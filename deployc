@@ -1,0 +1,16 @@
+#!/bin/sh
+RPI_LIB_LOC="../raspberry-pi"
+RPI_DEST="drone"
+RPI_NAME="pi@pidrone"
+
+mkdir deployed
+mkdir deployed/src
+cp -r tools deployed
+cp -r src deployed
+cp -r main deployed
+cp -r $RPI_LIB_LOC/src deployed
+cp -r include deployed
+cp makefile deployed
+scp -r deployed/* $RPI_NAME:$RPI_DEST
+
+rm -rf deployed
