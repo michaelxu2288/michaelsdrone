@@ -1,5 +1,5 @@
-#include <drone.h>
-#include <cstdlib>
+// #include <drone.h>
+// #include <cstdlib>
 
 // drone::drone(){
 //     printf("bruhconk\n");
