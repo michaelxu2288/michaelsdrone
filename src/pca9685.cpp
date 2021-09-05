@@ -40,7 +40,7 @@ int pwm_regs[16][4] = {
 
 
 
-void pca9685::open(){
+void pca9685::init(){
     fd = open("/dev/i2c-1", O_RDWR); //Open the I2C device file
 	if (fd < 0) { //Catch errors
 		std::cout << "ERR (pca9685.cpp:open()): Failed to open /dev/i2c-1. Please check that I2C is enabled with raspi-config\n"; //Print error message

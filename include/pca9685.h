@@ -84,7 +84,7 @@
 
 
 namespace pca9685 {
-    void open();
+    void init();
     void close();
 
     void wake_up();
