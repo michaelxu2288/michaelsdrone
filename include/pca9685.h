@@ -98,8 +98,8 @@ namespace pca9685 {
     void set_pwm_percent(int pwm, double percent);
     void set_pwm_ms(int pwm, int ms);
 
-    inline int query_reg(int reg);
-    inline void write_reg(int reg, int val);
+    int query_reg(int reg);
+    void write_reg(int reg, int val);
 };
 
 #endif

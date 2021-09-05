@@ -55,11 +55,11 @@ void pca9685::destroy(){
     close(fd);
 }
 
-inline int pca9685::query_reg(int reg){
+int pca9685::query_reg(int reg){
     return i2c_smbus_read_byte_data(fd, reg);
 }
 
-inline void pca9685::write_reg(int reg, int val){
+void pca9685::write_reg(int reg, int val){
     i2c_smbus_write_byte_data(fd, reg, val);
 }
 
