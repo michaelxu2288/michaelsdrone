@@ -9,5 +9,5 @@ int main(){
 
     printf("Mode 1 reg: %d", pca9685::query_reg(MODE_1));
 
-    pca9685::close();
+    pca9685::destroy();
 }
