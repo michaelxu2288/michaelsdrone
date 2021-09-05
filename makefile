@@ -1,6 +1,6 @@
 SRCS:=${wildcard src/*.cpp}
 
-OPTS:="" -Iinclude -Isrc/include -pthread -lpthread -l=L../lib -li2c -std=c++11"
+OPTS:=" -Iinclude -Isrc/include -pthread -lpthread -l=L../lib -li2c -std=c++11"
 
 .PHONY: drone arm calibration low_speed high_speed pressure accel
 
