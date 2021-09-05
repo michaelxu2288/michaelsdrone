@@ -12,7 +12,6 @@ extern "C" {
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <cstdlib>
-#include <math.h>
 
 #define read(r) i2c_smbus_read_byte_data(fd, r);
 #define write(r,v) i2c_smbus_write_byte_data(fd, r, v);
@@ -46,13 +45,13 @@ void pca9685::init(){
 		std::cout << "ERR (pca9685.cpp:open()): Failed to open /dev/i2c-1. Please check that I2C is enabled with raspi-config\n"; //Print error message
 	}
 
-	int status = ioctl(fd, I2C_SLAVE,BMP390_ADDR); //Set the I2C bus to use the correct address
+	int status = ioctl(fd, I2C_SLAVE, PCA9685_ADDRES); //Set the I2C bus to use the correct address
 	if (status < 0) {
 		std::cout << "ERR (pca9685.cpp:open()): Could not get I2C bus with " << PCA9685_ADDRESS << " address. Please confirm that this address is correct\n"; //Print error message
 	}
 }
 
-void pca9685::close(){
+void pca9685::destroy(){
     close(fd);
 }
 
@@ -66,7 +65,7 @@ inline void pca9685::write_reg(int reg, int val){
 
 inline int round(double d){
     if(d < 0){
-        return (((-d) - ((int)-d)) < 0.5 ? ((int) d) : ((int) d - 1))
+        return (((-d) - ((int)-d)) < 0.5 ? ((int) d) : ((int) d - 1));
     }
     return (d - ((int) d) < 0.5 ? (int) d : (int) d + 1);
 }
