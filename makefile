@@ -44,4 +44,4 @@ setmotors: ${SRCS} tools/set_motors.cpp
 
 drone: 
 	mkdir -p bin
-	g++ main/main.cpp ${SRCS} -o bin/drone${OPTS}
+	g++ main/main.cpp ${SRCS} -o bin/drone ${OPTS}
