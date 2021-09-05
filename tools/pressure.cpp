@@ -1,6 +1,5 @@
 #include <bmp390.h>
 #include <iostream>
-#include <i2c.h>
 #include <unistd.h>
 
 int main(){
