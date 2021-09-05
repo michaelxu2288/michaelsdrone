@@ -7,7 +7,7 @@ int main(){
     pca9685::wake_up();
     usleep(500);
 
-    printf("Mode 1 reg: %d", pca9685::query_reg(MODE_1));
+    printf("Mode 1 reg: %d\n", pca9685::query_reg(MODE_1) & 0xFF);
 
     pca9685::destroy();
 }
