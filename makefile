@@ -2,7 +2,7 @@ SRCS:=${wildcard src/*.cpp}
 
 OPTS:= -Iinclude -pthread -lpthread -L../lib -li2c -std=c++11
 
-.PHONY: drone arm calibration low_speed high_speed pressure accel
+.PHONY: drone arm calibration low_speed high_speed pressure accel servo
 
 all: drone
 
@@ -41,6 +41,10 @@ accel: ${SRCS} tools/accl_test.cpp
 setmotors: ${SRCS} tools/set_motors.cpp
 	mkdir -p bin
 	g++ tools/set_motors.cpp ${SRCS} -o bin/setmotors ${OPTS}
+
+servo: ${SRCS} tools/servo.cpp
+	mkdir -p bin
+	g++ tools/servo.cpp ${SRCS} -o bin/servo ${OPTS}
 
 drone: 
 	mkdir -p bin
