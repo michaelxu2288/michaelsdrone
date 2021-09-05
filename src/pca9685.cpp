@@ -16,7 +16,7 @@ extern "C" {
 #define read(r) i2c_smbus_read_byte_data(fd, r);
 #define write(r,v) i2c_smbus_write_byte_data(fd, r, v);
 
-int fd = -1;
+static int fd = -1;
 
 int pwm_regs[16][4] = {
     {0x06, 0x07, 0x08, 0x09},

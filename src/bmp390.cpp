@@ -14,7 +14,7 @@ extern "C" {
 #include <cstdlib>
 #include <math.h>
 
-int fd = -1;
+static int fd = -1;
 
 #define MOLAR_MASS_AIR 2.896e-2 // kg/mol
 #define AVERAGE_SEA_LVL_PRESSURE 1.01325e5 // kPa
