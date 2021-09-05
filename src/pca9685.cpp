@@ -45,7 +45,7 @@ void pca9685::init(){
 		std::cout << "ERR (pca9685.cpp:open()): Failed to open /dev/i2c-1. Please check that I2C is enabled with raspi-config\n"; //Print error message
 	}
 
-	int status = ioctl(fd, I2C_SLAVE, PCA9685_ADDRES); //Set the I2C bus to use the correct address
+	int status = ioctl(fd, I2C_SLAVE, PCA9685_ADDRESS); //Set the I2C bus to use the correct address
 	if (status < 0) {
 		std::cout << "ERR (pca9685.cpp:open()): Could not get I2C bus with " << PCA9685_ADDRESS << " address. Please confirm that this address is correct\n"; //Print error message
 	}
