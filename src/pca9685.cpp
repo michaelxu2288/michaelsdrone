@@ -79,7 +79,7 @@ void pca9685::set_frequency(int frq){
     per = 1000 / frq;
     int reg_val = round(25000000.0 / (4096 * freq)) - 1;
 
-    printf("\n\npca9685::set_frequency\nSetting frequency to %d\nPRESCALE value is %d\n", frq, reg_val & 0xFF);
+    printf("\n\npca9685::set_frequency\nSetting frequency to %d\nSetting PRESCALE to %d\n", frq, reg_val & 0xFF);
     write(PRESCALE, reg_val & 0xFF);
 }
 void pca9685::set_pwm_ms(int pwm, int ms){
