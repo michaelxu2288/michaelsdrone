@@ -11,7 +11,7 @@ extern "C" {
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#include <cstdlib>
+#include <cstdio>
 
 #define read(r) i2c_smbus_read_byte_data(fd, r);
 #define write(r,v) i2c_smbus_write_byte_data(fd, r, v);
@@ -79,13 +79,15 @@ void pca9685::set_frequency(int frq){
     per = 1000 / frq;
     int reg_val = round(25000000.0 / (4096 * freq)) - 1;
 
+    printf("\n\npca9685::set_frequency\nSetting frequency to %d\nPRESCALE value is %d\n", frq, reg_val & 0xFF);
     write(PRESCALE, reg_val & 0xFF);
 }
 void pca9685::set_pwm_ms(int pwm, int ms){
     int cycle = 4096 * ms / per;
+    printf("\n\npca9685::set_pwm_ms\nSetting OFF of pin %d to %d (%d %d)\nSetting ON of pin %d to %d (%d %d)\n", pwm, cycle, (cycle & 0xF00) >> 16, 0, 0, 0);
     write(pwm_regs[pwm][0], 0);
     write(pwm_regs[pwm][1], 0);
-    write(pwm_regs[pwm][2], (cycle & 0xF00) >> 8);
+    write(pwm_regs[pwm][2], (cycle & 0xF00) >> 16);
     write(pwm_regs[pwm][3], cycle & 0xFF);
 }
 void pca9685::set_pwm_percent(int pwm, double percent){
@@ -99,11 +101,14 @@ void pca9685::set_pwm_off(int pwm, int off){
 }
 
 void pca9685::wake_up(){
-    write(MODE_1, 0b00000001);
+    printf("\n\npca9685::wake_up\nSetting MODE_1 to %d\n", old & ~(0b00010000));
+    write(MODE_1, old & ~(0b00010000));
 }
 
 void pca9685::sleep(){
-    write(MODE_1, 0b00010001);
+    int old = read(MODE_1);
+    printf("\n\npca9685::sleep\nSetting MODE_1 to %d\n", old | 0b00010000);
+    write(MODE_1, old | 0b00010000);
 }
 
 void pca9685::restart(){
