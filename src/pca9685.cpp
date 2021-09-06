@@ -34,7 +34,7 @@ int pwm_regs[16][4] = {
     {0x36, 0x37, 0x38, 0x39},
     {0x3A, 0x3B, 0x3C, 0x3D},
     {0x3E, 0x3F, 0x40, 0x41},
-    {0x42, 0x43, 0x04, 0x05},
+    {0x42, 0x43, 0x44, 0x45},
 };
 
 
@@ -84,7 +84,7 @@ void pca9685::set_frequency(int frq){
 }
 void pca9685::set_pwm_ms(int pwm, int ms){
     int cycle = 4096 * ms / per;
-    printf("\n\npca9685::set_pwm_ms\nSetting OFF of pin %d to %d (%d %d)\nSetting ON of pin %d to %d (%d %d)\n", pwm, cycle, (cycle & 0xF00) >> 16, cycle & 0xFF, 0, 0, 0);
+    printf("\n\npca9685::set_pwm_ms\nSetting OFF of pin %d to %d (%d %d)\nSetting ON of pin %d to %d (%d %d)\n", pwm, cycle, (cycle & 0xF00) >> 16, cycle & 0xFF, pwm, 0, 0, 0);
     write(pwm_regs[pwm][0], 0);
     write(pwm_regs[pwm][1], 0);
     write(pwm_regs[pwm][2], cycle & 0xFF);
