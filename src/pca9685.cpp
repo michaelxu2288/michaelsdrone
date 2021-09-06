@@ -81,6 +81,7 @@ void pca9685::set_frequency(int frq){
 
     printf("\n\npca9685::set_frequency\nSetting frequency to %d\nSetting PRESCALE to %d\n", frq, reg_val & 0xFF);
     write(PRESCALE, reg_val & 0xFF);
+    usleep(5000);
 }
 void pca9685::set_pwm_ms(int pwm, int ms){
     int cycle = 4096 * ms / per;
@@ -104,12 +105,14 @@ void pca9685::wake_up(){
     int old = read(MODE_1);
     printf("\n\npca9685::wake_up\nSetting MODE_1 to %d\n", old & ~(0b00010000));
     write(MODE_1, old & ~(0b00010000));
+    usleep(5000);
 }
 
 void pca9685::sleep(){
     int old = read(MODE_1);
     printf("\n\npca9685::sleep\nSetting MODE_1 to %d\n", old | 0b00010000);
     write(MODE_1, old | 0b00010000);
+    usleep(5000);
 }
 
 void pca9685::restart(){
