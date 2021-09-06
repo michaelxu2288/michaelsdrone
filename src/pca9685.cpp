@@ -101,6 +101,7 @@ void pca9685::set_pwm_off(int pwm, int off){
 }
 
 void pca9685::wake_up(){
+    int old = read(MODE_1);
     printf("\n\npca9685::wake_up\nSetting MODE_1 to %d\n", old & ~(0b00010000));
     write(MODE_1, old & ~(0b00010000));
 }
