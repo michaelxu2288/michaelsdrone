@@ -98,7 +98,7 @@ void pca9685::set_pwm_off(int pwm, int off){
 }
 
 void pca9685::wake_up(){
-    write(MODE_1, 0b00010000);
+    write(MODE_1, 0b00000000);
 }
 
 void pca9685::restart(){
