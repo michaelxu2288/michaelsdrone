@@ -53,6 +53,7 @@ void pca9685::init(){
 
 void pca9685::destroy(){
     close(fd);
+    sleep();
 }
 
 int pca9685::query_reg(int reg){
@@ -70,8 +71,8 @@ inline int round(double d){
     return (d - ((int) d) < 0.5 ? (int) d : (int) d + 1);
 }
 
-int freq = 200; // hz
-int per =  1000 / freq; // 5 ms
+static int freq = 200; // hz
+static int per =  1000 / freq; // 5 ms
 void pca9685::set_frequency(int frq){
 // PRESCALE_VAL -> round(25000000 / (4096 * update_rate)) - 1
     freq = frq;
@@ -98,9 +99,13 @@ void pca9685::set_pwm_off(int pwm, int off){
 }
 
 void pca9685::wake_up(){
-    write(MODE_1, 0b00000000);
+    write(MODE_1, 0b00000001);
+}
+
+void pca9685::sleep(){
+    write(MODE_1, 0b00000001 | PCA9685_SLEEP);
 }
 
 void pca9685::restart(){
-
+    
 }

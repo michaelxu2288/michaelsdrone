@@ -5,6 +5,7 @@
 #define PCA9685_ADDRESS 0x40
 #define PCA9685_ADDRESS_B 0x70
 
+#define PCA9685_SLEEP 0b00010000
 
 // REGISTERS
 
@@ -88,8 +89,11 @@ namespace pca9685 {
     void init();
     void destroy();
 
+    
+
     void wake_up();
     void restart();
+    void sleep();
 
     void set_frequency(int rate);
 
@@ -98,6 +102,17 @@ namespace pca9685 {
 
     void set_pwm_percent(int pwm, double percent);
     void set_pwm_ms(int pwm, int ms);
+
+
+    // Set all pwms on time delays
+    void set_all_pwm_on();
+    // Set all pwms off time delays
+    void set_all_pwm_off();
+
+    // Set all pwms percent of full
+    void set_all_pwm_percent();
+    // Set all pwms percent of 
+    void set_all_pwm_ms();
 
     int query_reg(int reg);
     void write_reg(int reg, int val);
