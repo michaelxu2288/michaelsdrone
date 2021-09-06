@@ -103,7 +103,7 @@ void pca9685::wake_up(){
 }
 
 void pca9685::sleep(){
-    write(MODE_1, 0b00000001 | PCA9685_SLEEP);
+    write(MODE_1, 0b00010001);
 }
 
 void pca9685::restart(){
