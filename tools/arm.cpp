@@ -9,16 +9,22 @@
  * */
 #include <iostream>
 #include <settings.h>
-#include <drone.h>
+#include <pca9685.h>
+#include <unistd.h>
 
 int main(){
 
     std::cout << "Arming Motors\n";
 
-    drone d;
-    d.start();
-    d.arm();
-    d.close();
+    pca9685::init();
+    pca9685::set_frequency(50);
+
+    pca9685::set_pwm_ms(0, THROTTLE_MIN);
+    usleep(2000000);
+    pca9685::set_pwm_ms(0, THROTTLE_MAX);
+    usleep(2000000);
+    pca9685::set_pwm_ms(0, THROTTLE_MIN);
+    usleep(1000000);
 
     std::cout << "Finished\n";
 
