@@ -41,6 +41,10 @@ int pwm_regs[16][4] = {
 static int freq = 200; // hz
 static int per =  1000000 / freq; // 5 ms
 
+static int get_frequency(){
+    return 25000000 / ((read(PRESCALE) + 1) * 4096);
+}
+
 void pca9685::init(){
     fd = open("/dev/i2c-1", O_RDWR); //Open the I2C device file
 	if (fd < 0) { //Catch errors
@@ -75,9 +79,6 @@ inline int round(double d){
     return (d - ((int) d) < 0.5 ? (int) d : (int) d + 1);
 }
 
-static int get_frequency(){
-    return 25000000 / ((read(PRESCALE) + 1) * 4096);
-}
 void pca9685::set_frequency(int frq){
 // PRESCALE_VAL -> round(25000000 / (4096 * update_rate)) - 1
     freq = frq;
