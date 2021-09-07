@@ -82,7 +82,7 @@ inline int round(double d){
 void pca9685::set_frequency(int frq){
 // PRESCALE_VAL -> round(25000000 / (4096 * update_rate)) - 1
     freq = frq;
-    per = 1000 / frq;
+    per = 1000000 / frq;
     int reg_val = round(25000000.0 / (4096 * freq)) - 1;
 
     printf("\n\npca9685::set_frequency\nSetting frequency to %d\nSetting PRESCALE to %d\n", frq, reg_val & 0xFF);
