@@ -53,7 +53,6 @@ void pca9685::init(){
 
 void pca9685::destroy(){
     close(fd);
-    sleep();
 }
 
 int pca9685::query_reg(int reg){
@@ -109,7 +108,7 @@ void pca9685::wake_up(){
 }
 
 void pca9685::sleep(){
-    int old = read(MODE_1);
+    int old = read(MODE_1) & 0xFF;
     printf("\n\npca9685::sleep\nSetting MODE_1 to %d\n", old | 0b00010000);
     write(MODE_1, old | 0b00010000);
     usleep(5000);
