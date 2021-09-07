@@ -93,6 +93,7 @@ void pca9685::set_pwm_ms(int pwm, int ms){
 void pca9685::set_pwm_percent(int pwm, double percent){
     int cycle = (int) (4096 * percent);
     printf("\n\npca9685::set_pwm_ms\nSetting OFF of pin %d to %d (%d %d)\nSetting ON of pin %d to %d (%d %d)\n", pwm, cycle, (cycle & 0xF00) >> 8, cycle & 0xFF, pwm, 0, 0, 0);
+    printf("Estimated OFF ms: %d\nEstimated ON ms: %d\n", percent * per, 0);
     write(pwm_regs[pwm][0], 0);
     write(pwm_regs[pwm][1], 0);
     write(pwm_regs[pwm][2], cycle & 0xFF);
