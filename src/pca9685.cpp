@@ -38,6 +38,8 @@ int pwm_regs[16][4] = {
 };
 
 
+static int freq = 200; // hz
+static int per =  1000000 / freq; // 5 ms
 
 void pca9685::init(){
     fd = open("/dev/i2c-1", O_RDWR); //Open the I2C device file
@@ -49,6 +51,9 @@ void pca9685::init(){
 	if (status < 0) {
 		std::cout << "ERR (pca9685.cpp:open()): Could not get I2C bus with " << PCA9685_ADDRESS << " address. Please confirm that this address is correct\n"; //Print error message
 	}
+
+    freq = get_frequency();
+    per = 1000000 / freq;
 }
 
 void pca9685::destroy(){
@@ -70,8 +75,9 @@ inline int round(double d){
     return (d - ((int) d) < 0.5 ? (int) d : (int) d + 1);
 }
 
-static int freq = 200; // hz
-static int per =  1000 / freq; // 5 ms
+static int get_frequency(){
+    return 25000000 / ((read(PRESCALE) + 1) * 4096);
+}
 void pca9685::set_frequency(int frq){
 // PRESCALE_VAL -> round(25000000 / (4096 * update_rate)) - 1
     freq = frq;
@@ -82,8 +88,8 @@ void pca9685::set_frequency(int frq){
     write(PRESCALE, reg_val & 0xFF);
     usleep(5000);
 }
-void pca9685::set_pwm_ms(int pwm, int ms){
-    int cycle = 4096 * ms / per;
+void pca9685::set_pwm_ms(int pwm, int micro_s){
+    int cycle = 4096 * micro_s / per;
     printf("\n\npca9685::set_pwm_ms\nSetting OFF of pin %d to %d (%d %d)\nSetting ON of pin %d to %d (%d %d)\n", pwm, cycle, (cycle & 0xF00) >> 8, cycle & 0xFF, pwm, 0, 0, 0);
     write(pwm_regs[pwm][0], 0);
     write(pwm_regs[pwm][1], 0);
