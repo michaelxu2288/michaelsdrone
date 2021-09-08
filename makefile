@@ -46,6 +46,10 @@ servo: ${SRCS} tools/servo.cpp
 	mkdir -p bin
 	g++ tools/servo.cpp ${SRCS} -o bin/servo ${OPTS}
 
+logger: ${SRCS} tools/logger.cpp
+	mkdir -p bin
+	g++ tools/logger.cpp %{SRCS} -o bin/logger ${OPTS}
+
 drone: 
 	mkdir -p bin
 	g++ main/main.cpp ${SRCS} -o bin/drone ${OPTS}
