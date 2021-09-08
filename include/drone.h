@@ -4,7 +4,7 @@
 #include <pwm_s.h>
 #include <unistd.h>
 
-struct drone {
+namespace drone {
     pwm fl, fr, bl, br;
 
 
@@ -25,9 +25,9 @@ struct drone {
     /**
      * DRONE SETTINGS
      * */
-    void start();
+    void init();
     void enable(bool fl, bool fr, bool bl, bool br);
-    void close();
+    void destoy();
 
     /**
      * MOTOR SETTINGS
