@@ -12,12 +12,11 @@ int main(){
     mpu6050::wake_up();
     setvbuf(stdout, NULL,_IONBF,0);
     float x,y,z;
-    int i = 30;
     double data[6];
     while(i--){
         mpu6050::read(data);
         std::cout<< data[0] << " " << data[1] << " " << data[2] << "\n";
-        usleep(100000);
+        usleep(1000);
     }
 
     
