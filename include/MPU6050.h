@@ -100,15 +100,15 @@ namespace mpu6050 {
 		g_8 = 0b10,
 		g_16 = 0b11,
 	};
-	}
+	};
 namespace gyro_range {
 	enum gyro_range {
 		deg_250,
 		deg_500,
 		deg_1000,
 		deg_2000,
-	}
-	}
+	};
+	};
 	namespace fsync {
 	enum fsync {
 		input_dis,
@@ -119,8 +119,8 @@ namespace gyro_range {
 		accl_x_out_l,
 		accl_y_out_l,
 		accl_z_out_l,
-	}
-	}
+	};
+	};
 	namespace dlpf{
 	enum dlpf {
 		hz_260,
@@ -130,7 +130,7 @@ namespace gyro_range {
 		hz_21,
 		hz_10,
 		hz_5,
-	}
+	};
 	};
 	namespace clk{
 		enum clk {
