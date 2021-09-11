@@ -11,6 +11,23 @@ static char buf100[100];
 static char buf20A[20];
 static char buf20B[20];
 
+
+void logger::debug(char * msg) {
+    log(level::debug, msg);
+}
+void logger::info(char * msg) {
+    log(level::info, msg);
+}
+void logger::crit(char * msg) {
+    log(level::critical, msg);
+}
+void logger::warn(char * msg) {
+    log(level::warn, msg);
+   }
+void logger::err(char * msg) {
+    log(level::error, msg);
+}
+
 void logger::log(level lvl, char * msg){
     
     switch (lvl)
