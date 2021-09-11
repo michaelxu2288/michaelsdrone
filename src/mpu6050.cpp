@@ -117,12 +117,12 @@ void mpu6050::read_raw(int * data){
 
 
 void mpu6050::read(double * data){
-	data[0] = ((float) (Read(OUT_XACCL_H) << 8 | Read(OUT_XACCL_L))) / accl_scale;
-	data[1] = ((float) (Read(OUT_YACCL_H) << 8 | Read(OUT_YACCL_L))) / accl_scale;
-	data[2] = ((float) (Read(OUT_ZACCL_H) << 8 | Read(OUT_ZACCL_L))) / accl_scale;
-	data[3] = ((float) (Read(OUT_XGYRO_H) << 8 | Read(OUT_XGYRO_L))) / gyro_scale;
-	data[4] = ((float) (Read(OUT_YGYRO_H) << 8 | Read(OUT_YGYRO_L))) / gyro_scale;
-	data[5] = ((float) (Read(OUT_ZGYRO_H) << 8 | Read(OUT_ZGYRO_L))) / gyro_scale;
+	data[0] = ((double) (Read(OUT_XACCL_H) << 8 | Read(OUT_XACCL_L))) / accl_scale;
+	data[1] = ((double) (Read(OUT_YACCL_H) << 8 | Read(OUT_YACCL_L))) / accl_scale;
+	data[2] = ((double) (Read(OUT_ZACCL_H) << 8 | Read(OUT_ZACCL_L))) / accl_scale;
+	data[3] = ((double) (Read(OUT_XGYRO_H) << 8 | Read(OUT_XGYRO_L))) / gyro_scale;
+	data[4] = ((double) (Read(OUT_YGYRO_H) << 8 | Read(OUT_YGYRO_L))) / gyro_scale;
+	data[5] = ((double) (Read(OUT_ZGYRO_H) << 8 | Read(OUT_ZGYRO_L))) / gyro_scale;
 }
 
 int mpu6050::query_register(int reg){
