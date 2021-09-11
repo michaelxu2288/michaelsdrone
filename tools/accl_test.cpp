@@ -1,15 +1,22 @@
-#include <MPU6050.h>
+#include <mpu6050.h>
 #include <unistd.h>
 #include <iostream>
 
 int main(){
-    MPU6050 bruh(0x68, false);
+    mpu6050::init();
+    mpu6050::set_accl_set(mpu6050::accl_range::g_16);
+    mpu6050::set_gyro_set(mpu6050::gyro_range::deg_1000);
+    mpu6050::set_clk(mpu6050::clk::x_gyro);
+    mpu6050::set_fsync(mpu6050::fsync::input_dis);
+    mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_184);
+    mpu6050::wake_up();
     setvbuf(stdout, NULL,_IONBF,0);
     float x,y,z;
     int i = 30;
+    double data[6];
     while(i--){
-        bruh.getAccel(&x, &y,&z);
-        std::cout<<x << " " << y << " " << z;
+        mpu6050::read(data);
+        std::cout<< data[0] << " " << data[1] << " " << data[2] << "\n";
         usleep(100000);
     }
 

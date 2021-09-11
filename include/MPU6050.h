@@ -23,35 +23,11 @@
 //	3	+/- 16g
 //See the MPU6000 Register Map for more information
 
-
-//Offsets - supply your own here (calculate offsets with getOffsets function)
-//     Accelerometer
-#define A_OFF_X 0.498
-#define A_OFF_Y 0.482
-#define A_OFF_Z -0.03
-//    Gyroscope
-#define G_OFF_X 0
-#define G_OFF_Y 0
-#define G_OFF_Z 0
-
 //-----------------------END MODIFY THESE PARAMETERS-----------------------
 
-#include <iostream>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <time.h>
-extern "C" {
-	#include <linux/i2c-dev.h>
-	#include <i2c/smbus.h>
-}
-#include <cmath>
-#include <thread>
+#define MPU6050_DEFAULT_ADDR 0x68
 
 #define _POSIX_C_SOURCE 200809L //Used for calculating time
-
-#define TAU 0.05 //Complementary filter percentage
 #define RAD_T_DEG 57.29577951308 //Radians to degrees (180/PI)
 
 //Select the appropriate settings
@@ -88,42 +64,112 @@ extern "C" {
 
 #define REG_PWR_MNG_1 0x6B // Register map 4.28
 #define REG_PWR_MNG_2 0x6C // Register map 4.29
+#define REG_CFG 0x1A
+#define REG_GYRO_CFG 0x1B
+#define REG_ACCL_CFG 0x1C
+#define REG_FIFO_EN 0x23
+#define REG_ACCL_OUT_STRT 0x3B
+#define REG_TEMP_OUT_STRT 0x41
+#define REG_GYRO_OUT_STRT 0x43
+#define REG_SIG_PTH_RST 0x68 //Signal Path Reset
+#define REG_USR_CTRL 0x6A
+
+#define OUT_XACCL_H 0x3B
+#define OUT_XACCL_L 0x3C
+#define OUT_YACCL_H 0x3D
+#define OUT_YACCL_L 0x3E
+#define OUT_ZACCL_H 0x3F
+#define OUT_ZACCL_L 0x40
+#define OUT_TEMP_H 0x41
+#define OUT_TEMP_L 0x42
+#define OUT_XGYRO_H 0x43
+#define OUT_XGYRO_L 0x44
+#define OUT_YGYRO_H 0x45
+#define OUT_YGYRO_L 0x46
+#define OUT_ZGYRO_H 0x47
+#define OUT_ZGYRO_L 0x48
 
 
 
 
-class MPU6050 {
-	private:
-		void _update();
+namespace mpu6050 {
+	namespace accl_range{
+	enum accl_range {
+		g_2 = 0b00,
+		g_4 = 0b01,
+		g_8 = 0b10,
+		g_16 = 0b11,
+	};
+	}
+namespace gyro_range {
+	enum gyro_range {
+		deg_250,
+		deg_500,
+		deg_1000,
+		deg_2000,
+	}
+	}
+	namespace fsync {
+	enum fsync {
+		input_dis,
+		temp_out_l,
+		gyro_x_out_l,
+		gyro_y_out_l,
+		gyro_z_out_l,
+		accl_x_out_l,
+		accl_y_out_l,
+		accl_z_out_l,
+	}
+	}
+	namespace dlpf{
+	enum dlpf {
+		hz_260,
+		hz_184,
+		hz_94,
+		hz_44,
+		hz_21,
+		hz_10,
+		hz_5,
+	}
+	};
+	namespace clk{
+		enum clk {
+			int_oscl,
+			x_gyro,
+			y_gyro,
+			z_gyro,
+			ext_32kHz,
+			ext_19MHz,
+			reserved,
+			stop
+		};
+	};
 
-		float _accel_angle[3];
-		float _gyro_angle[3];
-		float _angle[3]; //Store all angles (accel roll, accel pitch, accel yaw, gyro roll, gyro pitch, gyro yaw, comb roll, comb pitch comb yaw)
 
-		float ax, ay, az, gr, gp, gy; //Temporary storage variables used in _update()
+	void init();
+	void init(int addr);
 
-		int MPU6050_addr;
-		int f_dev; //Device file
+	void wake_up();
+	void sleep();
 
-		float dt; //Loop time (recalculated with each loop)
+	void set_pwr_set(int set);
+	void set_accl_set(accl_range::accl_range set);
+	void set_gyro_set(gyro_range::gyro_range set);
+	void set_clk(clk::clk set);
+	void set_dlpf_bandwidth(dlpf::dlpf set);
+	void set_fsync(fsync::fsync set);
+	
+	void read_raw(int * data);
+	void read_accl_raw(int * data);
+	void read_gyro_raw(int * data);
 
-		struct timespec start,end; //Create a time structure
+	void read(double * data);
+	void read_accl(double * data);
+	void read_gyro(double * data);
 
-		bool _first_run = 1; //Variable for whether to set gyro angle to acceleration angle in compFilter
-	public:
-		MPU6050(int8_t addr);
-		MPU6050(int8_t addr, bool run_update_thread);
-		void getAccelRaw(float *x, float *y, float *z);
-		void getGyroRaw(float *roll, float *pitch, float *yaw);
-		void getAccel(float *x, float *y, float *z);
-		void getGyro(float *roll, float *pitch, float *yaw);
-		void getOffsets(float *ax_off, float *ay_off, float *az_off, float *gr_off, float *gp_off, float *gy_off);
-		int getAngle(int axis, float *result);
-		
+	int query_register(int reg);
+	void set_register(int reg, int data);
 
-		int inline query_register(int reg);
-		void inline set_register(int reg, int data);
 
-		
-		bool calc_yaw;
+	void destroy();
 };
