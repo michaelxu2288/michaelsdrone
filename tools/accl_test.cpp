@@ -13,7 +13,7 @@ int main(){
     setvbuf(stdout, NULL,_IONBF,0);
     float x,y,z;
     double data[6];
-    while(i--){
+    while(1){
         mpu6050::read(data);
         std::cout<< data[0] << " " << data[1] << " " << data[2] << "\n";
         usleep(1000);
