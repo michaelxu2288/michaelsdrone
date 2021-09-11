@@ -36,6 +36,6 @@ void logger::log(level lvl, char * msg){
     time(&rawtime);
     struct tm * timeinfo = localtime(&rawtime);
     strftime(buf20A, "%c", timeinfo);
-    sprintf(buf100, "[%s %s] %s", buf20B, buf20A, msg)
+    sprintf(buf100, "[%s %s] %s", buf20B, buf20A, msg);
     puts(buf100);
 }

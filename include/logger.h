@@ -12,11 +12,11 @@ namespace logger {
     void log(level lvl, char * msg);
 
 
-    void debug(char * msg) {log(level::debug, msg)}
-    void info(char * msg) {log(level::info, msg)}
-    void crit(char * msg) {log(level::critical, msg)}
-    void warn(char * msg) {log(level::warn, msg)}
-    void err(char * msg) {log(level::error, msg)}
+    void debug(char * msg) {log(level::debug, msg);}
+    void info(char * msg) {log(level::info, msg);}
+    void crit(char * msg) {log(level::critical, msg);}
+    void warn(char * msg) {log(level::warn, msg);}
+    void err(char * msg) {log(level::error, msg);}
 
 };
 
