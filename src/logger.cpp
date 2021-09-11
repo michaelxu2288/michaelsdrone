@@ -14,19 +14,19 @@ static char buf20B[20];
 static char ** titles = {"Debug", "Info", "CRITICAL", "WARNING", "ERROR"};
 
 void logger::debug(char * msg) {
-    log(level::debug, msg);
+    log(level::DEBUG, msg);
 }
 void logger::info(char * msg) {
-    log(level::info, msg);
+    log(level::INFO, msg);
 }
 void logger::crit(char * msg) {
-    log(level::critical, msg);
+    log(level::CRITICAL, msg);
 }
 void logger::warn(char * msg) {
-    log(level::warn, msg);
+    log(level::WARN, msg);
    }
 void logger::err(char * msg) {
-    log(level::error, msg);
+    log(level::ERROR, msg);
 }
 
 void logger::log(level lvl, char * msg){
