@@ -56,16 +56,16 @@ void mpu6050::sleep(){
 void mpu6050::set_accl_set(accl_range::accl_range set){
 	switch(set){
 	case accl_range::g_16:
-    	accel_scale = 2048;
+    	accl_scale = 2048;
 		break;
 	case accl_range::g_8: 
-    	accel_scale = 4096;
+    	accl_scale = 4096;
 		break;
 	case accl_range::g_4: 
-    	accel_scale = 8192;
+    	accl_scale = 8192;
 		break;
 	case accl_range::g_2: 
-    	accel_scale = 16384;
+    	accl_scale = 16384;
 		break;
 	}
 	Write(REG_ACCL_CFG, Read(REG_ACCL_CFG) & (~0b00011000) | (set << 3));
@@ -118,7 +118,7 @@ void mpu6050::read_raw(int * data){
 
 void mpu6050::read(double * data){
 	data[0] = ((float) (Read(OUT_XACCL_H) << 8 | Read(OUT_XACCL_L))) / accl_scale;
-	data[1] = ((float) (Read(OUT_YACCL_H) << 8 | Read(OUT_YACCL_L))) / accl_scale
+	data[1] = ((float) (Read(OUT_YACCL_H) << 8 | Read(OUT_YACCL_L))) / accl_scale;
 	data[2] = ((float) (Read(OUT_ZACCL_H) << 8 | Read(OUT_ZACCL_L))) / accl_scale;
 	data[3] = ((float) (Read(OUT_XGYRO_H) << 8 | Read(OUT_XGYRO_L))) / gyro_scale;
 	data[4] = ((float) (Read(OUT_YGYRO_H) << 8 | Read(OUT_YGYRO_L))) / gyro_scale;
