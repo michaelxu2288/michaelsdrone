@@ -18,7 +18,8 @@ int main(){
 
     pca9685::init();
     pca9685::set_frequency(50);
-
+    pca9685::wake_up();
+    
     pca9685::set_pwm_ms(0, THROTTLE_MIN);
     pca9685::set_pwm_ms(1, THROTTLE_MIN);
     pca9685::set_pwm_ms(2, THROTTLE_MIN);
