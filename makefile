@@ -50,6 +50,11 @@ logger: ${SRCS} tools/logger.cpp
 	mkdir -p bin
 	g++ tools/logger.cpp ${SRCS} -o bin/logger ${OPTS}
 
+drone_spd_ctl: ${SRCS} tools/drone_spd_ctl.cpp
+	mkdir -p bin
+	g++ tools/drone_spd_ctl.cpp ${SRCS} -o bin/spd ${OPTS}
+
+
 drone: 
 	mkdir -p bin
 	g++ main/main.cpp ${SRCS} -o bin/drone ${OPTS}
