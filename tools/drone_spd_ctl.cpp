@@ -24,9 +24,9 @@ int main(){
         pca9685::set_pwm_ms(1, THROTTLE_MIN + (int) (power / 100 * (THROTTLE_MAX - THROTTLE_MIN)));
         pca9685::set_pwm_ms(2, THROTTLE_MIN + (int) (power / 100 * (THROTTLE_MAX - THROTTLE_MIN)));
         pca9685::set_pwm_ms(3, THROTTLE_MIN + (int) (power / 100 * (THROTTLE_MAX - THROTTLE_MIN)));
-        
+
         std::cout << "Power %: ";
-        std::cin >> power
+        std::cin >> power;
         if(power > 100.0){
             power = 100.0;
         }
