@@ -25,9 +25,23 @@ static struct js_event {
     s16 value;
     u8 type;
     u8 number;
+};
+
+static void polling_thread_function(){
+    js_event event;
+    size_t event_s = sizeof(event);
+    
+    while(running){
+
+        ssize_t bytes = read(fd, &event, event_s);
+        if(bytes > 0){
+            printf("| Time: %10d | Event Type: %#8d | Number: %2d | Value: %4d |\n", event.time, event.type, event.number, event.value);
+        }
+
+
+        usleep(10000);
+    }
 }
-
-
 void gamepad::init(){
     if(!running){
         fd = open("/dev/input/js0");
@@ -55,19 +69,3 @@ bool gamepad::get_button(int button){
     return buttons[button];
 }
 
-
-static void polling_thread_function(){
-    js_event event;
-    size_t event_s = sizeof(event);
-    
-    while(running){
-
-        ssize_t bytes = read(fd, &event, event_s);
-        if(bytes > 0){
-            printf("| Time: %10d | Event Type: %#8d | Number: %2d | Value: %4d |\n", event.time, event.type, event.number, event.value);
-        }
-
-
-        usleep(10000);
-    }
-}
