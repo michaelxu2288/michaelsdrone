@@ -37,7 +37,7 @@ static void polling_thread_function(){
         if(bytes > 0){
             printf("| Time: %10d | Event Type: %#8d | Number: %2d | Value: %4d |\n", event.time, event.type, event.number, event.value);
         }
-
+        printf("cunt\n");
 
         usleep(10000);
     }
