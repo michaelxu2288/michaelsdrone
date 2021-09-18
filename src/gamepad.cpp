@@ -17,8 +17,8 @@ typedef std::uint32_t u32;
 
 static int fd;
 static std::thread polling_thread;
-static double axises[8];
-static bool buttons[8];
+static double axises[24];
+static bool buttons[24];
 static bool running;
 
 struct js_event {
@@ -43,9 +43,9 @@ static void polling_thread_function(){
         //     printf("| Time: %10d | Event Type: %#3d | Number: %2d | Value: %8d |\n", event.time, event.type, event.number, event.value);
         
         if((event.type & JS_EVENT_AXIS) == JS_EVENT_AXIS){
-            // axises[event.number] = ((double)(event.value)) / 32767.0;
+            axises[event.number] = ((double)(event.value)) / 32767.0;
         }else if((event.type & JS_EVENT_BUTTON) ==JS_EVENT_BUTTON){
-            // buttons[event.number] = event.value;
+            buttons[event.number] = event.value;
         }
         // }
 
