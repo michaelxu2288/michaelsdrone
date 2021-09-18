@@ -4,8 +4,13 @@
 
 int main(){
     gamepad::init();
-    char a = a;
-    std::cout << "Enter a character to exit: ";
-    std::cin >> a;
+
+    while(true){
+        std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+        std::cout << "Axis 0: " << gamepad::get_axis(0) << "\n";
+
+        usleep(100000);
+    }
+
     gamepad::stop();
 }
