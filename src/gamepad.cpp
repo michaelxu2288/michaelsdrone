@@ -39,7 +39,7 @@ static void polling_thread_function(){
         
             if((event.type & JS_EVENT_AXIS) == JS_EVENT_AXIS){
                 axises[event.number] = ((double)(event.value)) / 32767.0;
-            }else if((event.type &JS_EVENT_BUTTON) ==JS_EVENT_BUTTON){
+            }else if((event.type & JS_EVENT_BUTTON) ==JS_EVENT_BUTTON){
                 buttons[event.number] = event.value;
             }
         }
