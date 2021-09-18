@@ -44,7 +44,7 @@ static void polling_thread_function(){
 }
 void gamepad::init(){
     if(!running){
-        fd = open("/dev/input/js0");
+        fd = open("/dev/input/js0", O_RDONLY);
         if(fd >= 0){
             running = true;
             polling_thread = std::thread(polling_thread_function);

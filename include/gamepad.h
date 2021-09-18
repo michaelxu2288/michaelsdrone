@@ -1,3 +1,5 @@
+#ifndef GAMEPAD_H
+#define GAMEPAD_H
 
 namespace gamepad {
 
@@ -10,3 +12,5 @@ namespace gamepad {
     bool get_button(int button);
 
 }
+
+#endif
