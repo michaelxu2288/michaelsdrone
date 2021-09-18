@@ -28,9 +28,11 @@ struct js_event {
     u8 number;
 };
 
+
+static js_event event;
+static size_t event_s = sizeof(event);
+
 static void polling_thread_function(){
-    js_event event;
-    size_t event_s = sizeof(event);
     
     while(running){
 
