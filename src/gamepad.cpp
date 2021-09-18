@@ -35,7 +35,7 @@ static void polling_thread_function(){
 
         ssize_t bytes = read(fd, &event, event_s);
         if(bytes > 0){
-            //printf("| Time: %10d | Event Type: %#3d | Number: %2d | Value: %8d |\n", event.time, event.type, event.number, event.value);
+            printf("| Time: %10d | Event Type: %#3d | Number: %2d | Value: %8d |\n", event.time, event.type, event.number, event.value);
         
             if((event.type & JS_EVENT_AXIS) == JS_EVENT_AXIS){
                 axises[event.number] = ((double)(event.value)) / 32767.0;
