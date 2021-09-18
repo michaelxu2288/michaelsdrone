@@ -56,7 +56,7 @@ drone_spd_ctl: ${SRCS} tools/drone_spd_ctl.cpp
 
 gamepad:  ${SRCS} tools/gamepad_test.cpp
 	mkdir -p bin
-	g++ tools/gamepad_test.cpp ${SRCS} -o bin/spd ${OPTS}
+	g++ tools/gamepad_test.cpp ${SRCS} -o bin/game ${OPTS}
 
 drone: 
 	mkdir -p bin
