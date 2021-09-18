@@ -20,7 +20,7 @@ static double axises[8];
 static bool buttons[8];
 static bool running;
 
-static struct js_event {
+struct js_event {
     u32 time;
     s16 value;
     u8 type;
