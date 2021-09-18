@@ -5,8 +5,9 @@
 int main(){
     gamepad::init();
 
-    char n;
-    std::cin >> n;
-
+    while(true){
+        printf("Axis 0: %f\n", gamepad::get_axis(0));
+        usleep(100000)
+    }
     gamepad::stop();
 }
