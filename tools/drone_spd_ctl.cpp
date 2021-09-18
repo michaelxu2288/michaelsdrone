@@ -31,6 +31,10 @@ int main(){
             power = 100.0;
         }
     }
+        pca9685::set_pwm_ms(0, THROTTLE_MIN);
+        pca9685::set_pwm_ms(1, THROTTLE_MIN);
+        pca9685::set_pwm_ms(2, THROTTLE_MIN);
+        pca9685::set_pwm_ms(3, THROTTLE_MIN);
 
     std::cout << "Finished\n";
 
