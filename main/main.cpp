@@ -30,7 +30,7 @@ int main(){
         if(throttle > 0.3) {throttle = 0.3;}
         
         double diff = throttle - old;
-        if(diff > 0.01 || diff < 0.01){
+        if(diff > 0.01 || diff < -0.01){
             drone::set_all(throttle);
             old = throttle;
         }
