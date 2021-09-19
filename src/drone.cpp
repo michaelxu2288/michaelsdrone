@@ -12,7 +12,7 @@ void drone::arm(){
 }
 
 void drone::set_all(double per){
-    int pow = per * (THROTTLE_MAX - THROTTLE_MIN) + THROTTLE_MIN;
+    int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
     pca9685::set_pwm_ms(MOTOR_FL, pow);
     pca9685::set_pwm_ms(MOTOR_FR, pow);
     pca9685::set_pwm_ms(MOTOR_BL, pow);
@@ -20,7 +20,7 @@ void drone::set_all(double per){
 }
 
 void drone::set_diagonals(short diagonal, double per){
-    int pow = per * (THROTTLE_MAX - THROTTLE_MIN) + THROTTLE_MIN;
+    int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
     switch (diagonal)
     {
     case FLBR_DIAGONAL:
@@ -39,7 +39,7 @@ void drone::set_diagonals(short diagonal, double per){
 }
 
 void drone::set_motor(short motor, double per){
-    int pow = per * (THROTTLE_MAX - THROTTLE_MIN) + THROTTLE_MIN;
+    int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
     switch(motor){
     case MOTOR_FL:
         pca9685::set_pwm_ms(MOTOR_FL, pow);
