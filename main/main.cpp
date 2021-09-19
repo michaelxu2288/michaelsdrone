@@ -17,23 +17,20 @@ int main(){
 
     bool update = false;
 
+    double old = 0.0;
+
     while(true){
 
-        if(gamepad::get_button(0)){
-            throttle += 1 * dt;
-            update = true;
-        }
-        if(gamepad::get_button(1)){
-            throttle -= 1 * dt;
-            update = true;
-        }
+        
+        throttle +=  * dt;
+
 
         if(throttle < 0){throttle = 0;}
         if(throttle > 0.3) {throttle = 0.3;}
         
-        if(update){
-            drone::set_all(throttle);
-            update = false;
+        double diff = throttle - old;
+        if(diff > 0.01 || diff < 0.01){
+            drone::set_all(throttle)
         }
 
         usleep(10000);
