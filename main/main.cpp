@@ -33,6 +33,7 @@ int main(){
         
         if(update){
             drone::set_all(throttle);
+            update = false;
         }
 
         usleep(10000);
