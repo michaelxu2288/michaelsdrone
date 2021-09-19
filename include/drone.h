@@ -1,25 +1,11 @@
 #ifndef DRONE_H
 #define DRONE_H
 #include <settings.h>
-#include <pwm_s.h>
 #include <unistd.h>
 
 namespace drone {
-    pwm fl, fr, bl, br;
 
 
-
-
-
-
-
-
-
-
-
-
-
-    drone();
 
 
     /**
@@ -27,20 +13,22 @@ namespace drone {
      * */
     void init();
     void enable(bool fl, bool fr, bool bl, bool br);
-    void destoy();
+    void destroy();
 
     /**
      * MOTOR SETTINGS
      * */
-    void set_all(int width);
-    void set_diagonals(short diagonal, int width);
-    void set_motor(short motor, int width);
+    void set_all(double width);
+    void set_diagonals(short diagonal, double width);
+    void set_motor(short motor, double width);
 
     
     /**
-     * ROUTINES
+     * PRE PROGRAMMED ROUTINES
      * */
     void arm();
+
+
 
 
 };

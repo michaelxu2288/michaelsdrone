@@ -5,10 +5,11 @@
 #define MOTOR_BL 3
 #define MOTOR_BR 4
 
-#define MOTOR_FL_PIN 27
-#define MOTOR_FR_PIN 22
-#define MOTOR_BL_PIN 23
-#define MOTOR_BR_PIN 24
+#define MOTOR_FL_PIN 0
+#define MOTOR_FR_PIN 1
+#define MOTOR_BL_PIN 2
+#define MOTOR_BR_PIN 3
+
 
 #define ENABLE_FL 1
 #define ENABLE_FR 1

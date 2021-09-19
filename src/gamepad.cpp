@@ -18,7 +18,10 @@ typedef std::uint32_t u32;
 static int fd;
 static std::thread polling_thread;
 static double axises[24];
+// static void (*std::func) (double) axis_callbacks[24];
 static bool buttons[24];
+// static void (*std::func)() button_on_callbacks[24];
+// static void (*std::func)() button_off_callbacks[24];
 static bool running;
 
 struct js_event {
