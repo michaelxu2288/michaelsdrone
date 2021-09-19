@@ -7,7 +7,7 @@
 
 double fall_back_throttle = 0;
 double throttle = 0;
-double dt = 0.01
+double dt = 0.01;
 
 int main(){
     setvbuf(stdout, NULL,_IONBF,0);
