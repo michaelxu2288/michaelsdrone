@@ -22,7 +22,8 @@ int main(){
     while(true){
 
         
-        throttle +=  * dt;
+        throttle += 0.1 * (gamepad::get_axis(5) + 1)) * dt;
+        throttle -= 0.1 * (gamepad::get_axis(2) + 1)) * dt;
 
 
         if(throttle < 0){throttle = 0;}
