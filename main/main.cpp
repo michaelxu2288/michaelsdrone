@@ -22,8 +22,8 @@ int main(){
     while(true){
 
         
-        throttle += 0.1 * (gamepad::get_axis(5) + 1)) * dt;
-        throttle -= 0.1 * (gamepad::get_axis(2) + 1)) * dt;
+        throttle += 0.1 * (gamepad::get_axis(5) + 1) * dt;
+        throttle -= 0.1 * (gamepad::get_axis(2) + 1) * dt;
 
 
         if(throttle < 0){throttle = 0;}
@@ -31,7 +31,7 @@ int main(){
         
         double diff = throttle - old;
         if(diff > 0.01 || diff < 0.01){
-            drone::set_all(throttle)
+            drone::set_all(throttle);
         }
 
         usleep(10000);
