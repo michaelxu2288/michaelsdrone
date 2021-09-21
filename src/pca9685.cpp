@@ -78,6 +78,7 @@ void pca9685::set_frequency(int frq){
     printf("\n\npca9685::set_frequency\nSetting frequency to %d\nSetting PRESCALE to %d\n", frq, reg_val & 0xFF);
     write(PRESCALE, reg_val & 0xFF);
     usleep(5000);
+    printf("Reg 0x%#d val: %d\n", PRESCALE, read(PRESCALE));
 }
 void pca9685::set_pwm_ms(int pwm, int micro_s){
     int cycle = 4096 * micro_s / per;
@@ -86,6 +87,7 @@ void pca9685::set_pwm_ms(int pwm, int micro_s){
     write(pwm_regs[pwm][1], 0);
     write(pwm_regs[pwm][2], cycle & 0xFF);
     write(pwm_regs[pwm][3], (cycle >> 8) & 0xF);
+    printf("Reg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\n", pwm_regs[pwm][0], read(pwm_regs[pwm][0]), pwm_regs[pwm][1], read(pwm_regs[pwm][1]), pwm_regs[pwm][2], read(pwm_regs[pwm][2]), pwm_regs[pwm][3], read(pwm_regs[pwm][3]));
 }
 void pca9685::set_pwm_percent(int pwm, double percent){
     int cycle = (int) (4096 * percent);
@@ -95,7 +97,7 @@ void pca9685::set_pwm_percent(int pwm, double percent){
     write(pwm_regs[pwm][1], 0);
     write(pwm_regs[pwm][2], cycle & 0xFF);
     write(pwm_regs[pwm][3], (cycle >> 8) & 0xF);
-    
+    printf("Reg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\n", pwm_regs[pwm][0], read(pwm_regs[pwm][0]), pwm_regs[pwm][1], read(pwm_regs[pwm][1]), pwm_regs[pwm][2], read(pwm_regs[pwm][2]), pwm_regs[pwm][3], read(pwm_regs[pwm][3]));
 }
 void pca9685::set_pwm_on(int pwm, int on){
     write(pwm_regs[pwm][0], on & 0xFF);
@@ -110,6 +112,7 @@ void pca9685::wake_up(){
     printf("\n\npca9685::wake_up\nSetting MODE_1 to %d\n", old & ~(0b00010000));
     write(MODE_1, old & ~(0b00010000));
     usleep(5000);
+    printf("Reg 0x%#d val: %d\n", MODE_1, read(MODE_1));
 }
 
 void pca9685::sleep(){
