@@ -58,6 +58,10 @@ gamepad:  ${SRCS} tools/gamepad_test.cpp
 	mkdir -p bin
 	g++ tools/gamepad_test.cpp ${SRCS} -o bin/game ${OPTS} -DGAMEPAD_DEBUG=1
 
+init: ${SRCS} tools/init_test.cpp
+	mkdir -p bin
+	g++ tools/init_test.cpp ${SRCS} -o bin/game ${OPTS}
+
 drone: 
 	mkdir -p bin
 	g++ main/main.cpp ${SRCS} -o bin/drone ${OPTS}
