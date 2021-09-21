@@ -19,7 +19,7 @@ int main(){
 
     double old = 0.0;
 
-    while(drone::running){
+    while(true){
 
         
         throttle += 0.1 * (gamepad::get_axis(5) + 1) * dt;
