@@ -2,12 +2,19 @@
 #include <pca9685.h>
 #include <unistd.h>
 #include <csignal>
+#include <cstdio>
+#include <stdlib.h>
 
 void terminate_handle(int signum){
     
-    pca9685::set_pwm_ms(LED_RUN_PIN, 0);
-    pca9685::sleep();
-    pca9685::destroy();
+    pca9685::set_pwm_ms(LED_RUN_PIN, PWM_FULL / 2);
+    int i = 1000;
+    while(i--){
+        drone::set_all(1.0/(.1 * (1000 -i + 100)));
+        usleep(10000);
+    }
+    drone::set_all(0);
+    exit(0);
 }
 
 void drone::init(){

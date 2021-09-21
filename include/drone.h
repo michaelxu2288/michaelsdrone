@@ -5,7 +5,7 @@
 
 namespace drone {
 
-
+    extern bool running;
 
 
     /**
