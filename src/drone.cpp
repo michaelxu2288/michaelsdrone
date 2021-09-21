@@ -3,9 +3,10 @@
 #include <unistd.h>
 
 void drone::init(){
-    pca9685::init();
-    usleep(10000);
     pca9685::set_frequency(50);
+    pca9685::init();
+    pca9685::wake_up();
+    usleep(10000);
     pca9685::set_pwm_ms(LED_RUN_PIN, PWM_FULL - 1);
 }
 

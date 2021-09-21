@@ -98,7 +98,8 @@ void pca9685::set_pwm_percent(int pwm, double percent){
     
 }
 void pca9685::set_pwm_on(int pwm, int on){
-    
+    write(pwm_regs[pwm][0], on & 0xFF);
+    write(pwm_regs[pwm][1], (on >> 8) & 0xF);
 }
 void pca9685::set_pwm_off(int pwm, int off){
     
