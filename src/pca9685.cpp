@@ -130,6 +130,7 @@ void pca9685::sleep(){
     printf("\n\npca9685::sleep\nSetting MODE_1 to %d\n", old | 0b00010000);
     write(MODE_1, old | 0b00010000);
     usleep(5000);
+    printf("Reg 0x%#d val: %d\n", MODE_1, read(MODE_1));
 }
 
 void pca9685::restart(){
