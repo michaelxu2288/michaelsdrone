@@ -5,7 +5,7 @@
 #define MOTOR_BL 3
 #define MOTOR_BR 4
 
-#define PWM_FULL 20000
+#define PWM_FULL 19999
 
 #define MOTOR_FL_PIN 0
 #define MOTOR_FR_PIN 1
