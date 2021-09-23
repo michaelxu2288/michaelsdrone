@@ -60,7 +60,11 @@ gamepad:  ${SRCS} tools/gamepad_test.cpp
 
 init: ${SRCS} tools/init_test.cpp
 	mkdir -p bin
-	g++ tools/init_test.cpp ${SRCS} -o bin/game ${OPTS}
+	g++ tools/init_test.cpp ${SRCS} -o bin/init ${OPTS}
+
+led: ${SRCS} tools/test_led.cpp
+	mkdir -p bin
+	g++ tools/test_led.cpp ${SRCS} -o bin/led ${OPTS}
 
 drone: 
 	mkdir -p bin

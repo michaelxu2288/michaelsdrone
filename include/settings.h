@@ -13,6 +13,10 @@
 #define MOTOR_BR_PIN 3
 
 #define LED_RUN_PIN 15
+#define LED_ERROR_PIN 14
+#define LED_AUTO_PIN 11
+#define LED_WHITE_PIN 13
+#define LED_BLUE_PIN 12
 
 #define ENABLE_FL 1
 #define ENABLE_FR 1
