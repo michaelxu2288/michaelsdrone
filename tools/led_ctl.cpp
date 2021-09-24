@@ -7,7 +7,7 @@ void toggle(int pin){
     pca9685::init();
     pca9685::set_frequency(50);
     pca9685::wake_up();
-    
+
 }
 
 void set(int pin, double percent){
@@ -25,31 +25,31 @@ int main(int argc, char ** argv){
             if(argc >= 3){
                 toggle(LED_RUN_PIN);
             }else{
-                set(LED_RUN_PIN, atof(argv[2]);)
+                set(LED_RUN_PIN, atof(argv[2]));
             }
         }else if(strcmp("error", led_type)){
             if(argc >= 3){
                 toggle(LED_ERROR_PIN);
             }else{
-                set(LED_ERROR_PIN, atof(argv[2]);)
+                set(LED_ERROR_PIN, atof(argv[2]));
             }
         }else if(strcmp("auto", led_type)){
             if(argc >= 3){
                 toggle(LED_AUTO_PIN);
             }else{
-                set(LED_AUTO_PIN, atof(argv[2]);)
+                set(LED_AUTO_PIN, atof(argv[2]));
             }
         }else if(strcmp("blue", led_type)){
             if(argc >= 3){
                 toggle(LED_BLUE_PIN);
             }else{
-                set(LED_BLUE_PIN, atof(argv[2]);)
+                set(LED_BLUE_PIN, atof(argv[2]));
             }
         }else if(strcmp("white", led_type)){
             if(argc >= 3){
                 toggle(LED_WHITE_PIN);
             }else{
-                set(LED_WHITE_PIN, atof(argv[2]);)
+                set(LED_WHITE_PIN, atof(argv[2]));
             }
         }
     }
