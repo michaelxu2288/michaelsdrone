@@ -21,15 +21,15 @@ int main(int argc, char ** argv){
     if(argc >= 3){
         char * led_type = argv[1];
 
-        if(strcmp("run", led_type)){
+        if(!strcmp("run", led_type)){
             set(LED_RUN_PIN, atof(argv[2]));
-        }else if(strcmp("error", led_type)){
+        }else if(!strcmp("error", led_type)){
             set(LED_ERROR_PIN, atof(argv[2]));
-        }else if(strcmp("auto", led_type)){
+        }else if(!strcmp("auto", led_type)){
             set(LED_AUTO_PIN, atof(argv[2]));
-        }else if(strcmp("blue", led_type)){
+        }else if(!strcmp("blue", led_type)){
             set(LED_BLUE_PIN, atof(argv[2]));
-        }else if(strcmp("white", led_type)){
+        }else if(!strcmp("white", led_type)){
             set(LED_WHITE_PIN, atof(argv[2]));
         }
     }
