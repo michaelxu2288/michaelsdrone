@@ -62,7 +62,11 @@ init: ${SRCS} tools/init_test.cpp
 	mkdir -p bin
 	g++ tools/init_test.cpp ${SRCS} -o bin/init ${OPTS}
 
-led: ${SRCS} tools/test_led.cpp
+led_test: ${SRCS} tools/test_led.cpp
+	mkdir -p bin
+	g++ tools/test_led.cpp ${SRCS} -o bin/led_test ${OPTS}
+
+led: ${SRCS} tools/led_ctl.cpp
 	mkdir -p bin
 	g++ tools/test_led.cpp ${SRCS} -o bin/led ${OPTS}
 
