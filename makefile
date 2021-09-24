@@ -68,7 +68,7 @@ led_test: ${SRCS} tools/test_led.cpp
 
 led: ${SRCS} tools/led_ctl.cpp
 	mkdir -p bin
-	g++ tools/test_led.cpp ${SRCS} -o bin/led ${OPTS}
+	g++ tools/led_ctl.cpp ${SRCS} -o bin/led ${OPTS}
 
 drone: 
 	mkdir -p bin
