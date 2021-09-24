@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cd /home/pi/drone
+while :
+do
+    ./bin/led error 1
+    ./bin/led blue 1
+    git pull
+    make
+    ./bin/led error 0
+    ./bin/led blue 0
+    ./bin/drone
+done
