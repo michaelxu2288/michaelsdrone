@@ -31,7 +31,7 @@ int main(){
         std::cout << "Throttle : " <<throttle << "\n";
 
         if(throttle < 0){throttle = 0;}
-        if(throttle > 0.3) {throttle = 0.3;}
+        if(throttle > 0.5) {throttle = 0.5;}
         
         double diff = throttle - old;
         if(diff > 0.01 || diff < -0.01){
