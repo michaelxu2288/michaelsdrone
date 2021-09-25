@@ -8,11 +8,11 @@
 void terminate_handle(int signum){
     
     pca9685::set_pwm_ms(LED_RUN_PIN, PWM_FULL / 2);
-    int i = 1000;
-    while(i--){
-        drone::set_all(1.0/(.1 * (1000 -i + 100)));
-        usleep(10000);
-    }
+    // int i = 1000;
+    // while(i--){
+    //     drone::set_all(1.0/(.1 * (1000 -i + 100)));
+    //     usleep(10000);
+    // }
     drone::set_all(0);
     exit(0);
 }
