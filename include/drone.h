@@ -15,6 +15,8 @@ namespace drone {
     void enable(bool fl, bool fr, bool bl, bool br);
     void destroy();
 
+    void force_terminate();
+
     /**
      * MOTOR SETTINGS
      * */

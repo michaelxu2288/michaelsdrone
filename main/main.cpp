@@ -4,6 +4,7 @@
 #include <ctime>
 #include <gamepad.h>
 #include <drone.h>
+#include <stdlib.h>
 
 double fall_back_throttle = 0;
 double throttle = 0;
@@ -20,7 +21,10 @@ int main(){
     double old = 0.0;
 
     while(true){
-
+        if(gamepad::get_button(2)){
+            drone::force_terminate();
+            exit(0);
+        }
         
         throttle += 0.1 * (gamepad::get_axis(5) + 1) * dt;
         throttle -= 0.1 * (gamepad::get_axis(2) + 1) * dt;

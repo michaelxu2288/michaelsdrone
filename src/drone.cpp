@@ -5,19 +5,30 @@
 #include <cstdio>
 #include <stdlib.h>
 
-void terminate_handle(int signum){
-    
-    pca9685::set_pwm_ms(LED_RUN_PIN, PWM_FULL / 2);
-    // int i = 1000;
-    // while(i--){
-    //     drone::set_all(1.0/(.1 * (1000 -i + 100)));
-    //     usleep(10000);
-    // }
+void clear_led(){
+    pca9685::set_pwm_ms(LED_RUN_PIN, 0);
+    pca9685::set_pwm_ms(LED_AUTO_PIN, 0);
+    pca9685::set_pwm_ms(LED_ERROR_PIN, 0);
+    pca9685::set_pwm_ms(LED_WHITE_PIN, 0);
+    pca9685::set_pwm_ms(LED_BLUE_PIN, 0);
+}
+void drone::force_terminate(){
+    clear_led();
+    pca9685::set_pwm_ms(LED_RUN_PIN, 0);
+    pca9685::set_pwm_ms(LED_ERROR_PIN, PWM_FULL-1);
     drone::set_all(0);
+}
+
+
+void terminate_handle(int signum){
+    drone::force_terminate()
+    
     exit(0);
 }
 
+
 void drone::init(){
+    clear_led();
     pca9685::set_frequency(50);
     pca9685::init();
     pca9685::wake_up();
