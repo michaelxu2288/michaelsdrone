@@ -22,18 +22,22 @@ void drone::force_terminate(){
 
 void terminate_handle(int signum){
     drone::force_terminate();
-    
     exit(0);
 }
 
 
 void drone::init(){
+    // Setup pca9685
     pca9685::set_frequency(50);
     pca9685::init();
     pca9685::wake_up();
-    pca9685::set_pwm_ms(LED_RUN_PIN, PWM_FULL - 1);
+    
+    // Attach handle for ctrl+c
     signal(SIGINT, terminate_handle);
+
+    //initial LED control
     clear_led();
+    pca9685::set_pwm_ms(LED_RUN_PIN, PWM_FULL - 1);
 }
 
 void drone::arm(){
