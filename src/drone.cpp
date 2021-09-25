@@ -21,7 +21,7 @@ void drone::force_terminate(){
 
 
 void terminate_handle(int signum){
-    drone::force_terminate()
+    drone::force_terminate();
     
     exit(0);
 }
