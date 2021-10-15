@@ -12,7 +12,7 @@ extern "C" {
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <cstdlib>
-#include <math.h>
+#include <cmath>
 
 static int fd = -1;
 
