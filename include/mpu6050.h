@@ -89,7 +89,12 @@
 #define OUT_ZGYRO_H 0x47
 #define OUT_ZGYRO_L 0x48
 
-
+#define X_ACCL_SHIFT 1265
+#define Y_ACCL_SHIFT 215
+#define Z_ACCL_SHIFT 1066
+#define X_GYRO_SHIFT 65437
+#define Y_GYRO_SHIFT 72
+#define Z_GYRO_SHIFT 2337
 
 
 namespace mpu6050 {
@@ -159,6 +164,8 @@ namespace gyro_range {
 	void set_dlpf_bandwidth(dlpf::dlpf set);
 	void set_fsync(fsync::fsync set);
 	
+	void set_offsets(int x_a, int y_a, int z_a, int x_g, int y_g, int z_g);
+
 	void read_raw(int * data);
 	void read_accl_raw(int * data);
 	void read_gyro_raw(int * data);
@@ -170,6 +177,9 @@ namespace gyro_range {
 	int query_register(int reg);
 	void set_register(int reg, int data);
 
+	void calibrate(int n);
+
+	void print_debug();
 
 	void destroy();
 };
