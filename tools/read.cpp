@@ -47,7 +47,7 @@ int main(){
     mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
     mpu6050::wake_up();
 
-    mpu6050::set_offsets(-76, 232, -32294, 224, -228, -130);
+    mpu6050::set_offsets(-77, 240, -32334, 27, -29, -16);
     //mpu6050::set_offsets(1510, -170, -1350, -101, 69, 40);
     //mpu6050::set_offsets(1392, 18, -1359, -100, 68, 38);
     //mpu6050::set_offsets(1441, 87, -1340, -197, 149, 78)
