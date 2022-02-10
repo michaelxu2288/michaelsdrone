@@ -3,8 +3,9 @@ SRCS:=${wildcard src/*.cpp}
 OPTS:= -Iinclude -pthread -lpthread -L../lib -li2c -std=c++11
 
 .PHONY: drone arm calibration low_speed high_speed pressure accel servo read
+e: drone
 
-all: drone
+all: drone calibration led read
 
 rampup: ${SRCS} tools/rampup.cpp
 	mkdir -p bin
@@ -77,3 +78,7 @@ drone:
 read:
 	mkdir -p bin
 	g++ tools/read.cpp ${SRCS} -o bin/read ${OPTS}
+
+ws:
+	mkdir -p bin
+	g++ tools/ws_server.cpp ${SRCS} -o bin/wsserver ${OPTS}
