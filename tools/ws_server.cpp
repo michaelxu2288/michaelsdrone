@@ -8,7 +8,7 @@
 using namespace std;
 
 using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
-using WsClient = SimpleWeb::SocketClient<SimpleWeb::WS>;
+// using WsClient = SimpleWeb::SocketClient<SimpleWeb::WS>;
 
 int main() {
     // WebSocket (WS)-server at port 8080 using 1 thread
@@ -103,7 +103,7 @@ int main() {
     thread server_thread([&server, &server_port]() {
         // Start server
         server.start([&server_port](unsigned short port) {
-        server_port.set_value(port);
+            server_port.set_value(port);
         });
     });
     cout << "Server listening on port " << server_port.get_future().get() << endl
