@@ -1,7 +1,7 @@
 
 #include "server_ws.hpp"
 #include <future>
-
+#include <iostream>
 
 
 
@@ -100,14 +100,13 @@ int main() {
 
     // Start server and receive assigned port when server is listening for requests
     promise<unsigned short> server_port;
-    thread server_thread([&server, &server_port]() {
+    thread server_thread([WsServer &server, promise<unsigned short> &server_port]() {
         // Start server
         server.start([&server_port](unsigned short port) {
             server_port.set_value(port);
         });
     });
-    cout << "Server listening on port " << server_port.get_future().get() << endl
-        << endl;
+    cout << "Server listening on port " << server_port.get_future().get() << endl << endl;
 
     // Example 4: Client communication with server
     // Possible output:
