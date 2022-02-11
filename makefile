@@ -86,4 +86,7 @@ ws:
 motor_ctl:
 	mkdir -p bin
 	g++ tools/set_motor.cpp ${SRCS} -o bin/motor ${OPTS}
-	
+
+parse:
+	mkdir -p bin
+	g++ tools/parse.cpp ${SRCS} -o bin/parse ${OPTS}
