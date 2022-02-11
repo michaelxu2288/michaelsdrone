@@ -36,14 +36,14 @@ int main() {
         int i = next_token(m, 0, command);
         string v;
         i = next_token(m, i, v);
-        float value = atof(v.c_str())
+        float value = atof(v.c_str());
 
         cout << "Server: Message received: \"" << m << "\" from " << connection.get() << endl;
 
         cout << "Server: Sending message \"" << command << " set to " << value << "\" to " << connection.get() << endl;
 
         // connection->send is an asynchronous function
-        connection->send(command + " set to " + value, [](const SimpleWeb::error_code &ec) {
+        connection->send(command + " set to " + to_string(value), [](const SimpleWeb::error_code &ec) {
             if(ec) {
                 cout << "Server: Error sending message. " <<
                     // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
