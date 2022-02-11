@@ -82,3 +82,8 @@ read:
 ws:
 	mkdir -p bin
 	g++ tools/ws_server.cpp ${SRCS} -o bin/wsserver ${OPTS}
+	
+motor_ctl:
+	mkdir -p bin
+	g++ tools/set_motor.cpp ${SRCS} -o bin/motor ${OPTS}
+	
