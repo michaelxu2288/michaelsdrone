@@ -10,6 +10,13 @@ using namespace std;
 using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 // using WsClient = SimpleWeb::SocketClient<SimpleWeb::WS>;
 
+
+int next_token(string & tokenized, int i, string & out){
+    int k = tokenized.find(" ", i);
+    out = tokenized.substr(i, k);
+    return k + 1;
+}
+
 int main() {
     // WebSocket (WS)-server at port 8080 using 1 thread
     WsServer server;
@@ -24,18 +31,19 @@ int main() {
     auto &echo = server.endpoint["^/echo/?$"];
 
     echo.on_message = [](shared_ptr<WsServer::Connection> connection, shared_ptr<WsServer::InMessage> in_message) {
-        string out_message = in_message->string();
+        string m = in_message->string();
+        string command;
+        int i = next_token(m, 0, command);
+        string v;
+        i = next_token(m, i, v);
+        float value = atof(v.c_str())
 
-        size_t i = in_message.find("=", 0);
-        string variable = out_message.substr(0, i);
-        double value = atof(out_message.substr(i+1).c_str());
+        cout << "Server: Message received: \"" << m << "\" from " << connection.get() << endl;
 
-        cout << "Server: Message received: \"" << out_message << "\" from " << connection.get() << endl;
-
-        cout << "Server: Sending message \"" << variable << " set to " << value << "\" to " << connection.get() << endl;
+        cout << "Server: Sending message \"" << command << " set to " << value << "\" to " << connection.get() << endl;
 
         // connection->send is an asynchronous function
-        connection->send(variable + " set to " + value, [](const SimpleWeb::error_code &ec) {
+        connection->send(command + " set to " + value, [](const SimpleWeb::error_code &ec) {
             if(ec) {
                 cout << "Server: Error sending message. " <<
                     // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
