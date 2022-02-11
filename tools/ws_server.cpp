@@ -96,11 +96,11 @@ int main() {
     //     // echo_all.get_connections() can also be used to solely receive connections on this endpoint
     //     for(auto &a_connection : server.get_connections())
     //     a_connection->send(out_message);
-    };
+    // };
 
     // Start server and receive assigned port when server is listening for requests
     promise<unsigned short> server_port;
-    thread server_thread([WsServer &server, promise<unsigned short> &server_port]() {
+    thread server_thread([&server, &server_port]() {
         // Start server
         server.start([&server_port](unsigned short port) {
             server_port.set_value(port);
