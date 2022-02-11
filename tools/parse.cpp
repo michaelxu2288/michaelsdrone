@@ -8,7 +8,7 @@ using namespace std;
 
 int next_token(string & tokenized, int i, string & out){
     int k = tokenized.find(" ", i);
-    out.substr(i, k);
+    out = tokenized.substr(i, k);
     return k + 1;
 }
 
