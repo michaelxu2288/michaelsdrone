@@ -3,7 +3,7 @@
 #include <future>
 #include <iostream>
 
-
+#include <string>
 
 using namespace std;
 
@@ -24,19 +24,23 @@ int main() {
     auto &echo = server.endpoint["^/echo/?$"];
 
     echo.on_message = [](shared_ptr<WsServer::Connection> connection, shared_ptr<WsServer::InMessage> in_message) {
-        auto out_message = in_message->string();
+        string out_message = in_message->string();
+
+        size_t i = in_message.find("=", 0);
+        string variable = out_message.substr(0, i);
+        double value = atof(out_message.substr(i+1).c_str());
 
         cout << "Server: Message received: \"" << out_message << "\" from " << connection.get() << endl;
 
-        cout << "Server: Sending message \"" << out_message << "\" to " << connection.get() << endl;
+        cout << "Server: Sending message \"" << variable << " set to " << value << "\" to " << connection.get() << endl;
 
         // connection->send is an asynchronous function
-        connection->send(out_message, [](const SimpleWeb::error_code &ec) {
-        if(ec) {
-            cout << "Server: Error sending message. " <<
-                // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
-                "Error: " << ec << ", error message: " << ec.message() << endl;
-        }
+        connection->send(variable + " set to " + value, [](const SimpleWeb::error_code &ec) {
+            if(ec) {
+                cout << "Server: Error sending message. " <<
+                    // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
+                    "Error: " << ec << ", error message: " << ec.message() << endl;
+            }
         });
 
         // Alternatively use streams:
