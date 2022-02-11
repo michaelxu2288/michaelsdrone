@@ -1,6 +1,6 @@
 SRCS:=${wildcard src/*.cpp}
 
-OPTS:= -Iinclude -pthread -lpthread -L../lib -li2c -std=c++17 -Lboost-all-dev -Lssl-4 -Lboost_system -L"crypto++-dev"
+OPTS:= -Iinclude -pthread -lpthread -L../lib -li2c -std=c++17 -L"boost-all-dev" -L"ssl-dev" -Lboost_system -L"crypto++-dev"
 
 .PHONY: drone arm calibration low_speed high_speed pressure accel servo read
 e: drone
