@@ -90,3 +90,7 @@ motor_ctl:
 parse:
 	mkdir -p bin
 	g++ tools/parse.cpp ${SRCS} -o bin/parse ${OPTS}
+
+drone_server:
+	mkdir -p bin
+	g++ tools/drone_server_test.cpp ${SRCS} -o bin/drone_server ${OPTS}

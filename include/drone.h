@@ -1,7 +1,7 @@
 #ifndef DRONE_H
 #define DRONE_H
 #include <settings.h>
-#include <unistd.h>
+#include <string>
 
 namespace drone {
 
@@ -30,9 +30,13 @@ namespace drone {
      * */
     void arm();
 
+    void set_trim(short motor, double trim);
+    void set_diagonal_trim(short diagonal, double trim);
+    void set_all_trim(double trim);
 
 
-
+    void run_command(const std::string& s);
+    void run_command(const std::string& s, std::string& msg);
 };
 
 

@@ -13,9 +13,9 @@ double pid::output(double curr, double dt){
     double err = setpoint - curr;
 
 
-    if(err < I_MAX_ERR && err > -I_MAX_ERR){
+    if(err < i_max_err && err > -i_max_err){
         i_curr += dt * err;
-        i_curr = std::max(std::min(i_curr, I_MAX), -I_MAX);
+        i_curr = std::max(std::min(i_currm i_max), -i_max);
     }
 
     double derr = (err - old_error) / dt;  

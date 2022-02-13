@@ -21,7 +21,7 @@ extern "C" {
 #include <cmath>
 #include <thread>
 #include <cstdio>
-
+#include <string>
 #include <cstdint>
 
 
@@ -59,6 +59,11 @@ void mpu6050::init(int addr){
 
 inline void debug (int reg){
 	printf("[DEBUG] Value of register %2x: %5d\n", reg, Read(reg));
+}
+
+
+inline void debug2 (std::string name, int reg){
+	printf("[DEBUG] Register %20s: Value of register %2x: %5d\n", name.c_str(), reg, Read(reg));
 }
 
 inline void debug2 (char*name, int reg){

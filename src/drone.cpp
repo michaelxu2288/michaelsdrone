@@ -90,9 +90,59 @@ void drone::set_motor(short motor, double per){
     }
 }
 
+
+
+double throttle = 0.0;
+
+void drone::set_throttle(double per){
+    throttle = per;
+    // drone::set_all(throttle);
+}
+
 void drone::destroy(){
     
     set_all(0);
 
     pca9685::destroy();
+}
+
+
+int next_token(const std::string & tokenized, int i, std::string & out){
+    int k = tokenized.find(" ", i);
+    if(k < 0){
+        return tokenized.length();
+    }
+    out = tokenized.substr(i, k);
+    return k + 1;
+}
+
+
+void drone::run_command(const std::string& s){
+    std::string k;
+    run_command(s);
+}
+
+void drone::run_command(const std::string& s, std::string& msg){
+    string command;
+    int i = next_token(s, 0, command);
+    // string v;
+    // i = next_token(m, i, v);
+    // float value = atof(v.c_str());
+    int len = s.length();
+
+    if(command == "thrtl"){
+        i = next_token(s, i, command);
+        if(command == ""){
+            msg = "Throttle is "+std::to_string(throttle)+"% power.";
+        }else {
+            float value = atof(v.c_str());
+            set_throttle(value);
+            msg = "Throttle set to " + std::to_string(value) + "% power.";
+        }
+    }else if(command == ""){
+
+    }else {
+        msg = "I don't know that command! :(";
+        return;
+    }
 }

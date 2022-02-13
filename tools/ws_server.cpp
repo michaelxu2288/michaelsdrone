@@ -42,6 +42,10 @@ int main() {
 
         cout << "Server: Sending message \"" << command << " set to " << value << "\" to " << connection.get() << endl;
 
+
+
+        
+
         // connection->send is an asynchronous function
         connection->send(command + " set to " + to_string(value), [](const SimpleWeb::error_code &ec) {
             if(ec) {
