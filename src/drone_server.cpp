@@ -38,12 +38,12 @@ void drone::init_server(){
     
 
     drone_endpoint.on_open = [](shared_ptr<WsServer::Connection> connection) {
-        cout << "Server: Opened connection " << connection.get() << endl;
+        std::cout << "Server: Opened connection " << connection.get() << std::endl;
     };
 
     // See RFC 6455 7.4.1. for status codes
     drone_endpoint.on_close = [](shared_ptr<WsServer::Connection> connection, int status, const string & /*reason*/) {
-        cout << "Server: Closed connection " << connection.get() << " with status code " << status << endl;
+        std::cout << "Server: Closed connection " << connection.get() << " with status code " << status << std::endl;
     };
 
     // Can modify handshake response headers here if needed
@@ -53,8 +53,8 @@ void drone::init_server(){
 
     // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
     drone_endpoint.on_error = [](shared_ptr<WsServer::Connection> connection, const SimpleWeb::error_code &ec) {
-        cout << "Server: Error in connection " << connection.get() << ". "
-            << "Error: " << ec << ", error message: " << ec.message() << endl;
+        std::cout << "Server: Error in connection " << connection.get() << ". "
+            << "Error: " << ec << ", error message: " << ec.message() << std::endl;
     };
 
     
@@ -65,12 +65,12 @@ void drone::init_server(){
             server_port.set_value(port);
         });
     });
-    cout << "Server listening on port " << server_port.get_future().get() << endl << endl;
+    std::cout << "Server listening on port " << server_port.get_future().get() << std::endl << std::endl;
 
 }
 
 void drone::close_server(){
-    server.close();
+    server.stop();
     server_thread.join();
 
 }
