@@ -123,7 +123,7 @@ void drone::run_command(const std::string& s){
 }
 
 void drone::run_command(const std::string& s, std::string& msg){
-    string command;
+    std::string command;
     int i = next_token(s, 0, command);
     // string v;
     // i = next_token(m, i, v);
@@ -135,7 +135,7 @@ void drone::run_command(const std::string& s, std::string& msg){
         if(command == ""){
             msg = "Throttle is "+std::to_string(throttle)+"% power.";
         }else {
-            float value = atof(v.c_str());
+            float value = atof(command.c_str());
             set_throttle(value);
             msg = "Throttle set to " + std::to_string(value) + "% power.";
         }

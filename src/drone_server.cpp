@@ -9,21 +9,22 @@
 #include <thread>
 
 using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
+using namespace std;
 WsServer server;
 
-std::thread server_thread;
+thread server_thread;
 
 void drone::init_server(){
     server.config.port = 8080;
     auto &drone_endpoint = server.endpoint["^/drone/?$"];
 
     drone_endpoint.on_message = [](shared_ptr<WsServer::Connection> connection, shared_ptr<WsServer::InMessage> in_message) {
-        std::string response;
-        std::string msg = in_message->string();
+        string response;
+        string msg = in_message->string();
         run_command(msg, response);
 
-        std::cout << "Server: Message received: \"" << msg << "\" from " << connection.get() << std::endl;
-        std::cout << "Server: Sending message \"" << response << "\" to " << connection.get() << std::endl;
+        cout << "Server: Message received: \"" << msg << "\" from " << connection.get() << endl;
+        cout << "Server: Sending message \"" << response << "\" to " << connection.get() << endl;
 
         // connection->send is an asynchronous function
         connection->send(response, [](const SimpleWeb::error_code &ec) {
@@ -38,12 +39,12 @@ void drone::init_server(){
     
 
     drone_endpoint.on_open = [](shared_ptr<WsServer::Connection> connection) {
-        std::cout << "Server: Opened connection " << connection.get() << std::endl;
+        cout << "Server: Opened connection " << connection.get() << endl;
     };
 
     // See RFC 6455 7.4.1. for status codes
     drone_endpoint.on_close = [](shared_ptr<WsServer::Connection> connection, int status, const string & /*reason*/) {
-        std::cout << "Server: Closed connection " << connection.get() << " with status code " << status << std::endl;
+        cout << "Server: Closed connection " << connection.get() << " with status code " << status << endl;
     };
 
     // Can modify handshake response headers here if needed
@@ -53,19 +54,19 @@ void drone::init_server(){
 
     // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
     drone_endpoint.on_error = [](shared_ptr<WsServer::Connection> connection, const SimpleWeb::error_code &ec) {
-        std::cout << "Server: Error in connection " << connection.get() << ". "
-            << "Error: " << ec << ", error message: " << ec.message() << std::endl;
+        cout << "Server: Error in connection " << connection.get() << ". "
+            << "Error: " << ec << ", error message: " << ec.message() << endl;
     };
 
     
     promise<unsigned short> server_port;
-    server_thread = std::thread([&server, &server_port]() {
+    server_thread = thread([&server, &server_port]() {
         // Start server
         server.start([&server_port](unsigned short port) {
             server_port.set_value(port);
         });
     });
-    std::cout << "Server listening on port " << server_port.get_future().get() << std::endl << std::endl;
+    cout << "Server listening on port " << server_port.get_future().get() << endl << endl;
 
 }
 
