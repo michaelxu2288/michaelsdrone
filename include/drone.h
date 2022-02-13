@@ -37,6 +37,8 @@ namespace drone {
 
     void run_command(const std::string& s);
     void run_command(const std::string& s, std::string& msg);
+
+    void set_throttle(double power);
 };
 
 
