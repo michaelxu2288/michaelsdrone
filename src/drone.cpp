@@ -4,6 +4,7 @@
 #include <csignal>
 #include <cstdio>
 #include <stdlib.h>
+#include <iostream>
 
 void clear_led(){
     pca9685::set_pwm_ms(LED_RUN_PIN, 0);
@@ -119,7 +120,7 @@ int next_token(const std::string & tokenized, int i, std::string & out){
 
 void drone::run_command(const std::string& s){
     std::string k;
-    run_command(s);
+    run_command(s, k);
 }
 
 void drone::run_command(const std::string& s, std::string& msg){
@@ -136,6 +137,7 @@ void drone::run_command(const std::string& s, std::string& msg){
             msg = "Throttle is "+std::to_string(throttle)+"% power.";
         }else {
             float value = atof(command.c_str());
+            std::cout << "Throttle Argument: " << command << "\n";
             set_throttle(value);
             msg = "Throttle set to " + std::to_string(value) + "% power.";
         }
