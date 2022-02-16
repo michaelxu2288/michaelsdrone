@@ -110,10 +110,10 @@ void drone::destroy(){
 
 int next_token(const std::string & tokenized, int i, std::string & out){
     int k = tokenized.find(" ", i);
+    out = tokenized.substr(i);
     if(k < 0){
         return tokenized.length();
     }
-    out = tokenized.substr(i, k);
     return k + 1;
 }
 
