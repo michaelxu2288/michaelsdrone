@@ -114,7 +114,7 @@ int next_token(const std::string & tokenized, int i, std::string & out){
         out = tokenized.substr(i);
         return tokenized.length();
     }
-    out = tokenized.substr(i, k)
+    out = tokenized.substr(i, k);
     return k + 1;
 }
 
