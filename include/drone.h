@@ -20,9 +20,15 @@ namespace drone {
     /**
      * MOTOR SETTINGS
      * */
-    void set_all(double width);
-    void set_diagonals(short diagonal, double width);
-    void set_motor(short motor, double width);
+
+    /**
+     * @brief Set all the motors to a certain percent power.
+     * 
+     * @param percent
+     */
+    void set_all(double percent);
+    void set_diagonals(short diagonal, double percent);
+    void set_motor(short motor, double percent);
 
     
     /**

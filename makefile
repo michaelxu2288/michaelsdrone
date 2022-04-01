@@ -41,7 +41,7 @@ accel: ${SRCS} tools/accl_test.cpp
 
 setmotors: ${SRCS} tools/set_motors.cpp
 	mkdir -p bin
-	g++ tools/set_motors.cpp ${SRCS} -o bin/setmotors ${OPTS}
+	g++ tools/set_motors.cpp ${SRCS} -o bin/motors ${OPTS}
 
 servo: ${SRCS} tools/servo.cpp
 	mkdir -p bin
