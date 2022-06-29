@@ -3,6 +3,7 @@
 #include <iostream>
 #include <rapidjson/document.h>
 #include <fstream>
+#include <logger.h>
 
 int main(){
     mpu6050::init();
@@ -15,10 +16,10 @@ int main(){
     mpu6050::wake_up();
     mpu6050::print_debug();
     
-    printf("[Output] Calibrating MPU6050\n");
-	printf("[Output]  X Accl  |  Y Accl  |  Z Accl  |  X Gyro  |  Y Gyro  |  Z Gyro \n");
+    logger::info("[Output] Calibrating MPU6050\n");
+	logger::info("[Output]  X Accl  |  Y Accl  |  Z Accl  |  X Gyro  |  Y Gyro  |  Z Gyro \n");
     mpu6050::calibrate(2000);
-    printf("[Output] Writing to config.json file\n");
+    logger::info("[Output] Writing to config.json file\n");
 
     std::ifstream file("/dat/config.json");
     // file.seekg(0, std::ios::end);
@@ -32,17 +33,17 @@ int main(){
 
 
 
-    // usleep(10000000);
-    // double data[6];
-    // int i = 0;
-    // while(1) {
-    //     mpu6050::read(data);
-    //     if(i++ == 30){
-    //         i = 0;
-	//         printf("\n[Output]  X Accl  |  Y Accl  |  Z Accl  |  X Gyro  |  Y Gyro  |  Z Gyro \n");
-    //     }
-    //     printf("[Output] %8.5f | %8.5f | %8.5f | %8.5f | %8.5f | %8.5f\n",data[0],data[1],data[2],data[3],data[4],data[5]);
+    usleep(10000000);
+    double data[6];
+    int i = 0;
+    while(1) {
+        mpu6050::read(data);
+        if(i++ == 30){
+            i = 0;
+	        logger::info("\n[Output]  X Accl  |  Y Accl  |  Z Accl  |  X Gyro  |  Y Gyro  |  Z Gyro \n");
+        }
+        logger::info("[Output] %8.5f | %8.5f | %8.5f | %8.5f | %8.5f | %8.5f\n",data[0],data[1],data[2],data[3],data[4],data[5]);
 		
-    //     usleep(100000);
-    // }
+        usleep(100000);
+    }
 }
