@@ -9,6 +9,7 @@ void logger::set_log_file(const char * filename){
 
 }
 
+static logger::level allowed = logger::INFO;
 // static char buf20A[20];
 // static char buf20B[20];
 
@@ -44,19 +45,27 @@ void logger::err(const char * msg, const std::source_location location) {
     log(level::ERROR, msg, location);
 }
 void logger::log(level lvl, const char * msg, const std::source_location location){
-    tm tstruct;
-    char buf100[100];
-    localtime(tstruct);
-    strftime(buf100, 100, "%Y-%m-%d %X", &tstruct);
-    printf("%s [%s] - %s - %s:%d:%d \"%s\" - %s %s\n",colors[lvl], buf100, titles[lvl], location.file_name(), location.line(), location.column(), location.function_name(), msg, RESET);
-
+    if(lvl >= allowed){
+        tm tstruct;
+        char buf100[100];
+        localtime(tstruct);
+        strftime(buf100, 100, "%Y-%m-%d %X", &tstruct);
+        printf("%s [%s] - %s - %s:%d:%d \"%s\" - %s %s\n",colors[lvl], buf100, titles[lvl], location.file_name(), location.line(), location.column(), location.function_name(), msg, RESET);
+    }
 }
 #endif
 
+
 void logger::_log(level lvl, const char * msg, const char* funct_name, const char * file_name, const int line){
-    tm tstruct;
-    char buf100[100];
-    localtime(tstruct);
-    strftime(buf100, 100, "%Y-%m-%d %X", &tstruct);
-    printf("%s [%s] - %s - \"%s:%d\" function \"%s\" - %s %s\n",colors[lvl], buf100, titles[lvl], file_name, line, funct_name, msg, RESET);
+    if(lvl >= allowed){
+        tm tstruct;
+        char buf100[100];
+        localtime(tstruct);
+        strftime(buf100, 100, "%Y-%m-%d %X", &tstruct);
+        printf("%s [%s] - %s - \"%s:%d\" function \"%s\" - %s %s\n",colors[lvl], buf100, titles[lvl], file_name, line, funct_name, msg, RESET);
+    }
+}
+
+void logger::set_level(logger::level lvl){
+    allowed = lvl;
 }

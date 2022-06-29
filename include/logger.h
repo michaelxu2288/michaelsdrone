@@ -10,10 +10,12 @@
 #endif
 namespace logger {
 
+
     enum level {
         DEBUG=0, INFO=1, WARN=2, CRITICAL=3, ERROR=4
     };
 
+    void set_level(level lvl);
     void set_log_file(const char * filename);
 
 
