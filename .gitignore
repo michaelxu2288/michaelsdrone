@@ -1,4 +1,4 @@
-/client/*
-/bin/*
-/3rdParty/*
-/.vscode/*
+client/
+bin/
+3rdParty/
+.vscode/
