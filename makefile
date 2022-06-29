@@ -1,95 +1,107 @@
 SRCS:=${wildcard src/*.cpp}
-
+SRCDIR:=src
 OPTS:= -Iinclude -pthread -lpthread -L../lib -li2c -std=c++2a
+OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+
 .PHONY: drone arm calibration low_speed high_speed pressure accel servo read
-e: drone
+
+INCLUDEDIR:=include
+OBJDIR:=build
 
 all: drone calibration led read
 
-rampup: ${SRCS} tools/rampup.cpp
-	mkdir -p bin
-	g++ tools/rampup.cpp ${SRCS} -o bin/rampup ${OPTS}
+${OBJDIR}/%.o: ${SRCDIR}/%.cpp
+	mkdir -p build
+	g++ $^ -o $@ ${OPTS}
 
-high_speed: ${SRCS} tools/high_speed.cpp
+drone: $(OBJ_FILES)
 	mkdir -p bin
-	g++ tools/high_speed.cpp ${SRCS} -o bin/high_speed ${OPTS}
+	g++ main/main.cpp $^ ${SRCS} -o bin/drone ${OPTS}
 
-low_speed: ${SRCS} tools/low_speed_test.cpp
+%: ${OBJ_FILES} tools/%.cpp
 	mkdir -p bin
-	g++ tools/low_speed_test.cpp ${SRCS} -o bin/low_speed ${OPTS}
+	g++ $^ -o bin/$@ ${OPTS}
 
-arm: ${SRCS} tools/arm.cpp
-	mkdir -p bin
-	g++ tools/arm.cpp ${SRCS} -o bin/arm ${OPTS}
+# rampup: ${SRCS} tools/rampup.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/rampup ${OPTS}
 
-calibration: ${SRCS} tools/calibrate.cpp
-	mkdir -p bin
-	g++ tools/calibrate.cpp ${SRCS} -o bin/calibrate ${OPTS}
+# high_speed: ${SRCS} tools/high_speed.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/high_speed ${OPTS}
 
-pulse: ${SRCS} tools/pulse.cpp
-	mkdir -p bin
-	g++ tools/pulse.cpp ${SRCS} -o bin/pulse ${OPTS}
+# low_speed: ${SRCS} tools/low_speed_test.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/low_speed ${OPTS}
 
-pressure: ${SRCS} tools/pressure.cpp
-	mkdir -p bin
-	g++ tools/pressure.cpp ${SRCS} -o bin/pressure ${OPTS}
+# arm: ${SRCS} tools/arm.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/arm ${OPTS}
 
-accel: ${SRCS} tools/accl_test.cpp
-	mkdir -p bin
-	g++ tools/accl_test.cpp ${SRCS} -o bin/accel ${OPTS}
+# calibration: ${SRCS} tools/calibrate.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/calibrate ${OPTS}
 
-setmotors: ${SRCS} tools/set_motors.cpp
-	mkdir -p bin
-	g++ tools/set_motors.cpp ${SRCS} -o bin/motors ${OPTS}
+# pulse: ${SRCS} tools/pulse.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/pulse ${OPTS}
 
-servo: ${SRCS} tools/servo.cpp
-	mkdir -p bin
-	g++ tools/servo.cpp ${SRCS} -o bin/servo ${OPTS}
+# pressure: ${SRCS} tools/pressure.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/pressure ${OPTS}
 
-logger: ${SRCS} tools/logger.cpp
-	mkdir -p bin
-	g++ tools/logger.cpp ${SRCS} -o bin/logger ${OPTS}
+# accel: ${SRCS} tools/accl_test.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/accel ${OPTS}
 
-drone_spd_ctl: ${SRCS} tools/drone_spd_ctl.cpp
-	mkdir -p bin
-	g++ tools/drone_spd_ctl.cpp ${SRCS} -o bin/spd ${OPTS}
+# setmotors: ${SRCS} tools/set_motors.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/motors ${OPTS}
 
-gamepad:  ${SRCS} tools/gamepad_test.cpp
-	mkdir -p bin
-	g++ tools/gamepad_test.cpp ${SRCS} -o bin/game ${OPTS} -DGAMEPAD_DEBUG=1
+# servo: ${SRCS} tools/servo.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/servo ${OPTS}
 
-init: ${SRCS} tools/init_test.cpp
-	mkdir -p bin
-	g++ tools/init_test.cpp ${SRCS} -o bin/init ${OPTS}
+# logger: ${SRCS} tools/logger.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/logger ${OPTS}
 
-led_test: ${SRCS} tools/test_led.cpp
-	mkdir -p bin
-	g++ tools/test_led.cpp ${SRCS} -o bin/led_test ${OPTS}
+# drone_spd_ctl: ${SRCS} tools/drone_spd_ctl.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/spd ${OPTS}
 
-led: ${SRCS} tools/led_ctl.cpp
-	mkdir -p bin
-	g++ tools/led_ctl.cpp ${SRCS} -o bin/led ${OPTS}
+# gamepad:  ${SRCS} tools/gamepad_test.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/game ${OPTS} -DGAMEPAD_DEBUG=1
 
-drone: 
-	mkdir -p bin
-	g++ main/main.cpp ${SRCS} -o bin/drone ${OPTS}
+# init: ${SRCS} tools/init_test.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/init ${OPTS}
 
-read:
-	mkdir -p bin
-	g++ tools/read.cpp ${SRCS} -o bin/read ${OPTS}
+# led_test: ${SRCS} tools/test_led.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/led_test ${OPTS}
 
-ws:
-	mkdir -p bin
-	g++ tools/ws_server.cpp ${SRCS} -o bin/wsserver ${OPTS}
+# led: ${SRCS} tools/led_ctl.cpp
+# 	mkdir -p bin
+# 	g++ $^ -o bin/led ${OPTS}
+
+# read:
+# 	mkdir -p bin
+# 	g++ $^ -o bin/read ${OPTS}
+
+# ws:
+# 	mkdir -p bin
+# 	g++ $^ -o bin/wsserver ${OPTS}
 	
-motor_ctl:
-	mkdir -p bin
-	g++ tools/set_motor.cpp ${SRCS} -o bin/motor ${OPTS}
+# motor_ctl:
+# 	mkdir -p bin
+# 	g++ $^ -o bin/motor ${OPTS}
 
-parse:
-	mkdir -p bin
-	g++ tools/parse.cpp ${SRCS} -o bin/parse ${OPTS}
+# parse:
+# 	mkdir -p bin
+# 	g++ $^ -o bin/parse ${OPTS}
 
-drone_server:
-	mkdir -p bin
-	g++ tools/drone_server_test.cpp ${SRCS} -o bin/drone_server ${OPTS}
+# drone_server:
+# 	mkdir -p bin
+# 	g++ $^ -o bin/drone_server ${OPTS}
