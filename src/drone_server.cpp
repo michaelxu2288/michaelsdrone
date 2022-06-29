@@ -71,8 +71,8 @@ void drone::init_server(){
 }
 
 void drone::close_server(){
-    server.stop();
-    server_thread.join();
+    // server.stop();
+    // server_thread.join();
 
 }
 

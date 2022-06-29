@@ -61,11 +61,6 @@ inline void debug (int reg){
 	printf("[DEBUG] Value of register %2x: %5d\n", reg, Read(reg));
 }
 
-
-inline void debug2 (const char * name, int reg){
-	printf("[DEBUG] Register %20s: Value of register %2x: %5d\n", name.c_str(), reg, Read(reg));
-}
-
 inline void debug2 (const char * name, int reg){
 	printf("[DEBUG] Register %20s: Value of register %2x: %5d\n", name, reg, Read(reg));
 }
