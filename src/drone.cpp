@@ -35,6 +35,7 @@ void drone::init(){
     
     // Attach handle for ctrl+c
     signal(SIGINT, terminate_handle);
+    atexit(drone::force_terminate);
 
     //initial LED control
     clear_led();
