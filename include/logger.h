@@ -1,23 +1,44 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#ifndef __unix__
+#define _LOGGER_USE_MACRO_
+#endif
+
+#ifndef _LOGGER_USE_MACRO_
+#include <source_location>
+#endif
 namespace logger {
 
     enum level {
-        DEBUG=0, INFO=1, CRITICAL=2, WARN=3, ERROR=4
+        DEBUG=0, INFO=1, WARN=2, CRITICAL=3, ERROR=4
     };
 
     void set_log_file(const char * filename);
 
-    void log(level lvl, const char * msg);
 
+    #ifndef _LOGGER_USE_MACRO_
+    
+    void log(level lvl, const char * msg, const std::source_location location = std::source_location::current());
 
-    void debug(const char * msg);
-    void info(const char * msg);
-    void crit(const char * msg);
-    void warn(const char * msg);
-    void err(const char * msg);
+    void debug(const char * msg, const std::source_location location = std::source_location::current());
+    void info(const char * msg, const std::source_location location = std::source_location::current());
+    void crit(const char * msg, const std::source_location location = std::source_location::current());
+    void warn(const char * msg, const std::source_location location = std::source_location::current());
+    void err(const char * msg, const std::source_location location = std::source_location::current());
 
+    #else
+    // USE MACROS
+
+    void _log(level lvl, const char * msg, const char* funct_name, const char * file_name, const int line);
+    #define log(lvl, msg) _log(lvl, msg, __FUNCTION__, __FILE__, __LINE__)
+
+    #define debug(msg) _log(logger::DEBUG, msg, __FUNCTION__, __FILE__, __LINE__)
+    #define info(msg) _log(logger::INFO, msg, __FUNCTION__, __FILE__, __LINE__)
+    #define crit(msg) _log(logger::WARN, msg, __FUNCTION__, __FILE__, __LINE__)
+    #define warn(msg) _log(logger::CRITICAL, msg, __FUNCTION__, __FILE__, __LINE__)
+    #define err(msg) _log(logger::ERROR, msg, __FUNCTION__, __FILE__, __LINE__)
+    #endif
 };
 
 #endif

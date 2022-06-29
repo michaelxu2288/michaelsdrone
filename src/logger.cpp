@@ -1,42 +1,62 @@
+// clang++ ./src/logger.cpp ./tools/logger.cpp -Iinclude -o ./bin/logger
 #include <cstdio>
-#include <time.h>
+// #include <time.h>
 #include <logger.h>
-#include <time.h>
+#include <ctime>
+// #include <time.h>
 
 void logger::set_log_file(const char * filename){
 
 }
 
-static char buf100[100];
-static char buf20A[20];
-static char buf20B[20];
+// static char buf20A[20];
+// static char buf20B[20];
 
-static char * titles [5] = {"Debug", "Info", "CRITICAL", "WARNING", "ERROR"};
+static const char * titles [5] = {"debug", "info", "WARNING", "CRITICAL", "ERROR"};
 
-void logger::debug(const char * msg) {
-    log(level::DEBUG, msg);
-}
-void logger::info(const char * msg) {
-    log(level::INFO, msg);
-}
-void logger::crit(const char * msg) {
-    log(level::CRITICAL, msg);
-}
-void logger::warn(const char * msg) {
-    log(level::WARN, msg);
-   }
-void logger::err(const char * msg) {
-    log(level::ERROR, msg);
+#define RESET "\x1b[0m"
+static const char* colors [5] = {"\x1b[37;49m", "\x1b[36;49m", "\x1b[33;49m", "\x1b[35;49m", "\x1b[31;49m"};
+
+inline void localtime(tm &bruh){
+    time_t now = time(0);
+    char buf100[100];
+    #if defined(__unix__)
+        localtime_r(&now, &bruh);
+    #elif defined(_MSC_VER)
+        localtime_s(&bruh, &now);
+    #endif
 }
 
-void logger::log(level lvl, const char * msg){
-    
-    printf("[] %s %s\n", titles[lvl], msg);
+#ifndef _LOGGER_USE_MACRO_
+void logger::debug(const char * msg, const std::source_location location) {
+    log(level::DEBUG, msg, location);
+}
+void logger::info(const char * msg, const std::source_location location) {
+    log(level::INFO, msg, location);
+}
+void logger::crit(const char * msg, const std::source_location location) {
+    log(level::CRITICAL, msg, location);
+}
+void logger::warn(const char * msg, const std::source_location location) {
+    log(level::WARN, msg, location);
+}
+void logger::err(const char * msg, const std::source_location location) {
+    log(level::ERROR, msg, location);
+}
+void logger::log(level lvl, const char * msg, const std::source_location location){
+    tm tstruct;
+    char buf100[100];
+    localtime(tstruct);
+    strftime(buf100, 100, "%Y-%m-%d %X", &tstruct);
+    printf("%s [%s] - %s - %s:%d:%d \"%s\" - %s %s\n",colors[lvl], buf100, titles[lvl], location.file_name(), location.line(), location.column(), location.function_name(), msg, RESET);
 
-    // time_t rawtime;
-    // time(&rawtime);
-    // struct tm * timeinfo = localtime(&rawtime);
-    // strftime(buf20A, "%c", timeinfo);
-    // sprintf(buf100, "[%s %s] %s", titles[lvl], buf20A, msg);
-    // puts(buf100);
+}
+#endif
+
+void logger::_log(level lvl, const char * msg, const char* funct_name, const char * file_name, const int line){
+    tm tstruct;
+    char buf100[100];
+    localtime(tstruct);
+    strftime(buf100, 100, "%Y-%m-%d %X", &tstruct);
+    printf("%s [%s] - %s - \"%s:%d\" function \"%s\" - %s %s\n",colors[lvl], buf100, titles[lvl], file_name, line, funct_name, msg, RESET);
 }
