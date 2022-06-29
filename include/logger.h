@@ -4,7 +4,7 @@
 namespace logger {
 
     enum level {
-        DEBUG, INFO, CRITICAL, WARN, ERROR
+        DEBUG=0, INFO=1, CRITICAL=2, WARN=3, ERROR=4
     };
 
     void set_log_file(char * filename);
