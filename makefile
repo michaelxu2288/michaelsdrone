@@ -12,7 +12,7 @@ all: drone calibration led read
 
 ${OBJDIR}/%.o: ${SRCDIR}/%.cpp
 	mkdir -p build
-	g++ $^ -o $@ ${OPTS}
+	g++ $^ -c -o $@ ${OPTS}
 
 drone: $(OBJ_FILES)
 	mkdir -p bin
