@@ -1,12 +1,12 @@
 SRCS:=${wildcard src/*.cpp}
 SRCDIR:=src
 OPTS:= -Iinclude -pthread -lpthread -L../lib -li2c -std=c++2a
-OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
-
-.PHONY: drone arm calibration low_speed high_speed pressure accel servo read
-
 INCLUDEDIR:=include
 OBJDIR:=build
+OBJ_FILES := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
+
+.PHONY: drone lib
+
 
 all: drone calibration led read
 
