@@ -3,7 +3,7 @@
 #include <logger.h>
 #include <time.h>
 
-void logger::set_log_file(char * filename){
+void logger::set_log_file(const char * filename){
 
 }
 
@@ -13,25 +13,25 @@ static char buf20B[20];
 
 static char * titles [5] = {"Debug", "Info", "CRITICAL", "WARNING", "ERROR"};
 
-void logger::debug(char * msg) {
+void logger::debug(const char * msg) {
     log(level::DEBUG, msg);
 }
-void logger::info(char * msg) {
+void logger::info(const char * msg) {
     log(level::INFO, msg);
 }
-void logger::crit(char * msg) {
+void logger::crit(const char * msg) {
     log(level::CRITICAL, msg);
 }
-void logger::warn(char * msg) {
+void logger::warn(const char * msg) {
     log(level::WARN, msg);
    }
-void logger::err(char * msg) {
+void logger::err(const char * msg) {
     log(level::ERROR, msg);
 }
 
 void logger::log(level lvl, const char * msg){
     
-    printf("[] %s %s\n", titles[lvl], msg)
+    printf("[] %s %s\n", titles[lvl], msg);
 
     // time_t rawtime;
     // time(&rawtime);
