@@ -1,282 +1,300 @@
-/* jshint esversion:8  */
+
+const colors = {
+    grey1:"#b0acb0",
+    grey2:"#e2dddf",
+    light:"#85ebd9",
+    primary:"#3d898d",
+    dak:".0",
+}
+
+const deg_t_rad = 0.017453292519943;
+
+var width=700, height=700;
+var canvas;
+var gl;
+
+function resize(w,h){
+    canvas.width = width = w;
+    canvas.height = height = h;
+}
+
+var rotation = {r:0, p:0, y:0};
+
+
+var buffers = [];
+
+function initBuffers(){
+    buffers.push(Mesh.cube(gl, 1));
+}
+
+
 var socket;
-var host = "";
-var graph;
 
+var r_graph, p_graph, y_graph;
 
-var Drone = {
-    acceleration: {
-        x: 0,
-        y: 0,
-        z: 0,
-    },
+function connect(){
+    if(!socket)
+        socket = io("http://192.168.86.115:80/");
+    socket.on("connect", () => {
 
-    history: {
-        acceleration: {
-            x: [],
-            y: [],
-            z: [],
-        },
-    },
-};
-
-
-function setup() {
-    socket = io(host);
-    var i = 0;
-    socket.on("sensor", (sensorsRaw) => {
-        console.log(sensorsRaw);
-        graph.addData(0, i++, sensorsRaw[0]);
     });
 
-    window.onclose = () => {
-        socket.disconnect();
-    };
+    socket.on("sensor", (output) => {
+        // console.log(output);
+        rotation.r = parseFloat(output[1]);
+        rotation.p = parseFloat(output[2]);
+        rotation.y = parseFloat(output[3]);
+        // r_graph.addData(0, parseInt(output[0]), rotation.r);
+        // p_graph.addData(0, parseInt(output[0]), rotation.p);
+        // y_graph.addData(0, parseInt(output[0]), rotation.y);
+        // r_graph.render();
+        // p_graph.render();
+        // y_graph.render();
+    })
 }
 
-function main() {
-    // graph_drone_accel_main();
-    // graph_drone_accel_x_main();
+function disconnect(){
+    if(socket)
+        socket.disconnect();
+    socket = null;
+}
 
-    // var then = 0;
-    // const update = (now) => {
-    //     const dt = (now - then) / 1000;
-    //     then = now;
 
-    //     render_drone_accel();
-    //     render_drone_accel_x();
+function main(){
 
-    //     requestAnimationFrame(update);
-    // };
+    canvas = document.getElementById("gl-canvas");
+    resize(width,height);
+    gl = glUtil.createContext(canvas);
 
-    // requestAnimationFrame(update);
+    // r_graph = new LineGraph(document.getElementById("r-canv"), {
+    //     g_width: 500,
+    //     range: {
+    //         data: {
+    //             min: - Math.PI/2,
+    //             max: Math.PI/2
+    //         }
+    //     },
+    //     max_data: 500,
+    // });
+    // p_graph = new LineGraph(document.getElementById("p-canv"), {
+    //     g_width: 500,
+    //     range: {
+    //         data: {
+    //             min: - Math.PI/2,
+    //             max: Math.PI/2
+    //         }
+    //     },
+    //     max_data: 500,
+    // });
+    // y_graph = new LineGraph(document.getElementById("y-canv"), {
+    //     g_width: 500,
+    //     range: {
+    //         data: {
+    //             min: - Math.PI/2,
+    //             max: Math.PI/2
+    //         }
+    //     },
+    //     max_data: 500,
+    // });
+    // r_graph.createLine();
+    // r_graph.colors[0] = colors.primary;
+    // p_graph.createLine();
+    // p_graph.colors[0] = colors.primary;
+    // y_graph.createLine();
+    // y_graph.colors[0] = colors.primary;
+    // r_graph.render();
+    // p_graph.render();
+    // y_graph.render();
 
-    graph = new LineGraph(document.getElementById("graph-test"), {
-        g_width: 1000,
-        g_height: 150,
-        margin_l: 30,
-        margin_r: 0,
-        margin_t: 10,
-        margin_b: 10,
-        range: {
-            data: {
-                max: 100,
-                min: -100
-            }
-        },
-        max_data: 500,
+    initBuffers();
+
+    var prog = glUtil.createProgramInfo(gl, vsSource, fsSource, {
+        attribute:[
+            "pos",
+            "norm",
+        ],
+        uniform: [
+            "NormMat",
+            "ModelViewMat",
+            "ProjMat"
+        ]
     });
+    console.log(prog)
 
-    graph.createLine();
+    const render = () => {
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clearDepth(1.0);
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LEQUAL);
+    
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
 
-    // console.log(graph.lines);
-    graph.render();
-    // var j = 10;
-    setInterval(() => {
-        // j += 0.1;
-        // graph.addData(0, j, Math.random() * 81);
-        graph.render();
+        const fieldOfView = 45 * Math.PI / 180;   // in radians
+        const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+        const zNear = 0.1;
+        const zFar = 100.0;
+        const projectionMatrix = glMatrix.mat4.create();
 
-    }, 10);
+        // note: glmatrix.js always has the first argument
+        // as the destination to receive the result.
+        glMatrix.mat4.perspective(projectionMatrix,
+                        fieldOfView,
+                        aspect,
+                        zNear,
+                        zFar);
+
+
+        
+
+        // Set the drawing position to the "identity" point, which is
+        // the center of the scene.
+        const model = glMatrix.mat4.create();
+        const view = glMatrix.mat4.create();
+        const modelViewMatrix = glMatrix.mat4.create();
+
+        
+        glMatrix.mat4.rotateY(model, model, rotation.y);
+        glMatrix.mat4.rotateZ(model, model, rotation.r);
+        glMatrix.mat4.rotateX(model, model, rotation.p);
+
+        glMatrix.mat4.translate(view,     // destination matrix
+            view,     // matrix to translate
+            [-0.0, 0.0, -6.0]);
+        //glMatrix.mat4.rotateX(view, view, Math.PI/4);
+
+
+        //glMatrix.mat4.rotateX(model,model,theta/3);
+            
+        //glMatrix.mat4.mul(modelViewMatrix, view, model);
+        //glMatrix.mat4.rotateY(view, view, theta/4);
+
+
+
+
+        //glMatrix.mat4.mul(modelViewMatrix, model, view);
+        glMatrix.mat4.mul(modelViewMatrix, view, model);
+
+        const normalMatrix = glMatrix.mat4.create();
+        glMatrix.mat4.invert(normalMatrix, modelViewMatrix);
+        glMatrix.mat4.transpose(normalMatrix, normalMatrix);
+
+
+        {
+            const numComponents = 3;  // pull out 2 values per iteration
+            const type = gl.FLOAT;    // the data in the buffer is 32bit floats
+            const normalize = false;  // don't normalize
+            const stride = 0;         // how many bytes to get from one set of values to the next
+                                      // 0 = use type and numComponents above
+            const offset = 0;   
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers[0].vertices);
+            gl.vertexAttribPointer(
+                prog.attribute.pos,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset);
+            gl.enableVertexAttribArray(
+                prog.attribute.pos);
+          }
+
+           // Tell WebGL how to pull out the normals from
+        // the normal buffer into the vertexNormal attribute.
+        {
+            const numComponents = 3;
+            const type = gl.FLOAT;
+            const normalize = false;
+            const stride = 0;
+            const offset = 0;
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers[0].normals);
+            gl.vertexAttribPointer(
+                prog.attribute.norm,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset);
+            gl.enableVertexAttribArray(
+                prog.attribute.norm);
+        }
+
+
+        // Tell WebGL to use our program when drawing
+
+        gl.useProgram(prog.program);
+
+        // Set the shader uniforms
+
+        gl.uniformMatrix4fv(
+            prog.uniform.ProjMat,
+            false,
+            projectionMatrix);
+        gl.uniformMatrix4fv(
+            prog.uniform.ModelViewMat,
+            false,
+            modelViewMatrix);
+
+        gl.uniformMatrix4fv(
+            prog.uniform.NormMat,
+            false,
+            normalMatrix);
+        
+        {
+            const vertexCount = buffers[0].nvert;
+            const type = gl.UNSIGNED_SHORT;
+            const offset = 0;
+            gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+        }
+        
+    }
+    var theta = 0;
+    var then = 0;
+    const update = (now) => {
+        const dt = (now-then) / 1000;
+        then = now;
+        theta+=dt;
+        render();
+
+        requestAnimationFrame(update);
+    }
+
+
+    requestAnimationFrame(update);
 }
 
-class LineGraph {
-    constructor(element, options) {
-        this.g_width = options.g_width;
-        this.g_height = options.g_height;
-        this.margin_l = options.margin_l;
-        this.margin_r = options.margin_r;
-        this.margin_t = options.margin_t;
-        this.margin_b = options.margin_b;
+const vsSource = `
+    attribute vec4 pos;
+    attribute vec3 norm;
 
-        this.width = element.width = this.g_width + this.margin_l + this.margin_r;
-        this.height = element.height = this.g_height + this.margin_t + this.margin_b;
-        this.ctx = element.getContext("2d");
-        this.element = element;
+    uniform mat4 NormMat;
+    uniform mat4 ModelViewMat;
+    uniform mat4 ProjMat;
 
-        this.lines = [];
+    varying highp vec3 vLight;
 
-        this.dataMax = 0;
-        this.dataMin = 0;
-        this.labelMax = 0;
-        this.labelMin = 0;
+    void main(void) {
+    gl_Position = ProjMat * ModelViewMat * pos;
 
-        if (options.range) this.drivenRange = true;
-        else this.drivenRange = false;
-        this.range = options.range;
-        if (!this.range) this.range = { data: {}, label: {} };
-        if (!this.range.data) this.range.data = {};
-        if (!this.range.label) this.range.label = {};
+    // Apply lighting effect
 
-        this.max_data = options.max_data;
-        if (!this.max_data) this.max_data = 100;
-        this.draw_zero_label = options.draw_zero_label;
-        this.draw_zero_label = options.draw_zero_data;
-        this.draw_zero_label = options.draw_secondary_label;
-        this.draw_zero_label = options.draw_secondary_data;
+    highp vec3 ambientLight = vec3(0.01, 0.09, 0.07);
+    highp vec3 directionalLightColor = vec3(0.19, 0.9, 0.77);
+    highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
+
+    highp vec4 transformedNormal = NormMat * vec4(norm, 1.0);
+
+    highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
+    vLight = ambientLight + (directionalLightColor * directional);
     }
+`;
+const fsSource = `
+varying highp vec2 vTex;
+varying highp vec3 vLight;
 
-    addData(line, x, y) {
-        if (this.max_data == this.lines[line].points.length) {
-            this.lines[line].shift();
+void main(void) {
 
-            this.dataMax = this.lines.map((line) => line.maxY).reduce((a, b) => Math.max(a, b));
-            this.dataMin = this.lines.map((line) => line.minY).reduce((a, b) => Math.min(a, b));
-            this.labelMax = this.lines.map((line) => line.maxX).reduce((a, b) => Math.max(a, b));
-            this.labelMin = this.lines.map((line) => line.minX).reduce((a, b) => Math.min(a, b));
-
-        }
-        this.lines[line].add(x, y);
-
-        this.dataMax = Math.max(this.dataMax, this.lines[line].maxY);
-        this.dataMin = Math.min(this.dataMin, this.lines[line].minY);
-        this.labelMax = Math.max(this.labelMax, this.lines[line].maxX);
-        this.labelMin = Math.min(this.labelMin, this.lines[line].minX);
-    }
-
-    createLine() {
-        this.lines.push(new Line());
-    }
-
-    render() {
-        /**
-         * @type {CanvasRenderingContext2D}
-         */
-        const ctx = this.ctx;
-        ctx.clearRect(0, 0, this.width, this.height);
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = "#444";
-
-        const stepY = 20;
-        var range = {
-            data: {
-                max: this.dataMax + stepY / 2,
-                min: this.dataMin - stepY / 2,
-            },
-            label: {
-                max: this.labelMax,
-                min: this.labelMin,
-            }
-        };
-
-        const colors = [
-            "#EE8434",
-            "#C95D63",
-            "#AE8799",
-            "#717EC3",
-            "#496DDB",
-        ];
-        if (this.range.data.max) range.data.max = this.range.data.max;
-        if (this.range.data.min) range.data.min = this.range.data.min;
-        if (this.range.label.max) range.label.max = this.range.label.max;
-        if (this.range.label.min) range.label.min = this.range.label.min;
-
-        // Axes
-        // Label
-
-        const x_scaling = this.g_width / (range.label.max - range.label.min);
-        const mapx = (x) => {
-            return (x - range.label.min) * x_scaling + this.margin_l;
-        };
-        const y_scaling = this.g_height / (range.data.max - range.data.min);
-        const mapy = (y) => {
-            return -(y - range.data.min) * y_scaling + this.margin_t + this.g_height;
-        };
-
-        const x_0 = mapx(0);
-        const y_0 = mapy(0);
-
-        ctx.beginPath();
-        if (range.data.max * range.data.min <= 0) {
-            ctx.moveTo(this.margin_l, y_0);
-            ctx.lineTo(this.margin_l + this.g_width, y_0);
-        }
-        if (range.label.max * range.label.min <= 0) {
-            ctx.moveTo(x_0, this.margin_t);
-            ctx.lineTo(x_0, this.margin_t + this.g_height);
-        }
-        ctx.stroke();
-
-
-
-        // Secondary Axis and scale
-        const startY = range.data.min - range.data.min % stepY;
-        const endY = range.data.max - range.data.max % stepY;
-
-        ctx.beginPath();
-        ctx.strokeStyle = "#AAA";
-
-        for (var i = startY; i <= endY; i += stepY) {
-            const y = mapy(i);
-            ctx.moveTo(this.margin_l, y);
-            ctx.lineTo(this.g_width + this.margin_l, y);
-        }
-        ctx.stroke();
-
-        ctx.strokeStyle = "#666";
-        ctx.font = "normal 16px sans-serif";
-        ctx.textAlign = "right";
-        ctx.textBaseline = "middle";
-
-        for (i = startY; i <= endY; i += stepY) {
-            ctx.fillText("" + i, this.margin_l - 4, mapy(i));
-        }
-
-        // Draw data
-        this.lines.forEach((line, i) => {
-            ctx.strokeStyle = colors[i];
-            if (line.points.length > 0) {
-                ctx.beginPath();
-                ctx.moveTo(mapx(line.points[0].x), mapy(line.points[0].y));
-
-                line.points.forEach((point) => {
-                    // console.log(point)
-                    // console
-                    ctx.lineTo(mapx(point.x), mapy(point.y));
-                });
-                ctx.stroke();
-            }
-        });
-
-
-
-
-    }
+    gl_FragColor = vec4(vec3(1.0,1.0,1.0) * vLight, 1.0); //vec4(1.0,1.0,1.0,1.0);//vec4(vec3(1.0,1.0,1.0) * vLight, 1.0);
 }
-
-
-class Line {
-    constructor() {
-        this.maxX = 0;
-        this.maxY = 0;
-        this.minX = 0;
-        this.minY = 0;
-
-        this.points = [];
-    }
-
-    add(x, y) {
-        this.points.push({ x: x, y: y });
-        this.maxX = Math.max(x, this.maxX);
-        this.minX = Math.min(x, this.minX);
-        this.maxY = Math.max(y, this.maxY);
-        this.minY = Math.min(y, this.minY);
-    }
-
-    shift() {
-        this.points.shift();
-        const x = this.points.map((point) => point.x);
-        const y = this.points.map((point) => point.y);
-
-        this.maxX = x.reduce((a, b) => Math.max(a, b));
-        this.minX = x.reduce((a, b) => Math.min(a, b));
-        this.maxY = y.reduce((a, b) => Math.max(a, b));
-        this.minY = y.reduce((a, b) => Math.min(a, b));
-    }
-}
-
-function dc() {
-    if (socket) {
-        socket.disconnect();
-    }
-}
+`;
