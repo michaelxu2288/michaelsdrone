@@ -1,9 +1,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#ifndef __unix__
+// #ifndef __unix__
 #define _LOGGER_USE_MACRO_
-#endif
+// #endif
 
 #ifndef _LOGGER_USE_MACRO_
 #include <source_location>
