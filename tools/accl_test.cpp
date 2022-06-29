@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <iostream>
 
+#include <socket.h>
+
 int main(){
     mpu6050::init();
     mpu6050::set_accl_set(mpu6050::accl_range::g_16);
@@ -10,12 +12,17 @@ int main(){
     mpu6050::set_fsync(mpu6050::fsync::input_dis);
     mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_184);
     mpu6050::wake_up();
-    setvbuf(stdout, NULL,_IONBF,0);
+    // setvbuf(stdout, NULL,_IONBF,0);
+    
+
+    
     float x,y,z;
     double data[6];
+
     while(1){
         mpu6050::read(data);
-        std::cout<< data[0] << " " << data[1] << " " << data[2] << " " << data[3] << " " << data[4] << " " << data[5] << "\n";
+
+        // std::cout<< data[0] << " " << data[1] << " " << data[2] << " " << data[3] << " " << data[4] << " " << data[5] << "\n";
         usleep(1000);
     }
 
