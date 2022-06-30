@@ -5,6 +5,8 @@
 #include <socket.h>
 #include <logger.h>
 
+#include <math.h>
+
 int main(){
     logger::info("Initializing mpu6050.");
     mpu6050::init();
@@ -21,11 +23,21 @@ int main(){
     
     float x,y,z;
     double data[6];
+    math::quarternion orientation;
+    math::quarternion change_orientation;
+    math::vector euler_out;
+    math::vector euler;
 
     logger::info("Setting up sensor loop.");
     while(1){
         mpu6050::read(data);
+        euler_out=math::vector(data[3], data[4], data[5])
+        change_orientation.fromEulerZYX(euler_out);
+        orientation *= change_orientation;
         logger::debug("in loop");
+        // logger::info()
+        euler = math::quarternion::toEuler(orientation);
+        std::cout << euler.x << " " << euler.y << " " << euler.z << "\n";
         // std::cout<< data[0] << " " << data[1] << " " << data[2] << " " << data[3] << " " << data[4] << " " << data[5] << "\n";
         usleep(1000);
     }
