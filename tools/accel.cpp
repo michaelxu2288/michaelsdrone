@@ -7,6 +7,7 @@
 #include <thread>
 #include <cstdio>
 #include <cstdlib>
+#include <config.h>
 
 math::vector euler_glob;
 
@@ -59,8 +60,12 @@ int main(){
     auto start = then;
     auto now = std::chrono::steady_clock::now();
     
+    config::load_file("./config/config.json");
+    int ref_rate = config::get_config_int("mpu6050_ref_rate", 60);
+    int sleep_int = 1000000 / ref_rate;
+    config::write_to_file("./config/config.json");
     while(1) {
-        usleep(10);
+        usleep(sleep_int);
         mpu6050::read(data);
         now = std::chrono::steady_clock::now();
         double dt = std::chrono::duration_cast<std::chrono::milliseconds> (now - then).count() * 0.001;
