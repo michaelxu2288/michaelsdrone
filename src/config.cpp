@@ -5,7 +5,9 @@
 #include <fstream>
 #include <string>
 #include <logger.h>
-static json::JSON configuation;
+
+
+static json::JSON configuration;
 // static char * filename;
 void config::load_file(const char * filename){
     std::ifstream in(filename);
@@ -34,7 +36,7 @@ int config::get_config_int(const char * name, int dft){
     return dft;
 }
 
-double config::get_config_dbl(const char * name, double default){
+double config::get_config_dbl(const char * name, double dft){
     if(configuration.hasKey(name)){
         return configuration[name].ToFloat();
     }
