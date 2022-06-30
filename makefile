@@ -1,6 +1,6 @@
 SRCS:=${wildcard src/*.cpp}
 SRCDIR:=src
-OPTS:= -Iinclude -pthread -lpthread -L../lib -li2c -std=c++2a
+OPTS:= -Iinclude -pthread -lpthread -L../lib -li2c -std=c++2a -Wno-psabi
 INCLUDEDIR:=include
 OBJDIR:=build
 OBJ_FILES := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))

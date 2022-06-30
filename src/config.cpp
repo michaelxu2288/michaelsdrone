@@ -24,8 +24,9 @@ void config::write_to_file(const char * filename){
     if(out){
         out << configuration;
         out.close();
+    }else{
+        logger::warn("Couldn't create configuration file\n.");
     }
-    logger::warn("Couldn't create configuration file\n.");
 }
 
 int config::get_config_int(const char * name, int dft){
