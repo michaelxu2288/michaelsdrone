@@ -170,6 +170,15 @@ void mpu6050::read_raw(int * data){
 	data[5] = handle_neg(Read(OUT_ZGYRO_H) << 8 | Read(OUT_ZGYRO_L));
 }
 
+void mpu6050::read_wo_offsets(double * data){
+	data[0] = ((double) (handle_neg(Read(OUT_XACCL_H) << 8 | Read(OUT_XACCL_L)))) / accl_scale;
+	data[1] = ((double) (handle_neg(Read(OUT_YACCL_H) << 8 | Read(OUT_YACCL_L)))) / accl_scale;
+	data[2] = ((double) (handle_neg(Read(OUT_ZACCL_H) << 8 | Read(OUT_ZACCL_L)))) / accl_scale;
+	data[3] = ((double) (handle_neg(Read(OUT_XGYRO_H) << 8 | Read(OUT_XGYRO_L)))) / gyro_scale;
+	data[4] = ((double) (handle_neg(Read(OUT_YGYRO_H) << 8 | Read(OUT_YGYRO_L)))) / gyro_scale;
+	data[5] = ((double) (handle_neg(Read(OUT_ZGYRO_H) << 8 | Read(OUT_ZGYRO_L)))) / gyro_scale;
+}
+
 
 void mpu6050::read(double * data){
 	data[0] = ((double) (handle_neg(Read(OUT_XACCL_H) << 8 | Read(OUT_XACCL_L))) - offsets[0]) / accl_scale;

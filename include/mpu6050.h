@@ -173,6 +173,8 @@ namespace gyro_range {
 	void read(double * data);
 	void read_accl(double * data);
 	void read_gyro(double * data);
+	
+	void read_wo_offsets(double * data);
 
 	int query_register(int reg);
 	void set_register(int reg, int data);
