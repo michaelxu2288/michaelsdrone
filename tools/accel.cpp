@@ -38,8 +38,8 @@ int main(){
         logger::debug("in loop");
         // logger::info()
         euler = math::quarternion::toEuler(orientation);
+        std::cout<< data[0] << " " << data[1] << " " << data[2] << " " << data[3] << " " << data[4] << " " << data[5] << "\n";
         std::cout << euler.x << " " << euler.y << " " << euler.z << "\n";
-        // std::cout<< data[0] << " " << data[1] << " " << data[2] << " " << data[3] << " " << data[4] << " " << data[5] << "\n";
         usleep(1000);
     }
 
