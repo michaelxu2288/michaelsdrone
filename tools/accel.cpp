@@ -16,6 +16,7 @@ int main(){
     mpu6050::set_fsync(mpu6050::fsync::input_dis);
     mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_184);
     mpu6050::wake_up();
+    mpu6050::calibrate(2000);
     logger::info("Finished initializing mpu6050.");
     // setvbuf(stdout, NULL,_IONBF,0);
     
@@ -31,9 +32,9 @@ int main(){
     logger::info("Setting up sensor loop.");
     while(1){
         mpu6050::read(data);
-        euler_out=math::vector(data[3], data[4], data[5])
+        euler_out=math::vector(data[3], data[4], data[5]);
         change_orientation.fromEulerZYX(euler_out);
-        orientation *= change_orientation;
+        orientation = orientation * change_orientation;
         logger::debug("in loop");
         // logger::info()
         euler = math::quarternion::toEuler(orientation);
