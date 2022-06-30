@@ -2,6 +2,9 @@
 #define CONFIG_INCLUDE_GUARD
 
 namespace config{
+    void load_file();
+    void write_to_file();
+
     void load_file(const char * filename);
     void write_to_file(const char * filename);
 

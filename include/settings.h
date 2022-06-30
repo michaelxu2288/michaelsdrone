@@ -30,4 +30,6 @@
 
 #define THROTTLE_MAX 2000 // throttle maximum pwm 2 ms
 
+#define DEFAULT_CONFIG_FILE "./config/config.json"
+
 #endif
