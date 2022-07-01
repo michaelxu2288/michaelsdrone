@@ -7,7 +7,8 @@
 // #include <format>
 #include <string>
 #include <fmt/core.h>
-
+#include <mutex>
+ 
 void logger::set_log_file(const char * filename){
 
 }
@@ -66,13 +67,20 @@ void logger::log(level lvl, const char * msg, const std::source_location locatio
 //     return s;
 // }
 
+
+static std::mutex logger_mutex;
+// static std::unique_lock<std::mutex> logger_lock(logger_mutex, std::defer_lock);
+
 void logger::_log(level lvl, std::string_view msg, const char* funct_name, const char * file_name, const int line){
     if(lvl >= allowed){
+        std::lock_guard<std::mutex> lock(logger_mutex);
+        // logger_lock.lock();
         tm tstruct;
         char buf100[100];
         localtime(tstruct);
         strftime(buf100, 100, "%Y-%m-%d %X", &tstruct);
         fmt::print("{} [{}] - {} - \"{}:{}\" function \"{}\" - {} {}\n",colors[lvl], buf100, titles[lvl], file_name, line, funct_name, msg, RESET);
+        // logger_lock.unlock();
     }
 }
 

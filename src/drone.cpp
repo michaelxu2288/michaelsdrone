@@ -5,10 +5,19 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 #include <mpu6050.h>
-
+#include <logger.h>
 #include <config.h>
+
+
+
+math::quarternion orientation;
+math::vector orientation_euler;
+math::vector position;
+
 
 void clear_led(){
     pca9685::set_pwm_ms(LED_RUN_PIN, 0);
@@ -156,17 +165,57 @@ void drone::run_command(const std::string& s, std::string& msg){
 }
 
 
+static std::thread sensor_thread;
+static int mpu6050_ref_rate;
+
+static bool sensor_loop_alive = true;
+
+void sensor_thread_funct(){
+    int sleep_int = 1000000 / ref_rate;
+    double data[6];
+    
+    orientation = math::quarternion(1, 0, 0, 0);
+
+    math::quarternion euler_q;
+    math::vector euler_v;
+
+    auto then = std::chrono::steady_clock::now();
+    auto start = then;
+    auto now = std::chrono::steady_clock::now();
+
+    while(sensor_loop_alive){
+
+        mpu6050::read(data);
+        now = std::chrono::steady_clock::now();
+        double dt = std::chrono::duration_cast<std::chrono::milliseconds> (now - then).count() * 0.001;
+        t_since = std::chrono::duration_cast<std::chrono::milliseconds> (now - start).count();
+        then = now;
+
+        euler_v = math::vector(data[3]*dt*DEG_TO_RAD, data[4]*dt*DEG_TO_RAD, data[5]*dt*DEG_TO_RAD);
+        euler_q = math::quarternion::fromEulerZYX(euler_v);
+        rotation = euler_q*rotation;
+
+        orientation_euler = math::quarternion::toEuler(rotation);
+
+        usleep(sleep_int);
+    }
+}
+
 
 
 void drone::init_sensors() {
+    logger::info("Loading sensor configuration.");
     config::load_file();
-    int ref_rate = config::get_config_int("mpu6050_ref_rate", 60);
-    int sleep_int = 1000000 / ref_rate;
-    config::write_to_file();
-
-
-
     
+    mpu6050_ref_rate = config::get_config_int("mpu6050_ref_rate", 60);
+    
+    config::write_to_file();
+    logger::info("Finished loading sensor configuration.");
+    
+    logger::info("MPU6050 Refresh Rate: {}hz ", mpu6050_ref_rate);
+
+
+    logger::info("Initializing MPU6050.");
     mpu6050::init();
     mpu6050::set_accl_set(mpu6050::accl_range::g_2);
     mpu6050::set_gyro_set(mpu6050::gyro_range::deg_2000);
@@ -174,6 +223,19 @@ void drone::init_sensors() {
     mpu6050::set_fsync(mpu6050::fsync::input_dis);
     mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
     mpu6050::wake_up();
+    logger::info("Finished intializing the MPU6050.");
+
+    logger::info("Starting up sensor thread.");
+    sensor_thread = std::thread(sensor_thread_funct);
+}
+
+
+void drone::destroy_sensors(){
+
+    logger::info("Joining sensor thread.");
+    sensor_loop_alive = false;
+    sensor_thread..join();
+    logger::info("Joined sensor thread.");
 
 
 }
