@@ -6,6 +6,7 @@
 // #include <time.h>
 // #include <format>
 #include <string>
+#include <fmt/core.h>
 
 void logger::set_log_file(const char * filename){
 
@@ -71,7 +72,7 @@ void logger::_log(level lvl, std::string_view msg, const char* funct_name, const
         char buf100[100];
         localtime(tstruct);
         strftime(buf100, 100, "%Y-%m-%d %X", &tstruct);
-        printf("%s [%s] - %s - \"%s:%d\" function \"%s\" - %s %s\n",colors[lvl], buf100, titles[lvl], file_name, line, funct_name, msg, RESET);
+        fmt::print("%s [%s] - %s - \"%s:%d\" function \"%s\" - %s %s\n",colors[lvl], buf100, titles[lvl], file_name, line, funct_name, msg, RESET);
     }
 }
 
