@@ -2,7 +2,8 @@
 #define LOGGER_H
 
 #include <string_view>
-#include <format>
+// #include <format>
+#include <fmt/core.h>
 // #ifndef __unix__
 #define _LOGGER_USE_MACRO_
 // #endif
@@ -38,11 +39,11 @@ namespace logger {
     void _log(level lvl, std::string_view msg, const char* funct_name, const char * file_name, const int line);
     #define log(lvl, msg) _log(lvl, msg, __FUNCTION__, __FILE__, __LINE__)
 
-    #define debug(msg, ...) _log(logger::DEBUG, std::vformat(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
-    #define info(msg, ...) _log(logger::INFO, std::vformat(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
-    #define crit(msg, ...) _log(logger::WARN, std::vformat(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
-    #define warn(msg, ...) _log(logger::CRITICAL, std::vformat(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
-    #define err(msg, ...) _log(logger::ERROR, std::vformat(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
+    #define debug(msg, ...) _log(logger::DEBUG, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
+    #define info(msg, ...) _log(logger::INFO, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
+    #define crit(msg, ...) _log(logger::WARN, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
+    #define warn(msg, ...) _log(logger::CRITICAL, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
+    #define err(msg, ...) _log(logger::ERROR, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
     #endif
 };
 
