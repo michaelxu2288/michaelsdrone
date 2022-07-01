@@ -11,8 +11,9 @@
 #include <mpu6050.h>
 #include <logger.h>
 #include <config.h>
+#include <socket.h>
 
-
+#include 
 
 math::quarternion orientation;
 math::vector orientation_euler;
@@ -168,7 +169,9 @@ void drone::run_command(const std::string& s, std::string& msg){
 static std::thread sensor_thread;
 static int mpu6050_ref_rate;
 
-static bool sensor_loop_alive = true;
+static std::thread message_thread;
+
+static bool alive = true;
 
 void sensor_thread_funct(){
     int sleep_int = 1000000 / mpu6050_ref_rate;
@@ -183,7 +186,7 @@ void sensor_thread_funct(){
     auto start = then;
     auto now = std::chrono::steady_clock::now();
 
-    while(sensor_loop_alive){
+    while(alive){
 
         mpu6050::read(data);
         now = std::chrono::steady_clock::now();
@@ -200,6 +203,20 @@ void sensor_thread_funct(){
         usleep(sleep_int);
     }
 }
+
+int message_thread_ref_rate;
+void message_thread_funct(){
+    int sleep_int = 1000000 / message_thread_ref_rate;
+    while(alive){
+
+        logger::debug("{} {} {}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
+
+        usleep(sleep_int);
+    }
+}
+
+
+
 
 
 
@@ -229,13 +246,26 @@ void drone::init_sensors() {
     sensor_thread = std::thread(sensor_thread_funct);
 }
 
+void drone::init_messsage_thread(){
+    logger::info("Loading reporting configuration");
+    config::load_file();
+
+    message_thread_ref_rate = config::get_config_int("message_ref_rate", 10);
+
+    config::write_to_file();
+    logger::info("Message rate: {}", message_thread_ref_rate);
+
+    logger::info("Starting up message thread.");
+    message_thread = std::thread(message_thread_funct);
+}
+
+void drone::destroy_message_thread(){
+
+}
 
 void drone::destroy_sensors(){
-
     logger::info("Joining sensor thread.");
     sensor_loop_alive = false;
     sensor_thread.join();
     logger::info("Joined sensor thread.");
-
-
 }

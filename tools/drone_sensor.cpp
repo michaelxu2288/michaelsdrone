@@ -10,6 +10,7 @@ void exit(){
 int main(){
     std::atexit(exit);
 
+    drone::init_messsage_thread();
     drone::init_sensors();
     while(1);
 

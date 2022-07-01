@@ -47,7 +47,9 @@ namespace drone {
 
     void set_throttle(double power);
 
-    
+    void init_messsage_thread();
+    void destroy_message_thread();
+
     void init_sensors();
     void destroy_sensors();
 
