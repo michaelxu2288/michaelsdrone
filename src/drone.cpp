@@ -171,7 +171,7 @@ static int mpu6050_ref_rate;
 static bool sensor_loop_alive = true;
 
 void sensor_thread_funct(){
-    int sleep_int = 1000000 / ref_rate;
+    int sleep_int = 1000000 / mpu6050_ref_rate;
     double data[6];
     
     orientation = math::quarternion(1, 0, 0, 0);
@@ -188,7 +188,7 @@ void sensor_thread_funct(){
         mpu6050::read(data);
         now = std::chrono::steady_clock::now();
         double dt = std::chrono::duration_cast<std::chrono::milliseconds> (now - then).count() * 0.001;
-        t_since = std::chrono::duration_cast<std::chrono::milliseconds> (now - start).count();
+        int t_since = std::chrono::duration_cast<std::chrono::milliseconds> (now - start).count();
         then = now;
 
         euler_v = math::vector(data[3]*dt*DEG_TO_RAD, data[4]*dt*DEG_TO_RAD, data[5]*dt*DEG_TO_RAD);
