@@ -2,7 +2,7 @@
 #define LOGGER_H
 
 #include <string_view>
-
+#include <format>
 // #ifndef __unix__
 #define _LOGGER_USE_MACRO_
 // #endif
