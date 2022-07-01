@@ -1,6 +1,8 @@
 #include <drone.h>
+#include <logger.h>
 
 void exit(){
+    logging::info("Closing.")
     drone::destroy_sensors();
 }
 
