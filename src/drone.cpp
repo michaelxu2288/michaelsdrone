@@ -172,6 +172,7 @@ static std::thread message_thread;
 static bool alive = true;
 
 void sensor_thread_funct(){
+    logger::info("Sensor thread alive!");
     int sleep_int = 1000000 / mpu6050_ref_rate;
     double data[6];
     
@@ -204,6 +205,7 @@ void sensor_thread_funct(){
 
 int message_thread_ref_rate;
 void message_thread_funct(){
+    logger::info("Message thread alive!");
     int sleep_int = 1000000 / message_thread_ref_rate;
     while(alive){
 
