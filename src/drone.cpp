@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include <mpu6050.h>
+
 #include <config.h>
 
 void clear_led(){
