@@ -1,5 +1,6 @@
 #include <drone.h>
 #include <logger.h>
+#include <stdlib.h>
 
 void exit(){
     logger::info("Closing.");
