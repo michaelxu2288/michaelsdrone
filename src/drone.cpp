@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include <config.h>
+
 void clear_led(){
     pca9685::set_pwm_ms(LED_RUN_PIN, 0);
     pca9685::set_pwm_ms(LED_AUTO_PIN, 0);
@@ -149,4 +151,27 @@ void drone::run_command(const std::string& s, std::string& msg){
         msg = "I don't know that command! :(";
         return;
     }
+}
+
+
+
+
+void drone::init_sensors() {
+    config::load_file();
+    int ref_rate = config::get_config_int("mpu6050_ref_rate", 60);
+    int sleep_int = 1000000 / ref_rate;
+    config::write_to_file();
+
+
+
+    
+    mpu6050::init();
+    mpu6050::set_accl_set(mpu6050::accl_range::g_2);
+    mpu6050::set_gyro_set(mpu6050::gyro_range::deg_2000);
+    mpu6050::set_clk(mpu6050::clk::y_gyro);
+    mpu6050::set_fsync(mpu6050::fsync::input_dis);
+    mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
+    mpu6050::wake_up();
+
+
 }

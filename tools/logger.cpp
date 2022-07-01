@@ -19,4 +19,10 @@ int main(){
     logger::warn("expected a 0, but got a 1");
     logger::crit("FIRE FIRE FIRE");
     logger::err("something went wrong");
+
+    logger::debug("testing formatting {}.", "test worked!");
+    logger::info("testing formatting {}.", "test worked!");
+    logger::warn("testing formatting {}.", "test worked!");
+    logger::crit("testing formatting {}.", "test worked!");
+    logger::err("testing formatting {}.", "test worked!");
 }

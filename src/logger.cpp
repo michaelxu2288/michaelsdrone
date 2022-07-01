@@ -4,6 +4,8 @@
 #include <logger.h>
 #include <ctime>
 // #include <time.h>
+#include <format>
+#include <string>
 
 void logger::set_log_file(const char * filename){
 
@@ -55,8 +57,15 @@ void logger::log(level lvl, const char * msg, const std::source_location locatio
 }
 #endif
 
+std::string logger::_format(const char * fmt, ...){
+    va_list args;
+    va_start(args, formatted);
+    std::string s = std::vformat(fmt, args);
+    va_end(args);
+    return s;
+}
 
-void logger::_log(level lvl, const char * msg, const char* funct_name, const char * file_name, const int line){
+void logger::_log(level lvl, std::string_view msg, const char* funct_name, const char * file_name, const int line){
     if(lvl >= allowed){
         tm tstruct;
         char buf100[100];

@@ -2,6 +2,7 @@
 #define DRONE_H
 #include <settings.h>
 #include <string>
+#include <math.h>
 
 namespace drone {
 
@@ -45,6 +46,14 @@ namespace drone {
     void run_command(const std::string& s, std::string& msg);
 
     void set_throttle(double power);
+
+    
+    void init_sensors();
+    void destroy_sensors();
+
+    void get_orientation(math::quarternion &quart);
+    void get_orientation(math::vector &euler);
+    void get_position(math::vector &pos);
 };
 
 
