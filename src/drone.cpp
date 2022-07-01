@@ -13,8 +13,6 @@
 #include <config.h>
 #include <socket.h>
 
-#include 
-
 math::quarternion orientation;
 math::vector orientation_euler;
 math::vector position;
@@ -265,7 +263,7 @@ void drone::destroy_message_thread(){
 
 void drone::destroy_sensors(){
     logger::info("Joining sensor thread.");
-    sensor_loop_alive = false;
+    alive = false;
     sensor_thread.join();
     logger::info("Joined sensor thread.");
 }
