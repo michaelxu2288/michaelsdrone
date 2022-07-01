@@ -15,6 +15,8 @@ const io = new Server(server, {
 });
 const port = 80;
 
+const SOCKET_LOCATION = "/run/drone";
+
 // const index = fs.readFileSync("./client/index.html");
 // const style = fs.readFileSync("./client/style.css");
 // const script = fs.readFileSync("./client/script.js");
@@ -45,34 +47,11 @@ server.listen(port, () => {
             console.log(lastSensorOutput);
             io.emit("sensor", lastSensorOutput);
         });
+
+        
     });
 
-    server.listen("/run/test", () => {
-        console.log("Socket Server created at /run/test!");
+    server.listen(SOCKET_LOCATION, () => {
+        console.log(`Socket Server created at ${SOCKET_LOCATION}.`);
     });
-    // var client = net.connect({
-    //     path: "/run/test"
-    // })
-    // client.on("connect", () => {
-    //     client.write("SUCCESS-NODE");
-    // })
-    // client.on("data", (data) => {
-    //     lastSensorOutput = data.toString().split(" ");
-    //     console.log(lastSensorOutput);
-    //     io.emit("sensor", lastSensorOutput);
-    // });
-    // process.stdin.resume();
-    // process.stdin.setEncoding('utf8');
-    // process.stdin.on("data", function(chunk) {
-    //     const lines = chunk.toString("utf8").split("\n");
-    //     // console.log(chunk);
-    //     // console.log(lines);
-    //     lastSensorOutput = lines[lines.length - 2].split(" ");
-    //     //console.log(lastSensorOutput);
-    //     io.emit("sensor", lastSensorOutput);
-    // });
-
-    // io.on("connection", (socket) => {
-    //     console.log('socket conected');
-    // });
 });

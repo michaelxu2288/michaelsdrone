@@ -10,7 +10,7 @@ void exit(){
 int main(){
     std::atexit(exit);
 
-    logger::set_level(logger::DEBUG);
+    // logger::set_level(logger::DEBUG);
 
     drone::init_messsage_thread();
     drone::init_sensors();

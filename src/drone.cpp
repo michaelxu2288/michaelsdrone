@@ -202,14 +202,35 @@ void sensor_thread_funct(){
         usleep(sleep_int);
     }
 }
+/*
 
+
+    sock::un_connection unix_connection = client.un_connect("/run/test");
+    char recv[1024];
+
+    while(1){
+        sprintf(recv, "%d %f %f %f", t_since, euler_glob.x, euler_glob.y, euler_glob.z);
+        printf("%d %9.7f %9.7f %9.7f %7.4f %7.4f %7.4f\n", t_since, euler_glob.x*RAD_TO_DEG, euler_glob.y*RAD_TO_DEG, euler_glob.z*RAD_TO_DEG);
+
+        unix_connection.send(recv,strlen(recv));
+        usleep(10000);
+    }
+    */
 int message_thread_ref_rate;
 void message_thread_funct(){
     logger::info("Message thread alive!");
     int sleep_int = 1000000 / message_thread_ref_rate;
+
+    sock::socket client(sock::unix, sock::tcp);
+    sock::un_connection unix_connection = client.un_connect("/run/drone");
+    char recv[1024];
+
     while(alive){
 
-        logger::debug("{} {} {}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
+        sprintf(recv, "%f %f %f", orientation_euler.x, orientation_euler.y, orientation_euler.z);
+        logger::debug("{.2f} {.2f} {.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
+
+        unix_connection.send(recv, strlen(recv));
 
         usleep(sleep_int);
     }
