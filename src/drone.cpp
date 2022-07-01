@@ -193,9 +193,9 @@ void sensor_thread_funct(){
 
         euler_v = math::vector(data[3]*dt*DEG_TO_RAD, data[4]*dt*DEG_TO_RAD, data[5]*dt*DEG_TO_RAD);
         euler_q = math::quarternion::fromEulerZYX(euler_v);
-        rotation = euler_q*rotation;
+        orientation = euler_q*orientation;
 
-        orientation_euler = math::quarternion::toEuler(rotation);
+        orientation_euler = math::quarternion::toEuler(orientation);
 
         usleep(sleep_int);
     }
@@ -234,7 +234,7 @@ void drone::destroy_sensors(){
 
     logger::info("Joining sensor thread.");
     sensor_loop_alive = false;
-    sensor_thread..join();
+    sensor_thread.join();
     logger::info("Joined sensor thread.");
 
 
