@@ -9,6 +9,7 @@ void foobar(const char* msg, const char* str = __builtin_FUNCTION()){
     std::printf("%s (called by %s)\n", msg, str);
 }
 
+#define test(msg, ...) fmt::format(msg, ##__VA_ARGS__)
 
 int main(){
     // std::cout << "bruh\n";
@@ -16,6 +17,8 @@ int main(){
     // printf("%s\n", _SOURCE_LOCATION_);
     foobar("this is a message");
     std::string s = fmt::format("cock {}", "and balls");
+    printf("%s\n", s.c_str());
+    s = test("wow {} {}", 2.41221, "IT WORKS!");
     printf("%s\n", s.c_str());
 
     logger::debug("chugging along");
