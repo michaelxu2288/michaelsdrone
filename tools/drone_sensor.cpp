@@ -2,7 +2,7 @@
 #include <logger.h>
 
 void exit(){
-    logger::info("Closing.")
+    logger::info("Closing.");
     drone::destroy_sensors();
 }
 
