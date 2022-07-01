@@ -228,7 +228,7 @@ void message_thread_funct(){
     while(alive){
 
         sprintf(recv, "%f %f %f", orientation_euler.x, orientation_euler.y, orientation_euler.z);
-        logger::debug("{.2f} {.2f} {.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
+        logger::debug("{:.2f} {:.2f} {:.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
 
         unix_connection.send(recv, strlen(recv));
 
