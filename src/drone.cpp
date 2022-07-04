@@ -243,7 +243,7 @@ void message_thread_funct(){
         // |  0   | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |
         
         sprintf(recv, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
-            mpu6050_data[0]*G, mpu6050_data[1]*G, mpu6050_data[2]*G, mpu6050_data[3]*DEG_TO_RAD, mpu6050_data[4]*DEG_TO_RAD, mpu6050_data[5]*DEG_TO_RAD,
+            mpu6050_data[0]*G, mpu6050_data[1]*G, (mpu6050_data[2] - 1)*G, mpu6050_data[3]*DEG_TO_RAD, mpu6050_data[4]*DEG_TO_RAD, mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2]
             );
