@@ -225,6 +225,7 @@ int bmp390::get_raw_press(){
 }
 
 double bmp390::get_press(){
+    return compensate_pressure();
     double raw_press = (float) get_raw_press();
     double temp = get_temp() * 100 * 16384 / 25;
     // std::cout << "temp: " << temp << "\n";
@@ -259,6 +260,7 @@ double bmp390::get_press(){
 
 
 double bmp390::get_press(double temp){
+    return compensate_pressure();
     double raw_press = (float) get_raw_press();
     temp *= 100;
     // temp *= 16384;
@@ -308,6 +310,8 @@ uint32_t bmp390::get_raw_temp(){
 }
 
 double bmp390::get_temp(){
+    return compensate_temp();
+
     double raw_temp = get_raw_temp();
     double pd1 = raw_temp - par_t1;
 
