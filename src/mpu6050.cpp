@@ -224,14 +224,21 @@ void mpu6050::calibrate(int n){
 		
 		int calibed = 0;
 		
+		int avg_err = 0;
 		for(int i = 0; i < 6; i++){
 			// s_data[i]+=data[i];
-			if((s_data[i] / n) < max_error){
+			int err = (s_data[i] / n);
+			avg_err += err;
+			if(err < max_error){
 				calibed ++;
 			}else {
 				off[i] = off[i] - (s_data[i] / n) / (max_error + 1);
 			}
 		}
+
+		avg_err /= 6;
+		printf("[Debug] Average error: %d\n", avg_err);
+		
 
 		if(calibed == 6) {
 			break;
