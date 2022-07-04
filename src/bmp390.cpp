@@ -46,7 +46,8 @@ void bmp390::init(){
 
 }
 
-
+double compensate_temp();
+double compensate_pressure();
 
 double par_t1, par_t2, par_t3;
 double par_p1, par_p2, par_p3, par_p4, par_p5, par_p6, par_p7, par_p8, par_p9, par_p10, par_p11;
@@ -302,7 +303,7 @@ double bmp390::get_height(){
     return - UNV_GAS_CONST * STANDARD_TEMP * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
 }
 
-uint32_t bmp390::get_raw_temp(){
+int bmp390::get_raw_temp(){
     int high = ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_23_16));
     int low = ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_7_0));
     // std::cout << "TEMPERATURE: " << high << " / " << low << "\n";
