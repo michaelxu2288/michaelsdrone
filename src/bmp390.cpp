@@ -142,7 +142,7 @@ int bmp390::get_raw_press(){
 
 double bmp390::get_press(){
     double raw_press = (float) get_raw_press();
-    double temp = get_temp() * 100;
+    double temp = get_temp() * 100 * 16384 / 25;
     // std::cout << "temp: " << temp << "\n";
     // std::cout << "raw pressure: " << raw_press << "\n";
     double partial_data1;
@@ -177,6 +177,8 @@ double bmp390::get_press(){
 double bmp390::get_press(double temp){
     double raw_press = (float) get_raw_press();
     temp *= 100;
+    temp *= 16384;
+    temp /= 25
     // std::cout << "temp: " << temp << "\n";
     // std::cout << "raw pressure: " << raw_press << "\n";
     double partial_data1;
