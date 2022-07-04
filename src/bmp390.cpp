@@ -216,8 +216,8 @@ void bmp390::print_compensations(){
 
 
 int bmp390::get_raw_press(){
-    int high = i2c_smbus_read_byte_data(fd, REG_PRESS_23_16);
-    int low = i2c_smbus_read_byte_data(fd, REG_PRESS_15_8) << 8 | i2c_smbus_read_byte_data(fd, REG_PRESS_7_0);
+    int high = (uint32_t) i2c_smbus_read_byte_data(fd, REG_PRESS_23_16);
+    int low = ((uint32_t) i2c_smbus_read_byte_data(fd, REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, REG_PRESS_7_0));
     // std::cout << "PRESSURE: " << high << " / " << low << "\n";
     //Two's complement?
 
@@ -300,9 +300,9 @@ double bmp390::get_height(){
     return - UNV_GAS_CONST * STANDARD_TEMP * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
 }
 
-int bmp390::get_raw_temp(){
-    int high = i2c_smbus_read_byte_data(fd, REG_TEMP_23_16);
-    int low = i2c_smbus_read_byte_data(fd, REG_TEMP_15_8) << 8 | i2c_smbus_read_byte_data(fd, REG_TEMP_7_0);
+uint32_t bmp390::get_raw_temp(){
+    int high = ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_23_16));
+    int low = ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_7_0));
     // std::cout << "TEMPERATURE: " << high << " / " << low << "\n";
     return (high << 16) | low;
 }
@@ -313,6 +313,112 @@ double bmp390::get_temp(){
 
     return par_t2 * pd1 + par_t3 * (pd1 * pd1);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+double compensate_temp(){
+
+    uint32_t uncomp_temp = bmp390::get_raw_temp();
+    double partial_data1;
+    double partial_data2;
+
+    partial_data1 = (double)(uncomp_temp - par_t1);
+    partial_data2 = (double)(partial_data1 * par_t2);
+
+    /* Update the compensated temperature in calib structure since this is
+     * needed for pressure calculation */
+    return partial_data2 + (partial_data1 * partial_data1) *
+                                             par_t3;
+
+    /* Returns compensated temperature */
+    // return calib_data->quantized_calib_data.t_lin;
+}
+
+
+double pow_bmp3(double base, uint8_t power)
+{
+    double pow_output = 1;
+
+    while (power != 0)
+    {
+        pow_output = (double) base * pow_output;
+        power--;
+    }
+
+    return pow_output;
+}
+
+double compensate_pressure()
+{
+    
+    double t_lin = compensate_temp();
+    int uncomp_pressure = bmp390::get_raw_press();
+    /* Variable to store the compensated pressure */
+    double comp_press;
+
+    /* Temporary variables used for compensation */
+    double partial_data1;
+    double partial_data2;
+    double partial_data3;
+    double partial_data4;
+    double partial_out1;
+    double partial_out2;
+
+    partial_data1 = par_p6 * t_lin;
+    partial_data2 = par_p7 * pow_bmp3(t_lin, 2);
+    partial_data3 = par_p8 * pow_bmp3(t_lin, 3);
+    partial_out1 = par_p5 + partial_data1 + partial_data2 + partial_data3;
+    partial_data1 = par_p2 * t_lin;
+    partial_data2 = par_p3 * pow_bmp3(t_lin, 2);
+    partial_data3 = par_p4 * pow_bmp3(t_lin, 3);
+    partial_out2 = uncomp_pressure *
+                   (par_p1 + partial_data1 + partial_data2 + partial_data3);
+    partial_data1 = pow_bmp3((double)uncomp_pressure, 2);
+    partial_data2 = par_p9 + par_p10 * t_lin;
+    partial_data3 = partial_data1 * partial_data2;
+    partial_data4 = partial_data3 + pow_bmp3((double)uncomp_pressure, 3) * par_p11;
+    comp_press = partial_out1 + partial_out2 + partial_data4;
+
+    return comp_press;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void bmp390::stop(){
     close(fd);
