@@ -23,7 +23,6 @@ extern "C" {
 #include <cstdio>
 #include <string>
 #include <cstdint>
-#include <logger.h>
 
 #define Read(r) i2c_smbus_read_byte_data(fd, r)
 #define Write(r,v) i2c_smbus_write_byte_data(fd, r, v)
@@ -211,7 +210,7 @@ void mpu6050::calibrate(int n){
 	int max_error = 8;
 
 	while(1){
-		j++
+		j++;
 		for(int i = 0; i < 6; i++){s_data[i]=0;}
 
 		for(int i = 0; i < n; i ++ ){
