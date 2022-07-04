@@ -381,6 +381,39 @@ double pow_bmp3(double base, uint8_t power)
 
     return pow_output;
 }
+double compensate_pressure()
+{
+    
+    double t_lin = compensate_temp();
+    int uncomp_pressure = bmp390::get_raw_press();
+    /* Variable to store the compensated pressure */
+    double comp_press;
+
+    /* Temporary variables used for compensation */
+    double partial_data1;
+    double partial_data2;
+    double partial_data3;
+    double partial_data4;
+    double partial_out1;
+    double partial_out2;
+
+    partial_data1 = par_p6 * t_lin;
+    partial_data2 = par_p7 * pow_bmp3(t_lin, 2);
+    partial_data3 = par_p8 * pow_bmp3(t_lin, 3);
+    partial_out1 = par_p5 + partial_data1 + partial_data2 + partial_data3;
+    partial_data1 = par_p2 * t_lin;
+    partial_data2 = par_p3 * pow_bmp3(t_lin, 2);
+    partial_data3 = par_p4 * pow_bmp3(t_lin, 3);
+    partial_out2 = uncomp_pressure *
+                   (par_p1 + partial_data1 + partial_data2 + partial_data3);
+    partial_data1 = pow_bmp3((double)uncomp_pressure, 2);
+    partial_data2 = par_p9 + par_p10 * t_lin;
+    partial_data3 = partial_data1 * partial_data2;
+    partial_data4 = partial_data3 + pow_bmp3((double)uncomp_pressure, 3) * par_p11;
+    comp_press = partial_out1 + partial_out2 + partial_data4;
+
+    return comp_press;
+}
 
 double compensate_pressure(double temp)
 {
