@@ -60,6 +60,8 @@ namespace bmp390 {
     double get_press(double temp);
     double get_height();
 
+    double get_data(double * data);
+
     int query_register(int reg);
 
     void soft_reset();

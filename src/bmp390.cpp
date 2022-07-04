@@ -261,7 +261,7 @@ double bmp390::get_press(){
 
 
 double bmp390::get_press(double temp){
-    return compensate_pressure();
+    return compensate_pressure(temp);
     double raw_press = (float) get_raw_press();
     temp *= 100;
     // temp *= 16384;
@@ -295,12 +295,17 @@ double bmp390::get_press(double temp){
     return partial_out1 + partial_out2 + partial_data4;
 }
 
-double bmp390::get_height(){
-    double temp_c = get_temp();
-    double pressure_k = get_press(temp_c);
+
+double height(double temp_c, double pressure_k){
     double temp_k = temp_c + 273.15;
 
     return - UNV_GAS_CONST * STANDARD_TEMP * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
+}
+
+double bmp390::get_height(){
+    double temp_c = get_temp();
+    double pressure_k = get_press(temp_c);
+    return height(temp_c, pressure_k);
 }
 
 int bmp390::get_raw_temp(){
@@ -308,6 +313,15 @@ int bmp390::get_raw_temp(){
     int low = ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_7_0));
     // std::cout << "TEMPERATURE: " << high << " / " << low << "\n";
     return (high << 16) | low;
+}
+
+
+
+
+void bmp390::get_data(double * data){
+    data[0] = bmp390::get_temp();
+    data[1] = bmp390::get_press(data[0]);
+    data[2] = height(data[0], data[1]);
 }
 
 double bmp390::get_temp(){
@@ -367,10 +381,10 @@ double pow_bmp3(double base, uint8_t power)
     return pow_output;
 }
 
-double compensate_pressure()
+double compensate_pressure(double temp)
 {
     
-    double t_lin = compensate_temp();
+    double t_lin = temp;
     int uncomp_pressure = bmp390::get_raw_press();
     /* Variable to store the compensated pressure */
     double comp_press;
