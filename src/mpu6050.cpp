@@ -213,7 +213,7 @@ void mpu6050::calibrate(int n){
 		j++;
 		for(int i = 0; i < 6; i++){s_data[i]=0;}
 
-		for(int i = 0; i < n; i ++ ){
+		for(int i = 0; i < 200; i ++ ){
 			mpu6050::read_raw(data);
 			for(int i = 0; i < 6; i++){
 				s_data[i]+=data[i] - off[i];
@@ -232,7 +232,7 @@ void mpu6050::calibrate(int n){
 			if(err < max_error){
 				calibed ++;
 			}else {
-				off[i] = (off[i] + (s_data[i] / n)) / 2;
+				off[i] = (off[i] * 2 + (s_data[i] / n)) / 2;
 			}
 		}
 
