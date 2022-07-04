@@ -14,11 +14,13 @@
 #include <socket.h>
 #include <bmp390.h>
 
+#define G 9.81
+
 static double mpu6050_data[6];
 static math::quarternion orientation;
 
 static math::vector orientation_euler;
-static math::vector position, velocity;
+static math::vector position(0, 0, 0), velocity(0, 0, 0);
 
 static double bmp390_data[3];
 
@@ -191,7 +193,7 @@ void sensor_thread_funct(){
 
     math::quarternion euler_q;
     math::vector euler_v;
-
+    math::vector temp;
     auto then = std::chrono::steady_clock::now();
     auto start = then;
     auto now = std::chrono::steady_clock::now();
@@ -202,7 +204,7 @@ void sensor_thread_funct(){
         int t_since = std::chrono::duration_cast<std::chrono::milliseconds> (now - start).count();
         then = now;
         
-        { // MPU6050 Sensor Read
+        { // MPU6050 Sensor Read & Dead Reckoning
             mpu6050::read(mpu6050_data);
 
             euler_v = math::vector(mpu6050_data[3]*dt*DEG_TO_RAD, mpu6050_data[4]*dt*DEG_TO_RAD, mpu6050_data[5]*dt*DEG_TO_RAD);
@@ -210,6 +212,11 @@ void sensor_thread_funct(){
             orientation = euler_q*orientation;
 
             orientation_euler = math::quarternion::toEuler(orientation);
+
+            temp = velocity * dt;
+            position = position + temp;
+            temp = math::vector(mpu6050_data[3]*dt*G, mpu6050_data[4]*dt*G, mpu6050_data[5]*dt*G - G);
+            velocity = velocity + temp;
         }
 
         { // BMP390 Sensor Read
@@ -236,7 +243,7 @@ void message_thread_funct(){
         // |  0   | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |
         
         sprintf(recv, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
-            mpu6050_data[0], mpu6050_data[1], mpu6050_data[2], mpu6050_data[3], mpu6050_data[4], mpu6050_data[5],
+            mpu6050_data[0]*G, mpu6050_data[1]*G, mpu6050_data[2]*G, mpu6050_data[3]*DEG_TO_RAD, mpu6050_data[4]*DEG_TO_RAD, mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2]
             );
