@@ -237,7 +237,7 @@ void message_thread_funct(){
         
         sprintf(recv, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             mpu6050_data[0], mpu6050_data[1], mpu6050_data[2], mpu6050_data[3], mpu6050_data[4], mpu6050_data[5],
-            velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z
+            velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2]
             );
         logger::debug("{:.2f} {:.2f} {:.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
