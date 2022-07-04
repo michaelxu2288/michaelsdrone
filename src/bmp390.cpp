@@ -34,13 +34,13 @@ void bmp390::init(){
 		std::cout << "ERR (bmp390.cpp:init()): Could not get I2C bus with " << BMP390_ADDR << " address. Please confirm that this address is correct\n"; //Print error message
 	}
 
-    bmp390::acquire_calib_vars();
     bmp390::soft_reset();
     i2c_smbus_write_byte_data(fd, REG_PWR_CTRL, BMP390_MODE);
     while((query_register(REG_PWR_CTRL) & 0b110000) == 0){
         i2c_smbus_write_byte_data(fd, REG_PWR_CTRL, BMP390_MODE);
         usleep(1000);
     }
+    bmp390::acquire_calib_vars();
     //i2c_smbus_write_byte_data(fd, REG_CONFIG, BMP390_CONFIG);
     //i2c_smbus_write_byte_data(fd, REG_OSR, BMP390_OSRS);
 
