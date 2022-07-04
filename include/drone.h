@@ -47,8 +47,8 @@ namespace drone {
 
     void set_throttle(double power);
 
-    void init_messsage_thread();
-    void destroy_message_thread();
+    void init_messsage_thread(bool threaded = true);
+    void destroy_message_thread(bool threaded = true);
 
     void init_sensors();
     void destroy_sensors();
@@ -56,6 +56,8 @@ namespace drone {
     void get_orientation(math::quarternion &quart);
     void get_orientation(math::vector &euler);
     void get_position(math::vector &pos);
+
+    void synch_loop();
 };
 
 

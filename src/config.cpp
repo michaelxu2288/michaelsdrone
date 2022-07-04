@@ -62,6 +62,14 @@ double config::get_config_dbl(const char * name, double dft){
     return dft;
 }
 
+std::string config::get_config_dbl(const char * name, std::string dft){
+    if(configuration.hasKey(name)){
+        return configuration[name].ToString();
+    }
+    configuration[name]=dft;
+    return dft;
+}
+
 void config::set_config(const char * name, int value){
     configuration[name]=value;
 }

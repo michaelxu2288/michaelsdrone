@@ -171,10 +171,14 @@ static std::thread message_thread;
 
 static bool alive = true;
 
+static double mpu6050_data[6];
+
+static std::string socket_path;
+
 void sensor_thread_funct(){
     logger::info("Sensor thread alive!");
     int sleep_int = 1000000 / mpu6050_ref_rate;
-    double data[6];
+    // double data[6];
     
     orientation = math::quarternion(1, 0, 0, 0);
 
@@ -187,13 +191,13 @@ void sensor_thread_funct(){
 
     while(alive){
 
-        mpu6050::read(data);
+        mpu6050::read(mpu6050_data);
         now = std::chrono::steady_clock::now();
         double dt = std::chrono::duration_cast<std::chrono::milliseconds> (now - then).count() * 0.001;
         int t_since = std::chrono::duration_cast<std::chrono::milliseconds> (now - start).count();
         then = now;
 
-        euler_v = math::vector(data[3]*dt*DEG_TO_RAD, data[4]*dt*DEG_TO_RAD, data[5]*dt*DEG_TO_RAD);
+        euler_v = math::vector(mpu6050_data[3]*dt*DEG_TO_RAD, mpu6050_data[4]*dt*DEG_TO_RAD, mpu6050_data[5]*dt*DEG_TO_RAD);
         euler_q = math::quarternion::fromEulerZYX(euler_v);
         orientation = euler_q*orientation;
 
@@ -222,7 +226,7 @@ void message_thread_funct(){
     int sleep_int = 1000000 / message_thread_ref_rate;
 
     sock::socket client(sock::unix, sock::tcp);
-    sock::un_connection unix_connection = client.un_connect("/run/drone");
+    sock::un_connection unix_connection = client.un_connect(socket_path.c_str());
     char recv[1024];
 
     while(alive){
@@ -241,7 +245,7 @@ void message_thread_funct(){
 
 
 
-void drone::init_sensors() {
+void drone::init_sensors(bool thread) {
     logger::info("Loading sensor configuration.");
     config::load_file();
     
@@ -249,8 +253,6 @@ void drone::init_sensors() {
     
     config::write_to_file();
     logger::info("Finished loading sensor configuration.");
-    
-    logger::info("MPU6050 Refresh Rate: {}hz ", mpu6050_ref_rate);
 
 
     logger::info("Initializing MPU6050.");
@@ -266,21 +268,27 @@ void drone::init_sensors() {
 
     logger::info("Finished intializing the MPU6050.");
 
-    logger::info("Starting up sensor thread.");
-    sensor_thread = std::thread(sensor_thread_funct);
+    if(thread){
+        logger::info("Starting up sensor thread.");
+        logger::info("MPU6050 Refresh Rate: {}hz ", mpu6050_ref_rate);
+        sensor_thread = std::thread(sensor_thread_funct);
+    }
 }
 
-void drone::init_messsage_thread(){
+void drone::init_messsage_thread(bool thread){
     logger::info("Loading reporting configuration");
     config::load_file();
 
     message_thread_ref_rate = config::get_config_int("message_ref_rate", 10);
+    socket_path = config::get_config_str("socket_path", "./run/drone");
 
     config::write_to_file();
-    logger::info("Message rate: {}", message_thread_ref_rate);
 
-    logger::info("Starting up message thread.");
-    message_thread = std::thread(message_thread_funct);
+    if(thread){
+        logger::info("Starting up message thread.");
+        logger::info("Message rate: {}", message_thread_ref_rate);
+        message_thread = std::thread(message_thread_funct);
+    }
 }
 
 void drone::destroy_message_thread(){
@@ -292,4 +300,47 @@ void drone::destroy_sensors(){
     alive = false;
     sensor_thread.join();
     logger::info("Joined sensor thread.");
+}
+
+
+
+void drone::synch_loop(){
+    logger::info("Loading loop configuration.");
+    config::load_file();
+    
+    int ref_rate = config::get_config_int("drone_ref_rate", 60);
+    
+    config::write_to_file();
+    logger::info("Finished loading loop configuration.");
+    
+    int sleep = 1000000/ref_rate;
+
+    
+    orientation = math::quarternion(1, 0, 0, 0);
+
+    math::quarternion euler_q;
+    math::vector euler_v;
+
+    auto then = std::chrono::steady_clock::now();
+    auto start = then;
+    auto now = std::chrono::steady_clock::now();
+
+    while(1){
+
+        
+
+        mpu6050::read(mpu6050_data);
+        now = std::chrono::steady_clock::now();
+        double dt = std::chrono::duration_cast<std::chrono::milliseconds> (now - then).count() * 0.001;
+        int t_since = std::chrono::duration_cast<std::chrono::milliseconds> (now - start).count();
+        then = now;
+
+        euler_v = math::vector(mpu6050_data[3]*dt*DEG_TO_RAD, mpu6050_data[4]*dt*DEG_TO_RAD, mpu6050_data[5]*dt*DEG_TO_RAD);
+        euler_q = math::quarternion::fromEulerZYX(euler_v);
+        orientation = euler_q*orientation;
+
+        orientation_euler = math::quarternion::toEuler(orientation);
+
+        usleep(sleep);
+    }
 }

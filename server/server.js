@@ -14,8 +14,9 @@ const io = new Server(server, {
     }
 });
 const port = 80;
+const config = require("../config/config.json");
 
-const SOCKET_LOCATION = "/run/drone";
+const SOCKET_LOCATION = config.socket_path;
 
 // const index = fs.readFileSync("./client/index.html");
 // const style = fs.readFileSync("./client/style.css");
