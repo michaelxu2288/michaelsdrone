@@ -232,7 +232,7 @@ void mpu6050::calibrate(int n){
 			if(err < max_error){
 				calibed ++;
 			}else {
-				off[i] = (off[i] * 2 + (s_data[i] / n)) / 2;
+				off[i] = (off[i] + (s_data[i] / n));
 			}
 		}
 
