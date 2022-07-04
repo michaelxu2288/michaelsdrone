@@ -142,7 +142,7 @@ int bmp390::get_raw_press(){
 
 double bmp390::get_press(){
     double raw_press = (float) get_raw_press();
-    double temp = get_temp();
+    double temp = get_temp() * 100;
     // std::cout << "temp: " << temp << "\n";
     // std::cout << "raw pressure: " << raw_press << "\n";
     double partial_data1;
@@ -176,6 +176,7 @@ double bmp390::get_press(){
 
 double bmp390::get_press(double temp){
     double raw_press = (float) get_raw_press();
+    temp *= 100;
     // std::cout << "temp: " << temp << "\n";
     // std::cout << "raw pressure: " << raw_press << "\n";
     double partial_data1;
@@ -239,3 +240,8 @@ void bmp390::soft_reset(){
     // std::cout << "FUCK SHIT CUNT DICK\n";
     i2c_smbus_write_byte_data(fd, REG_CMD, BMP390_SOFT_RESET);
 }
+
+
+
+
+
