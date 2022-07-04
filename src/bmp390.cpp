@@ -51,47 +51,131 @@ void bmp390::init(){
 double par_t1, par_t2, par_t3;
 double par_p1, par_p2, par_p3, par_p4, par_p5, par_p6, par_p7, par_p8, par_p9, par_p10, par_p11;
 
+// int par_t1, par_t2, par_t3;
+// int par_p1, par_p2, par_p3, par_p4, par_p5, par_p6, par_p7, par_p8, par_p9, par_p10, par_p11;
+// int8_t par_t3, par_p3, par_p4, par_p7, par_p8, par_p10, par_p11;
+// uint16_t par_t1, par_t2, par_p5, par_p6;
+// int16_t par_p1, par_p2, par_p9;
+
+
 int16_t combine(int byte1, int byte2) {
   // This code assumes that byte1 is in range, but allows for the possibility
   // that the values were originally in a signed char and so is now negative.
   return (int16_t) (((uint16_t) byte1 << 8) | byte2);
 }
 
-void bmp390::acquire_calib_vars(){
-    int nvm_part_p11 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P11);
-    int nvm_part_p10 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P10);
-    int nvm_part_p9 = combine(i2c_smbus_read_byte_data(fd, NVM_PAR_P9_H),i2c_smbus_read_byte_data(fd, NVM_PAR_P9_L));
-    //nvm_part_p9 = ((nvm_part_p9 & 0x80) == 0x80 ? -(nvm_part_p9 & 0x7F) : nvm_part_p9 & 0x7F);
-    int nvm_part_p8 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P8);
-    int nvm_part_p7 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P7);
-    int nvm_part_p6 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_P6_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_P6_L);
-    int nvm_part_p5 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_P5_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_P5_L);
-    int nvm_part_p4 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P4);
-    int nvm_part_p3 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P3);
-    int nvm_part_p2 = combine(i2c_smbus_read_byte_data(fd, NVM_PAR_P2_H),i2c_smbus_read_byte_data(fd, NVM_PAR_P2_L));
-    //nvm_part_p2 = ((nvm_part_p2 & 0x80) == 0x80 ? -(nvm_part_p2 & 0x7F) : nvm_part_p2 & 0x7F);
-    int nvm_part_p1 = combine(i2c_smbus_read_byte_data(fd, NVM_PAR_P1_H),i2c_smbus_read_byte_data(fd, NVM_PAR_P1_L));
-    //nvm_part_p1 = ((nvm_part_p1 & 0x80) == 0x80 ? -(nvm_part_p1 & 0x7F) : nvm_part_p1 & 0x7F);
-    int nvm_part_t3 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_T3);
-    int nvm_part_t2 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_T2_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_T2_L);
-    int nvm_part_t1 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_T1_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_T1_L);
+// void bmp390::acquire_calib_vars(){
+//     int nvm_part_p11 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P11);
+//     int nvm_part_p10 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P10);
+//     int nvm_part_p9 = combine(i2c_smbus_read_byte_data(fd, NVM_PAR_P9_H),i2c_smbus_read_byte_data(fd, NVM_PAR_P9_L));
+//     //nvm_part_p9 = ((nvm_part_p9 & 0x80) == 0x80 ? -(nvm_part_p9 & 0x7F) : nvm_part_p9 & 0x7F);
+//     int nvm_part_p8 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P8);
+//     int nvm_part_p7 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P7);
+//     int nvm_part_p6 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_P6_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_P6_L);
+//     int nvm_part_p5 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_P5_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_P5_L);
+//     int nvm_part_p4 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P4);
+//     int nvm_part_p3 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P3);
+//     int nvm_part_p2 = combine(i2c_smbus_read_byte_data(fd, NVM_PAR_P2_H),i2c_smbus_read_byte_data(fd, NVM_PAR_P2_L));
+//     //nvm_part_p2 = ((nvm_part_p2 & 0x80) == 0x80 ? -(nvm_part_p2 & 0x7F) : nvm_part_p2 & 0x7F);
+//     int nvm_part_p1 = combine(i2c_smbus_read_byte_data(fd, NVM_PAR_P1_H),i2c_smbus_read_byte_data(fd, NVM_PAR_P1_L));
+//     //nvm_part_p1 = ((nvm_part_p1 & 0x80) == 0x80 ? -(nvm_part_p1 & 0x7F) : nvm_part_p1 & 0x7F);
+//     int nvm_part_t3 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_T3);
+//     int nvm_part_t2 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_T2_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_T2_L);
+//     int nvm_part_t1 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_T1_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_T1_L);
 
-    par_t1 = ((double) nvm_part_t1) * (256.0);
-    par_t2 = ((double) nvm_part_t2) / (1073741824.0);
-    par_t3 = ((double) nvm_part_t3) / (281474976710656.0);
+//     par_t1 = ((double) nvm_part_t1) * (256.0);
+//     par_t2 = ((double) nvm_part_t2) / (1073741824.0);
+//     par_t3 = ((double) nvm_part_t3) / (281474976710656.0);
     
-    par_p1 = (((double) nvm_part_p1) - 16384.0) / (137438953472.0);
-    par_p2 = (((double) nvm_part_p2) - 16384.0) / (536870912.0);
-    par_p3 = ((double) nvm_part_p3) / (4294967296.0);
-    par_p4 = ((double) nvm_part_p4) / (137438953472.0);
-    par_p5 = ((double) nvm_part_p5) * (8.0);
-    par_p6 = ((double) nvm_part_p6) / (64.0);
-    par_p7 = ((double) nvm_part_p7) / (256.0);
-    par_p8 = ((double) nvm_part_p8) / (32768.0);
-    par_p9 = ((double) nvm_part_p9) / (281474976710656.0);
-    par_p10 = ((double) nvm_part_p10) / (281474976710656.0);
-    par_p11 = ((double) nvm_part_p11) / (36893488147419103232.0);
+//     par_p1 = (((double) nvm_part_p1) - 16384.0) / (137438953472.0);
+//     par_p2 = (((double) nvm_part_p2) - 16384.0) / (536870912.0);
+//     par_p3 = ((double) nvm_part_p3) / (4294967296.0);
+//     par_p4 = ((double) nvm_part_p4) / (137438953472.0);
+//     par_p5 = ((double) nvm_part_p5) * (8.0);
+//     par_p6 = ((double) nvm_part_p6) / (64.0);
+//     par_p7 = ((double) nvm_part_p7) / (256.0);
+//     par_p8 = ((double) nvm_part_p8) / (32768.0);
+//     par_p9 = ((double) nvm_part_p9) / (281474976710656.0);
+//     par_p10 = ((double) nvm_part_p10) / (281474976710656.0);
+//     par_p11 = ((double) nvm_part_p11) / (36893488147419103232.0);
+// }
+
+
+void bmp390::acquire_calib_vars(){
+
+    #define BMP3_CONCAT_BYTES(msb, lsb)             (((uint16_t)msb << 8) | (uint16_t)lsb)
+
+    
+    uint16_t reg_par_t1;
+    uint16_t reg_par_t2;
+    int8_t reg_par_t3;
+    int16_t reg_par_p1;
+    int16_t reg_par_p2;
+    int8_t reg_par_p3;
+    int8_t reg_par_p4;
+    uint16_t reg_par_p5;
+    uint16_t reg_par_p6;
+    int8_t reg_par_p7;
+    int8_t reg_par_p8;
+    int16_t reg_par_p9;
+    int8_t reg_par_p10;
+    int8_t reg_par_p11;
+
+    uint8_t reg_data[20];
+    for(int i = 0; i < 20; i ++){
+        reg_data[i] = i2c_smbus_read_byte_data(fd, NVM_PAR_T1_L+i);
+    }
+
+    /* Temporary variable */
+    double temp_var;
+
+    /* 1 / 2^8 */
+    temp_var = 0.00390625f;
+    reg_par_t1 = BMP3_CONCAT_BYTES(reg_data[1], reg_data[0]);
+    par_t1 = ((double)reg_par_t1 / temp_var);
+    reg_par_t2 = BMP3_CONCAT_BYTES(reg_data[3], reg_data[2]);
+    temp_var = 1073741824.0f;
+    par_t2 = ((double)reg_par_t2 / temp_var);
+    reg_par_t3 = (int8_t)reg_data[4];
+    temp_var = 281474976710656.0f;
+    par_t3 = ((double)reg_par_t3 / temp_var);
+    reg_par_p1 = (int16_t)BMP3_CONCAT_BYTES(reg_data[6], reg_data[5]);
+    temp_var = 1048576.0f;
+    par_p1 = ((double)(reg_par_p1 - (16384)) / temp_var);
+    reg_par_p2 = (int16_t)BMP3_CONCAT_BYTES(reg_data[8], reg_data[7]);
+    temp_var = 536870912.0f;
+    par_p2 = ((double)(reg_par_p2 - (16384)) / temp_var);
+    reg_par_p3 = (int8_t)reg_data[9];
+    temp_var = 4294967296.0f;
+    par_p3 = ((double)reg_par_p3 / temp_var);
+    reg_par_p4 = (int8_t)reg_data[10];
+    temp_var = 137438953472.0f;
+    par_p4 = ((double)reg_par_p4 / temp_var);
+    reg_par_p5 = BMP3_CONCAT_BYTES(reg_data[12], reg_data[11]);
+
+    /* 1 / 2^3 */
+    temp_var = 0.125f;
+    par_p5 = ((double)reg_par_p5 / temp_var);
+    reg_par_p6 = BMP3_CONCAT_BYTES(reg_data[14], reg_data[13]);
+    temp_var = 64.0f;
+    par_p6 = ((double)reg_par_p6 / temp_var);
+    reg_par_p7 = (int8_t)reg_data[15];
+    temp_var = 256.0f;
+    par_p7 = ((double)reg_par_p7 / temp_var);
+    reg_par_p8 = (int8_t)reg_data[16];
+    temp_var = 32768.0f;
+    par_p8 = ((double)reg_par_p8 / temp_var);
+    reg_par_p9 = (int16_t)BMP3_CONCAT_BYTES(reg_data[18], reg_data[17]);
+    temp_var = 281474976710656.0f;
+    par_p9 = ((double)reg_par_p9 / temp_var);
+    reg_par_p10 = (int8_t)reg_data[19];
+    temp_var = 281474976710656.0f;
+    par_p10 = ((double)reg_par_p10 / temp_var);
+    reg_par_p11 = (int8_t)reg_data[20];
+    temp_var = 36893488147419103232.0f;
+    par_p11 = ((double)reg_par_p11 / temp_var);
 }
+
 
 void bmp390::print_compensations(){
     printf("COMPUTED\n");
@@ -177,8 +261,8 @@ double bmp390::get_press(){
 double bmp390::get_press(double temp){
     double raw_press = (float) get_raw_press();
     temp *= 100;
-    temp *= 16384;
-    temp /= 25;
+    // temp *= 16384;
+    // temp /= 25;
     // std::cout << "temp: " << temp << "\n";
     // std::cout << "raw pressure: " << raw_press << "\n";
     double partial_data1;
