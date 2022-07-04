@@ -48,6 +48,7 @@ void bmp390::init(){
 
 double compensate_temp();
 double compensate_pressure();
+double compensate_pressure(double temp);
 
 double par_t1, par_t2, par_t3;
 double par_p1, par_p2, par_p3, par_p4, par_p5, par_p6, par_p7, par_p8, par_p9, par_p10, par_p11;
