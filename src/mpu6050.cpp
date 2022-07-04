@@ -23,7 +23,7 @@ extern "C" {
 #include <cstdio>
 #include <string>
 #include <cstdint>
-
+#include <logger.h>
 
 #define Read(r) i2c_smbus_read_byte_data(fd, r)
 #define Write(r,v) i2c_smbus_write_byte_data(fd, r, v)
@@ -200,22 +200,48 @@ void mpu6050::set_register(int reg, int data){
 
 
 void mpu6050::calibrate(int n){
-	int j = n;
+	int j = 0;
     int data[6];
     int s_data[6];
-	for(int i = 0; i < 6; i++){s_data[i]=0;}
-	printf(			"[Debug] Calibrating MPU6050\n");
-	printf(			"[Debug] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n");
-	while(j--){
-		mpu6050::read_raw(data);
-		printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
-		for(int i = 0; i < 6; i++){
-			s_data[i]+=data[i];
+	int off[6];
+	for(int i = 0; i < 6; i++){s_data[i]=0; off[i]=0;}
+	// printf(			"[Debug] Calibrating MPU6050\n");
+	// printf(			"[Debug] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n");
+	
+	int max_error = 8;
+
+	while(1){
+		j++
+		for(int i = 0; i < 6; i++){s_data[i]=0;}
+
+		for(int i = 0; i < n; i ++ ){
+			mpu6050::read_raw(data);
+			for(int i = 0; i < 6; i++){
+				s_data[i]+=data[i] - off[i];
+			}
+			usleep(1000);
 		}
-        usleep(500);
+		// printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
+		
+		int calibed = 0;
+		
+		for(int i = 0; i < 6; i++){
+			// s_data[i]+=data[i];
+			if((s_data[i] / n) < max_error){
+				calibed ++;
+			}else {
+				off[i] = off[i] - (s_data[i] / n) / (max_error + 1);
+			}
+		}
+
+		if(calibed == 6) {
+			break;
+		}
+
+        usleep(1000);
 	}
-	set_offsets(s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n);
-	printf("\n\n[Output] Calibration Results: \n[Output] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n[Output] %6d | %6d | %6d | %6d | %6d | %6d\n[Output] The running program's offsets have been configured. To configure offsets when running other programs, insert the following line: \n[Output] mpu6050::set_offsets(%d, %d, %d, %d, %d, %d)\n\n", s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n, s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n);
+	set_offsets(off[0], off[1], off[2] - 16834, off[3], off[4], off[5]);
+	// printf("\n\n[Output] Calibration Results: \n[Output] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n[Output] %6d | %6d | %6d | %6d | %6d | %6d\n[Output] The running program's offsets have been configured. To configure offsets when running other programs, insert the following line: \n[Output] mpu6050::set_offsets(%d, %d, %d, %d, %d, %d)\n\n", s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n, s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n);
 }
 
 void mpu6050::set_offsets(int x_a, int y_a, int z_a, int x_g, int y_g, int z_g){
