@@ -207,7 +207,7 @@ double bmp390::get_press(double temp){
 
 double bmp390::get_height(){
     double temp_c = get_temp();
-    double pressure_k = get_press(temp_c) * 10;
+    double pressure_k = get_press(temp_c) / 1000;
     double temp_k = temp_c + 273.15;
 
     return - UNV_GAS_CONST * STANDARD_TEMP * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
