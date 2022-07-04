@@ -215,7 +215,7 @@ void sensor_thread_funct(){
 
             temp = velocity * dt;
             position = position + temp;
-            temp = math::vector(mpu6050_data[3]*dt*G, mpu6050_data[4]*dt*G, (mpu6050_data[5] - 1)*dt*G);
+            temp = math::vector(mpu6050_data[0]*dt*G, mpu6050_data[1]*dt*G, (mpu6050_data[2] - 1)*dt*G);
             velocity = velocity + temp;
         }
 
