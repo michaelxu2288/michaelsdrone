@@ -35,7 +35,7 @@ double filter::none::operator[] (double x0){
     return x0;
 }
 
-filter::none::low_pass(double sample_rate, double w0) {}
+filter::none::none(double sample_rate, double w0) {}
 
 
-filter::none::low_pass() {}
+filter::none::none() {}
