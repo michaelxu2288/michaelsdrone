@@ -23,8 +23,10 @@ const process = require("process");
 function exitHandler(options, exitCode){
     console.log(`Exiting with code "${exitCode}"`);
 
-    // fs.unlinkSync(SOCKET_LOCATION);
     server.close();
+    fs.unlinkSync(SOCKET_LOCATION);
+
+    
 
     if (options.cleanup) console.log('clean');
     if (exitCode || exitCode === 0) console.log(exitCode);
