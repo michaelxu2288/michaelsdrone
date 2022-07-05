@@ -200,28 +200,21 @@ void mpu6050::set_register(int reg, int data){
 
 
 void mpu6050::calibrate(int n){
-	int j = 0;
+	int j = n;
     int data[6];
     int s_data[6];
 	for(int i = 0; i < 6; i++){s_data[i]=0;}
 	printf(			"[Debug] Calibrating MPU6050\n");
 	printf(			"[Debug] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n");
-	
-	 double max_error = 0.01;
-
-	while(n--){
+	while(j--){
 		mpu6050::read_raw(data);
-		// printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
-		
-		
-		
+		printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
 		for(int i = 0; i < 6; i++){
 			s_data[i]+=data[i];
 		}
-
-        usleep(1000);
+        usleep(500);
 	}
-	set_offsets(s_data[0] / j, s_data[1] / j, s_data[2] / j - 16834,s_data[3] / j, s_data[4] / j,s_data[5] / j);
+	set_offsets(s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n);
 	printf("\n\n[Output] Calibration Results: \n[Output] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n[Output] %6d | %6d | %6d | %6d | %6d | %6d\n[Output] The running program's offsets have been configured. To configure offsets when running other programs, insert the following line: \n[Output] mpu6050::set_offsets(%d, %d, %d, %d, %d, %d)\n\n", s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n, s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n);
 }
 
