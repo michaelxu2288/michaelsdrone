@@ -51,6 +51,7 @@ server.listen(port, () => {
             
             io.on("connection", (socket) => {
                 socket.on("cmd", (cmd) => {
+                    cmd = `${cmd}`;
                     console.log(`Sending command "${cmd}"`);
                    connection.write(cmd); 
                 });
