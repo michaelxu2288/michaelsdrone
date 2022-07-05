@@ -15,6 +15,7 @@
 #include <bmp390.h>
 
 #include <filter.h>
+#include <pid.h>
 
 #define G 9.81
 
@@ -22,7 +23,7 @@
 
 static double mpu6050_data[6];
 static double filtered_mpu6050_data[6];
-static filter::low_pass mpu6050_filters[6];
+static filter::filter mpu6050_filters[6];
 static math::quarternion orientation;
 
 static math::vector orientation_euler;
@@ -37,7 +38,8 @@ static double throttle = 0.0;
 static bool alive = true;
 
 static int sensor_ref_rate;
-static int sensor_freq_cutoff;
+static int upper_sensor_freq_cutoff;
+static int lower_sensor_freq_cutoff;
 static std::thread sensor_thread;
 
 static int message_thread_ref_rate;
@@ -46,6 +48,8 @@ static std::string socket_path;
 
 static bool zero_flag = false;
 static bool calib_flag = false;
+
+static pid motor_controllers[4];
 
 
 
@@ -197,9 +201,8 @@ void sensor_thread_funct(){
     int sleep_int = 1000000 / sensor_ref_rate;
     // double data[6];
     
-    double mpu6050_cutoff = sensor_freq_cutoff;
     for(int i = 0; i < 6; i ++){
-        mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, mpu6050_cutoff);
+        mpu6050_filters[i] = filter::band_pass(sensor_ref_rate, lower_sensor_freq_cutoff,  upper_sensor_freq_cutoff);
     }
 
 
@@ -334,7 +337,8 @@ void drone::init_sensors(bool thread) {
     config::load_file();
     
     sensor_ref_rate = config::get_config_int("sensor_ref_rate", 60);
-    sensor_freq_cutoff = config::get_config_int("sensor_freq_cutoff", 5);
+    upper_sensor_freq_cutoff = config::get_config_int("upper_sensor_freq_cutoff", 5);
+    lower_sensor_freq_cutoff = config::get_config_dbl("lower_sensor_freq_cutoff", 0.01);
 
     config::write_to_file();
     logger::info("Finished loading sensor configuration.");

@@ -25,9 +25,6 @@ struct pid {
     void change_setpoint(double new_setpoint);
 
     void reset_integral_term();
-
-
-
 };
 
 #endif
