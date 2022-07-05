@@ -213,8 +213,8 @@ void sensor_thread_funct(){
 
     while(alive){
         now = std::chrono::steady_clock::now();
-        double dt = std::chrono::duration_cast<std::chrono::milliseconds> (now - then).count() * 0.001;
-        int t_since = std::chrono::duration_cast<std::chrono::milliseconds> (now - start).count();
+        double dt = std::chrono::duration_cast<std::chrono::seconds> (now - then).count();
+        int t_since = std::chrono::duration_cast<std::chrono::seconds> (now - start).count();
         then = now;
         
         { // MPU6050 Sensor Read, Filter & Dead Reckoning
