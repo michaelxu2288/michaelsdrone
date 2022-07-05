@@ -3,8 +3,8 @@
 
 namespace filter {
     struct none {
-        low_pass();
-        low_pass(double sample_rate, double w0);
+        none();
+        none(double sample_rate, double w0);
         double operator [](double inp);
     };
     struct low_pass {
