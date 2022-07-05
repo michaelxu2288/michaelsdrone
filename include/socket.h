@@ -47,6 +47,8 @@ namespace sock{
         int inBind(int addr, int port);
         int unixBind(const char* path);
         int listen(int backlog);
+        
+        void make_non_block();
 
         un_connection un_accept();
         in_connection in_accept();
