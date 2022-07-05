@@ -60,7 +60,6 @@ server.listen(port, () => {
             // console.log(lastSensorOutput);
             io.emit("sensor", lastSensorOutput);
         });
-
         connection.on("end", () => {
             console.log("Connection lost");
             lastconn = null;
@@ -73,7 +72,7 @@ server.listen(port, () => {
             cmd = `${cmd}`;
             console.log(`Sending command "${cmd}"`);
             if(lastconn !== null){
-                lastconn.send(cmd);
+                lastconn.write(cmd);
             }
         });
     });
