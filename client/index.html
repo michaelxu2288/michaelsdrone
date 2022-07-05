@@ -11,8 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Turret+Road:wght@200&display=swap" rel="stylesheet">
 
     <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" integrity="sha384-PiBR5S00EtOj2Lto9Uu81cmoyZqR57XcOna1oAuVuIEjzj0wpqDVfD0JA9eXlRsj" crossorigin="anonymous"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js" integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="./jq-dev.js"></script>
+    <script src="./plotly.js"></script>
 
     <script src="graph.js"></script>
     <script src="gl-matrix.js"></script>
@@ -24,11 +25,27 @@
 <body onload="main();">
     <canvas id="gl-canvas"></canvas>
     <div>
-
-        <h2>Roll <span id="roll"></span>&deg;</h2>
+        <div class="bruh">
+            <button onclick="connect(); ">Connect</button>
+            <button onclick="disconnect(); ">disConnect</button>
+            <div id="roll-gauges">
+                
+            </div>
+            <div id="pitch-gauges">
+            </div>
+            <div id="yaw-gauges">
+            </div>
+            <div id="x-gauges"></div>
+            <div id="y-gauges"></div>
+            <div id="z-gauges"></div>
+            <!-- <div id="z-gauges"></div> -->
+        </div>
+        <!-- <h2>Roll <span id="roll"></span>&deg;</h2>
         <h2>Pitch <span id="pitch"></span>&deg;</h2>
-        <h2>Yaw <span id="yaw"></span>&deg;</h2>
-        <button onclick="connect(); ">Connect</button>
+        <h2>Yaw <span id="yaw"></span>&deg;</h2> -->
+    </div>
+    <div id="graphs">
+        <canvas id="vroll-graph"></canvas>
     </div>
 </body>
 </html>

@@ -35,7 +35,7 @@ namespace math{
         static quarternion fromEulerZYX(const vector& euler);
         static vector toEuler(const quarternion& q);
         static vector toMagAxis(const quarternion& q);
-        static vector rotateVector(const math::quarternion& q, const math::vector& in);
+        static vector rotateVector(math::quarternion& q, math::vector& in);
     };
     double length(const quarternion& n);
     double length(const vector& n);
