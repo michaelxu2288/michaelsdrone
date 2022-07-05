@@ -31,7 +31,7 @@ filter::filter filter::band_pass(double sample_rate, double wL, double wH){
     double fc = (wL + wH) / 2;
     double Q = 2 / (wH - wL);
 
-    double w = 2.0 * pi * fc / fs;
+    double w = 2.0 * M_PI * fc / fs;
     double b = 0.5*((1.0 - tan(w / (2.0*Q))) / (1.0 + tan(w / (2.0*Q))));
     double g = (0.5 + b)*cos(w);
     out.b0 = 0.5 - b;
