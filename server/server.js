@@ -18,24 +18,31 @@ const config = require("../config/config.json");
 
 const SOCKET_LOCATION = config.socket_path;
 
-// const index = fs.readFileSync("./client/index.html");
-// const style = fs.readFileSync("./client/style.css");
-// const script = fs.readFileSync("./client/script.js");
+const process = require("process");
+
+function exitHandler(options, code){
+    console.log(`Exiting with code "${code}"`);
+
+    fs.unlinkSync(SOCKET_LOCATION);
+
+    if (options.cleanup) console.log('clean');
+    if (exitCode || exitCode === 0) console.log(exitCode);
+    if (options.exit) process.exit();
+}
 
 
-// app.get("/", (req, res) => {
-//     res.setHeader('content-type', 'text/html');
-//     res.send(index);
-// });
-// app.get("/style.css", (req, res) => {
-//     res.setHeader('content-type', 'text/css');
-//     res.send(style);
-// });
-// app.get("/script.js", (req, res) => {
-//     res.setHeader('content-type', 'text/javascript');
-//     res.send(script);
-// });
+//do something when app is closing
+process.on('exit', exitHandler.bind(null,{cleanup:true}));
 
+//catches ctrl+c event
+process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+
+// catches "kill pid" (for example: nodemon restart)
+process.on('SIGUSR1', exitHandler.bind(null, {exit:true}));
+process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
+
+//catches uncaught exceptions
+process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 
 server.listen(port, () => {
     console.log("listenen");
@@ -48,7 +55,7 @@ server.listen(port, () => {
             // console.log(lastSensorOutput);
             io.emit("sensor", lastSensorOutput);
         });
-         
+
         io.on("connection", (socket) => {
             socket.on("cmd", (cmd) => {
                 cmd = `${cmd}`;
