@@ -163,5 +163,6 @@ math::vector math::vector::operator*(const double& s){
 math::vector math::quarternion::rotateVector(math::quarternion& q, math::vector& r){
     quarternion temp(0, r.x, r.y, r.z);
     temp = q * temp * quarternion::conjugate(q);
-    return vector::vector(temp.x, temp.y, temp.z);
+    vector out = math::vector(temp.x, temp.y, temp.z);
+    return out;
 }
