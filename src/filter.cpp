@@ -29,3 +29,13 @@ filter::low_pass::low_pass() {
     a1=a2=b0=b1=b2 = 0;
     x1=x2=y1=y2=0;
 }
+
+
+double filter::none::operator[] (double x0){
+    return x0;
+}
+
+filter::none::low_pass(double sample_rate, double w0) {}
+
+
+filter::none::low_pass() {}
