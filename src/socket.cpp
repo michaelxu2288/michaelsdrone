@@ -160,3 +160,7 @@ int sock::in_connection::send(const char * buffer, int len){
     }
     return e;
 }
+
+void sock::socket::make_non_block(){
+    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
+}
