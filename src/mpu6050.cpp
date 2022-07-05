@@ -209,8 +209,7 @@ void mpu6050::calibrate(int n){
 	
 	 double max_error = 0.01;
 
-	while(j < n){
-		j++
+	while(n--){
 		mpu6050::read_raw(data);
 		// printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
 		
