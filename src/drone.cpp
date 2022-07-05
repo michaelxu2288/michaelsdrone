@@ -22,7 +22,7 @@
 
 static double mpu6050_data[6];
 static double filtered_mpu6050_data[6];
-static filter::none mpu6050_filters[6];
+static filter::low_pass mpu6050_filters[6];
 static math::quarternion orientation;
 
 static math::vector orientation_euler;
@@ -197,7 +197,7 @@ void sensor_thread_funct(){
     
     double mpu6050_cutoff = 10;
     for(int i = 0; i < 6; i ++){
-        mpu6050_filters[i] = filter::none(sensor_ref_rate, mpu6050_cutoff);
+        mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, mpu6050_cutoff);
     }
 
 
