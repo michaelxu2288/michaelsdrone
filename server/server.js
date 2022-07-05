@@ -51,8 +51,10 @@ server.listen(port, () => {
     console.log("listenen");
 
     var lastSensorOutput = [];
+    var lastconn = null;
 
     var server = net.createServer((connection) =>{
+        lastconn = connection;
         connection.on("data", (data) => {
             lastSensorOutput = data.toString().split(" ");
             // console.log(lastSensorOutput);
@@ -61,14 +63,18 @@ server.listen(port, () => {
 
         connection.on("end", () => {
             console.log("Connection lost");
+            lastconn = null;
         })
+    });
 
-        io.on("connection", (socket) => {
-            socket.on("cmd", (cmd) => {
-                cmd = `${cmd}`;
-                console.log(`Sending command "${cmd}"`);
-               connection.write(cmd); 
-            });
+    
+    io.on("connection", (socket) => {
+        socket.on("cmd", (cmd) => {
+            cmd = `${cmd}`;
+            console.log(`Sending command "${cmd}"`);
+            if(lastconn !== null){
+                lastconn.send(cmd);
+            }
         });
     });
 
