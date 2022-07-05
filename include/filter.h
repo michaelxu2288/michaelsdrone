@@ -8,7 +8,7 @@ namespace filter {
         double x1, x2, y1, y2;
         low_pass();
         low_pass(double sample_rate, double w0);
-        double operator [](double inp) const;
+        double operator [](double inp);
     };
 };
 #endif
