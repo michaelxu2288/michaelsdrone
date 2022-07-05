@@ -57,7 +57,6 @@ server.listen(port, () => {
         lastconn = connection;
         connection.on("data", (data) => {
             message = data.toString().split(" ");
-            const type = message.shift();
             io.emit("sensor", message);
             
         });
