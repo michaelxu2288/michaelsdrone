@@ -14,9 +14,13 @@
 #include <socket.h>
 #include <bmp390.h>
 
+#include <filter.h>
+
 #define G 9.81
 
 static double mpu6050_data[6];
+static double filtered_mpu6050_data[6];
+static filter::low_pass mpu6050_filters[6];
 static math::quarternion orientation;
 
 static math::vector orientation_euler;
@@ -189,6 +193,12 @@ void sensor_thread_funct(){
     int sleep_int = 1000000 / sensor_ref_rate;
     // double data[6];
     
+    double mpu6050_cutoff = 5;
+    for(int i = 0; i < 6; i ++){
+        mpu6050_filters = filter::low_pass(sensor_ref_rate, mpu6050_cutoff);
+    }
+
+
     orientation = math::quarternion(1, 0, 0, 0);
 
     math::quarternion euler_q;
@@ -204,10 +214,15 @@ void sensor_thread_funct(){
         int t_since = std::chrono::duration_cast<std::chrono::milliseconds> (now - start).count();
         then = now;
         
-        { // MPU6050 Sensor Read & Dead Reckoning
+        { // MPU6050 Sensor Read, Filter & Dead Reckoning
             mpu6050::read(mpu6050_data);
 
-            euler_v = math::vector(mpu6050_data[3]*dt*DEG_TO_RAD, mpu6050_data[4]*dt*DEG_TO_RAD, mpu6050_data[5]*dt*DEG_TO_RAD);
+            for(int i = 0; i < 6; i ++){
+                filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
+            }
+                    
+
+            euler_v = math::vector(filtered_mpu6050_data[3]*dt*DEG_TO_RAD, filtered_mpu6050_data[4]*dt*DEG_TO_RAD, filtered_mpu6050_data[5]*dt*DEG_TO_RAD);
             euler_q = math::quarternion::fromEulerZYX(euler_v);
             orientation = euler_q*orientation;
 
@@ -215,7 +230,7 @@ void sensor_thread_funct(){
 
             temp = velocity * dt;
             position = position + temp;
-            temp = math::vector(mpu6050_data[0]*dt*G, mpu6050_data[1]*dt*G, (mpu6050_data[2] - 1)*dt*G);
+            temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, (filtered_mpu6050_data[2] - 1)*dt*G);
             velocity = velocity + temp;
         }
 
@@ -243,7 +258,7 @@ void message_thread_funct(){
         // |  0   | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |
         
         sprintf(recv, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
-            mpu6050_data[0]*G, mpu6050_data[1]*G, (mpu6050_data[2] - 1)*G, mpu6050_data[3]*DEG_TO_RAD, mpu6050_data[4]*DEG_TO_RAD, mpu6050_data[5]*DEG_TO_RAD,
+            filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2] - 1)*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2]
             );
