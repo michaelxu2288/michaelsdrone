@@ -24,6 +24,7 @@ namespace sock{
         sockaddr_un addr;
         int fd;
         int read(char * buffer, int len);
+        bool can_read();
         int send(const char * buffer, int len);
     };
     struct in_connection{
@@ -32,6 +33,7 @@ namespace sock{
         sockaddr_in addr;
         int fd;
         int read(char * buffer, int len);
+        bool can_read();
         int send(const char * buffer, int len);
     };
     struct socket{
@@ -49,6 +51,7 @@ namespace sock{
         int listen(int backlog);
         
         void make_non_block();
+
 
         un_connection un_accept();
         in_connection in_accept();

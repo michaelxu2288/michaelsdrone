@@ -4,6 +4,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <fcntl.h>
+#include <poll.h>
 
 inline int _socket(int d, int t, int p){
     return socket(d, t, p);
@@ -164,4 +165,12 @@ int sock::in_connection::send(const char * buffer, int len){
 
 void sock::socket::make_non_block(){
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
+}
+
+bool sock::un_connection::can_read(){
+    pollfd fds;
+    fds.fd = fd;
+    fds.events = POLLIN;
+    fds.revents = 0;
+    return poll(&fds, 1, 0);
 }

@@ -256,6 +256,20 @@ void message_thread_funct(){
     char recv[1024];
 
     while(alive){
+        
+
+        // | zero | calibrate |
+        // |  0   |     1     |
+        if(unix_connection.can_read()){
+            logger::info("YOO DATA!");
+            
+            int len = unix_connection.read(recv, 50);
+
+            logger::info("Message: \"{}\"", recv);
+        }else {
+            logger::info("no data :(");
+        }
+
 
         // | Type |                MPU6050                  |                 Dead Reckoned                 |             BMP390                |
         // | Type | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude |
