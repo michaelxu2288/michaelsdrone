@@ -59,6 +59,10 @@ server.listen(port, () => {
             io.emit("sensor", lastSensorOutput);
         });
 
+        connection.on("end", () => {
+            console.log("Connection lost");
+        })
+
         io.on("connection", (socket) => {
             socket.on("cmd", (cmd) => {
                 cmd = `${cmd}`;
