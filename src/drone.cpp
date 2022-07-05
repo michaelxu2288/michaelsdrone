@@ -14,9 +14,14 @@
 #include <socket.h>
 #include <bmp390.h>
 
+// #include <cmath>
+#include <limits>
+#include <math.h>
 #include <filter.h>
 #include <pid.h>
 
+
+#define nan std::numeric_limits<double>::quiet_NaN()
 #define G 9.81
 
 
@@ -33,7 +38,7 @@ static double bmp390_data[3];
 
 
 static double throttle = 0.0;
-
+static double motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd;
 
 static bool alive = true;
 
@@ -49,7 +54,8 @@ static std::string socket_path;
 static bool zero_flag = false;
 static bool calib_flag = false;
 
-static pid motor_controllers[4];
+static pid /* x_controller, y_controller, */ z_controller;
+static pid roll_controller, pitch_controller, yaw_controller;
 
 
 
@@ -94,6 +100,7 @@ void drone::arm(){
 }
 
 void drone::set_all(double per){
+    motor_bl_spd = motor_br_spd = motor_fl_spd = motor_fr_spd = per;
     int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
     pca9685::set_pwm_ms(MOTOR_FL_PIN, pow);
     pca9685::set_pwm_ms(MOTOR_FR_PIN, pow);
@@ -106,11 +113,13 @@ void drone::set_diagonals(short diagonal, double per){
     switch (diagonal)
     {
     case FLBR_DIAGONAL:
+        motor_br_spd = motor_fl_spd = per;
         pca9685::set_pwm_ms(MOTOR_FL_PIN, pow);
         pca9685::set_pwm_ms(MOTOR_BR_PIN, pow);
         
         break;
     case FRBL_DIAGONAL:
+        motor_bl_spd = motor_fr_spd = per;
         pca9685::set_pwm_ms(MOTOR_FR_PIN, pow);
         pca9685::set_pwm_ms(MOTOR_BL_PIN, pow);
         break;
@@ -124,15 +133,19 @@ void drone::set_motor(short motor, double per){
     int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
     switch(motor){
     case MOTOR_FL:
+        motor_fl_spd = per;
         pca9685::set_pwm_ms(MOTOR_FL_PIN, pow);
         break;
     case MOTOR_FR:
+        motor_fr_spd = per;
         pca9685::set_pwm_ms(MOTOR_FR_PIN, pow);
         break;
     case MOTOR_BL:
+        motor_bl_spd = per;
         pca9685::set_pwm_ms(MOTOR_BL_PIN, pow);
         break;
     case MOTOR_BR:
+        motor_br_spd = per;
         pca9685::set_pwm_ms(MOTOR_BR_PIN, pow);
         break;
     default:break;
@@ -309,19 +322,29 @@ void message_thread_funct(){
             // logger::info("Message: \"{}\"", recv);
         }
 
+        // | Type |                  Setpoints                    |                      Error                    |     Motor Speed   |
+        // | Type | x | y | z | vx | vy | vz | roll | pitch | yaw | x | y | z | vx | vy | vz | roll | pitch | yaw | fl | fr | bl | br |
+        // |  1   | 0 | 1 | 2 | 3  | 4  | 5  |  6   |   7   |  8  | 9 |10 |11 | 12 | 13 | 14 |  15  |  16   | 17  | 18 | 19 | 20 | 21 |
+
+        sprintf(send, "1 %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+            nan, nan, z_controller.setpoint, nan, nan, nan, roll_controller.setpoint, pitch_controller.setpoint, yaw_controller.setpoint,
+            nan, nan, z_controller.old_error, nan, nan, nan, roll_controller.old_error, pitch_controller.old_error, yaw_controller.old_error,
+            motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd
+            );
+        unix_connection.send(send, strlen(send));
 
         // | Type |                MPU6050                  |                 Dead Reckoned                 |             BMP390                |
         // | Type | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude |
         // |  0   | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |
         
-        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+        sprintf(send, "0 %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2] - 1)*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2]
             );
-        logger::debug("{:.2f} {:.2f} {:.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
-
         unix_connection.send(send, strlen(send));
+        // logger::debug("{:.2f} {:.2f} {:.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
+
 
         usleep(sleep_int);
     }
