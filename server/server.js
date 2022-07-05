@@ -20,8 +20,8 @@ const SOCKET_LOCATION = config.socket_path;
 
 const process = require("process");
 
-function exitHandler(options, code){
-    console.log(`Exiting with code "${code}"`);
+function exitHandler(options, exitCode){
+    console.log(`Exiting with code "${exitCode}"`);
 
     fs.unlinkSync(SOCKET_LOCATION);
 
