@@ -193,7 +193,7 @@ void sensor_thread_funct(){
     int sleep_int = 1000000 / sensor_ref_rate;
     // double data[6];
     
-    double mpu6050_cutoff = 5;
+    double mpu6050_cutoff = 1;
     for(int i = 0; i < 6; i ++){
         mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, mpu6050_cutoff);
     }
