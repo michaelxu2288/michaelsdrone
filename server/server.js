@@ -45,11 +45,17 @@ server.listen(port, () => {
     var server = net.createServer((connection) =>{
         connection.on("data", (data) => {
             lastSensorOutput = data.toString().split(" ");
-            console.log(lastSensorOutput);
+            // console.log(lastSensorOutput);
             io.emit("sensor", lastSensorOutput);
-        });
-
-        
+            
+            
+            io.on("connection", (socket) => {
+                socket.on("cmd", (cmd) => {
+                    console.log(`Sending command "${cmd}"`);
+                   connection.write(cmd); 
+                });
+            });
+        }); 
     });
 
     server.listen(SOCKET_LOCATION, () => {
