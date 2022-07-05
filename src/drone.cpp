@@ -37,6 +37,7 @@ static double throttle = 0.0;
 static bool alive = true;
 
 static int sensor_ref_rate;
+static int sensor_freq_cutoff;
 static std::thread sensor_thread;
 
 static int message_thread_ref_rate;
@@ -195,7 +196,7 @@ void sensor_thread_funct(){
     int sleep_int = 1000000 / sensor_ref_rate;
     // double data[6];
     
-    double mpu6050_cutoff = 10;
+    double mpu6050_cutoff = sensor_freq_cutoff;
     for(int i = 0; i < 6; i ++){
         mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, mpu6050_cutoff);
     }
@@ -282,7 +283,8 @@ void drone::init_sensors(bool thread) {
     config::load_file();
     
     sensor_ref_rate = config::get_config_int("sensor_ref_rate", 60);
-    
+    sensor_freq_cutoff = config::get_config_int("sensor_freq_cutoff", 5);
+
     config::write_to_file();
     logger::info("Finished loading sensor configuration.");
 
