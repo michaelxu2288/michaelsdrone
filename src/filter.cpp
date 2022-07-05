@@ -34,10 +34,10 @@ filter::filter filter::band_pass(double sample_rate, double wL, double wH){
     double w = 2.0 * pi * fc / fs;
     double b = 0.5*((1.0 - tan(w / (2.0*Q))) / (1.0 + tan(w / (2.0*Q))));
     double g = (0.5 + b)*cos(w);
-    out.a0 = 0.5 - b;
-    out.a1 = 0.0;
-    out.a2 = -(0.5 - b);
-    out.b1 = -2.0 * g;
-    out.b2 = 2.0 * b;
+    out.b0 = 0.5 - b;
+    out.b1 = 0.0;
+    out.b2 = -(0.5 - b);
+    out.a1 = -2.0 * g;
+    out.a2 = 2.0 * b;
     return out;
 }
