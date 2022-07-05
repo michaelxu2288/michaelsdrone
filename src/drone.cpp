@@ -39,7 +39,7 @@ static bool alive = true;
 
 static int sensor_ref_rate;
 static int upper_sensor_freq_cutoff;
-static int lower_sensor_freq_cutoff;
+static double lower_sensor_freq_cutoff;
 static std::thread sensor_thread;
 
 static int message_thread_ref_rate;

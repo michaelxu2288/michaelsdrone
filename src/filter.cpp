@@ -17,16 +17,20 @@ filter::filter filter::low_pass(double sample_rate, double w0) {
     const double ita =1.0/ tan(M_PI*ff);
     const double q=sqrt(2.0);
     out.b0 = 1.0 / (1.0 + q*ita + ita*ita);
-    out.b1= 2*b0;
-    out.b2= b0;
-    out.a1 = 2.0 * (ita*ita - 1.0) * b0;
-    out.a2 = -(1.0 - q*ita + ita*ita) * b0;
+    out.b1= 2*out.b0;
+    out.b2= out.b0;
+    out.a1 = 2.0 * (ita*ita - 1.0) * out.b0;
+    out.a2 = -(1.0 - q*ita + ita*ita) * out.b0;
     return out;
 }
 
 filter::filter filter::band_pass(double sample_rate, double wL, double wH){
     // https://github.com/dimtass/DSP-Cpp-filters/blob/master/lib/so_bpf.h
     filter out;
+    double fs = sample_rate;
+    double fc = (wL + wH) / 2;
+    double Q = 2 / (wH - wL);
+
     double w = 2.0 * pi * fc / fs;
     double b = 0.5*((1.0 - tan(w / (2.0*Q))) / (1.0 + tan(w / (2.0*Q))));
     double g = (0.5 + b)*cos(w);
