@@ -322,25 +322,26 @@ void message_thread_funct(){
             // logger::info("Message: \"{}\"", recv);
         }
 
-        // | Type |                  Setpoints                    |                      Error                    |     Motor Speed   |
-        // | Type | x | y | z | vx | vy | vz | roll | pitch | yaw | x | y | z | vx | vy | vz | roll | pitch | yaw | fl | fr | bl | br |
-        // |  1   | 0 | 1 | 2 | 3  | 4  | 5  |  6   |   7   |  8  | 9 |10 |11 | 12 | 13 | 14 |  15  |  16   | 17  | 18 | 19 | 20 | 21 |
+        // |                  Setpoints                    |                      Error                    |     Motor Speed   |
+        // | x | y | z | vx | vy | vz | roll | pitch | yaw | x | y | z | vx | vy | vz | roll | pitch | yaw | fl | fr | bl | br |
+        // | 0 | 1 | 2 | 3  | 4  | 5  |  6   |   7   |  8  | 9 |10 |11 | 12 | 13 | 14 |  15  |  16   | 17  | 18 | 19 | 20 | 21 |
 
-        sprintf(send, "1 %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
-            nan, nan, z_controller.setpoint, nan, nan, nan, roll_controller.setpoint, pitch_controller.setpoint, yaw_controller.setpoint,
-            nan, nan, z_controller.old_error, nan, nan, nan, roll_controller.old_error, pitch_controller.old_error, yaw_controller.old_error,
-            motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd
-            );
-        unix_connection.send(send, strlen(send));
 
         // | Type |                MPU6050                  |                 Dead Reckoned                 |             BMP390                |
         // | Type | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude |
         // |  0   | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |
         
-        sprintf(send, "0 %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+        // |                  Setpoints                    |                      Error                    |     Motor Speed   |
+        // | x | y | z | vx | vy | vz | roll | pitch | yaw | x | y | z | vx | vy | vz | roll | pitch | yaw | fl | fr | bl | br |
+        // |18 |19 |20 | 21 | 22 | 23 |  24  |  25   | 26  |27 |28 |29 | 30 | 31 | 32 |  33  |  34   | 35  | 36 | 37 | 38 | 39 |
+
+        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2] - 1)*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
-            bmp390_data[0], bmp390_data[1], bmp390_data[2]
+            bmp390_data[0], bmp390_data[1], bmp390_data[2],
+            nan, nan, z_controller.setpoint, nan, nan, nan, roll_controller.setpoint, pitch_controller.setpoint, yaw_controller.setpoint,
+            nan, nan, z_controller.old_error, nan, nan, nan, roll_controller.old_error, pitch_controller.old_error, yaw_controller.old_error,
+            motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd
             );
         unix_connection.send(send, strlen(send));
         // logger::debug("{:.2f} {:.2f} {:.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);

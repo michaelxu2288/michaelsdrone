@@ -58,11 +58,8 @@ server.listen(port, () => {
         connection.on("data", (data) => {
             message = data.toString().split(" ");
             const type = message.shift();
-            if(type === "0"){
-                io.emit("sensor", message);
-            }else if(type === "1"){
-                io.emit("control", message);
-            }
+            io.emit("sensor", message);
+            
         });
         connection.on("end", () => {
             console.log("Connection lost");
