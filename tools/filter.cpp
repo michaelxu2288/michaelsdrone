@@ -1,4 +1,5 @@
 #include <filter.h>
+#include <cstdio>
 
 int main(){
     filter::low_pass a(1000, 5);
