@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include <unistd.h>
+#include <fcntl.h>
 
 inline int _socket(int d, int t, int p){
     return socket(d, t, p);
