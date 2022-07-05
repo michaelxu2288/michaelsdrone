@@ -253,6 +253,20 @@ void sensor_thread_funct(){
             zero_flag = false;
         }
 
+        if(calib_flag){
+            orientation = math::quarternion(1, 0, 0, 0);
+
+            velocity = math::vector(0, 0, 0);
+            position = math::vector(0, 0, 0);
+
+            logger::info("Calibrated");
+
+            mpu6050::calibrate(2000);
+
+            calib_flag = false;
+
+        }
+
         usleep(sleep_int);
     }
 }
