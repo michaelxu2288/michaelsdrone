@@ -353,6 +353,10 @@ void drone::init_sensors(bool thread) {
 
     logger::info("Finished intializing the MPU6050.");
 
+    logger::info("Initializing BMP390.");
+    bmp390::init();
+    logger:info("Finished initializing the BMP390.");
+
     if(thread){
         logger::info("Starting up sensor thread.");
         logger::info("MPU6050 Refresh Rate: {}hz ", sensor_ref_rate);
