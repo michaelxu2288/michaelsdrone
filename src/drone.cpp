@@ -218,7 +218,7 @@ void sensor_thread_funct(){
         mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
     }
 
-
+    int settle = 100;
     orientation = math::quarternion(1, 0, 0, 0);
 
     math::quarternion euler_q;
@@ -228,6 +228,21 @@ void sensor_thread_funct(){
     auto start = then;
     auto now = std::chrono::steady_clock::now();
 
+    logger::info("Settling sensors");
+
+    for(int i = 0; i < settle; i++){
+        mpu6050::read(mpu6050_data);
+
+        for(int i = 0; i < 6; i ++){
+            filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
+        }
+
+        bmp390::get_data(bmp390_data);
+        usleep(sleep_int);
+    }
+
+
+    logger::info("Settled sensor filters");
     while(alive){
         now = std::chrono::steady_clock::now();
         double dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
