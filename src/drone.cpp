@@ -44,7 +44,8 @@ static int message_thread_ref_rate;
 static std::thread message_thread;
 static std::string socket_path;
 
-
+static bool zero_flag = false;
+static bool calib_flag = false;
 
 
 
@@ -242,6 +243,15 @@ void sensor_thread_funct(){
             bmp390::get_data(bmp390_data);
         }
 
+        if(zero_flag){
+            orientation = math::quarternion(1, 0, 0, 0);
+
+            velocity = math::vector(0, 0, 0);
+            position = math::vector(0, 0, 0);
+
+            logger::info("Zeroed");
+            zero_flag = false;
+        }
 
         usleep(sleep_int);
     }
@@ -264,8 +274,22 @@ void message_thread_funct(){
             logger::info("YOO DATA!");
             
             int len = unix_connection.read(recv, 50);
+            int cmd = atoi(recv);
 
-            logger::info("Message: \"{}\"", recv);
+            switch(cmd){
+            case 0:
+                logger::info("Zeroing");
+                zero_flag = true;
+                break;
+            case 1:
+                logger::info("Calibrating");
+                calib_flag = true;
+                break;
+            default:
+                logger::warn("Unknown cmd \"{}\"", cmd);
+            }
+
+            // logger::info("Message: \"{}\"", recv);
         }
 
 
