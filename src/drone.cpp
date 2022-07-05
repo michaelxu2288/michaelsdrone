@@ -46,6 +46,7 @@ static int sensor_ref_rate;
 static int upper_sensor_freq_cutoff;
 static double lower_sensor_freq_cutoff;
 static std::thread sensor_thread;
+static int settle_length;
 
 static int message_thread_ref_rate;
 static std::thread message_thread;
@@ -218,7 +219,6 @@ void sensor_thread_funct(){
         mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
     }
 
-    int settle = 100;
     orientation = math::quarternion(1, 0, 0, 0);
 
     math::quarternion euler_q;
@@ -230,7 +230,7 @@ void sensor_thread_funct(){
 
     logger::info("Settling sensors");
 
-    for(int i = 0; i < settle; i++){
+    for(int i = 0; i < settle_length; i++){
         mpu6050::read(mpu6050_data);
 
         for(int i = 0; i < 6; i ++){
@@ -378,6 +378,7 @@ void drone::init_sensors(bool thread) {
     sensor_ref_rate = config::get_config_int("sensor_ref_rate", 60);
     upper_sensor_freq_cutoff = config::get_config_int("upper_sensor_freq_cutoff", 5);
     lower_sensor_freq_cutoff = config::get_config_dbl("lower_sensor_freq_cutoff", 0.01);
+    settle_length = config::get_config_int("settle_length", 200);
 
     config::write_to_file();
     logger::info("Finished loading sensor configuration.");
