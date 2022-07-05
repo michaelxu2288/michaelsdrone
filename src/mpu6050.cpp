@@ -24,6 +24,7 @@ extern "C" {
 #include <string>
 #include <cstdint>
 
+
 #define Read(r) i2c_smbus_read_byte_data(fd, r)
 #define Write(r,v) i2c_smbus_write_byte_data(fd, r, v)
 
@@ -188,16 +189,6 @@ void mpu6050::read(double * data){
 	data[5] = ((double) (handle_neg(Read(OUT_ZGYRO_H) << 8 | Read(OUT_ZGYRO_L))) - offsets[5]) / gyro_scale;
 }
 
-void read_int(int * data){
-	data[0] = ((handle_neg(Read(OUT_XACCL_H) << 8 | Read(OUT_XACCL_L))) - offsets[0]);
-	data[1] = ((handle_neg(Read(OUT_YACCL_H) << 8 | Read(OUT_YACCL_L))) - offsets[1]);
-	data[2] = ((handle_neg(Read(OUT_ZACCL_H) << 8 | Read(OUT_ZACCL_L))) - offsets[2]);
-	data[3] = ((handle_neg(Read(OUT_XGYRO_H) << 8 | Read(OUT_XGYRO_L))) - offsets[3]);
-	data[4] = ((handle_neg(Read(OUT_YGYRO_H) << 8 | Read(OUT_YGYRO_L))) - offsets[4]);
-	data[5] = ((handle_neg(Read(OUT_ZGYRO_H) << 8 | Read(OUT_ZGYRO_L))) - offsets[5]);
-}
-
-
 int mpu6050::query_register(int reg){
 	return Read(reg);
 }
@@ -209,67 +200,30 @@ void mpu6050::set_register(int reg, int data){
 
 
 void mpu6050::calibrate(int n){
+	int j = 0;
+    int data[6];
+    int s_data[6];
+	for(int i = 0; i < 6; i++){s_data[i]=0;}
+	printf(			"[Debug] Calibrating MPU6050\n");
+	printf(			"[Debug] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n");
 	
-	int mean_ax = 0, mean_ay = 0, mean_az = 0, mean_gx = 0, mean_gy = 0, mean_gz = 0;
+	 double max_error = 0.01;
 
-	int ax_offset=-mean_ax/8;
-	int ay_offset=-mean_ay/8;
-	int az_offset=(16384-mean_az)/8;
-
-	int gx_offset=-mean_gx/4;
-	int gy_offset=-mean_gy/4;
-	int gz_offset=-mean_gz/4;
-	int readings[6];
-
-	int acel_deadzone=8;     //Acelerometer error allowed, make it lower to get more precision, but sketch may not converge  (default:8)
-	int giro_deadzone=1;
-
-	while (1){
-		int ready=0;
-		set_offsets(ax_offset, ay_offset, az_offset, gx_offset, gy_offset, gz_offset);
-
-
-		// meansensors();
-		// Serial.println("...");
-
-		for(int i = 0; i < 1000; i ++){
-			read_int(readings);
-			mean_ax += readings[0];
-			mean_ay += readings[1];
-			mean_az += readings[2];
-			mean_gx += readings[3];
-			mean_gy += readings[4];
-			mean_gz += readings[5];
-			usleep(100);
+	while(j < n){
+		j++
+		mpu6050::read_raw(data);
+		// printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
+		
+		
+		
+		for(int i = 0; i < 6; i++){
+			s_data[i]+=data[i];
 		}
 
-		mean_ax /= 1000;
-		mean_ay /= 1000;
-		mean_az /= 1000;
-		mean_gx /= 1000;
-		mean_gy /= 1000;
-		mean_gz /= 1000;
-
-		if (abs(mean_ax)<=acel_deadzone) ready++;
-		else ax_offset=ax_offset-mean_ax/acel_deadzone;
-
-		if (abs(mean_ay)<=acel_deadzone) ready++;
-		else ay_offset=ay_offset-mean_ay/acel_deadzone;
-
-		if (abs(16384-mean_az)<=acel_deadzone) ready++;
-		else az_offset=az_offset+(16384-mean_az)/acel_deadzone;
-
-		if (abs(mean_gx)<=giro_deadzone) ready++;
-		else gx_offset=gx_offset-mean_gx/(giro_deadzone+1);
-
-		if (abs(mean_gy)<=giro_deadzone) ready++;
-		else gy_offset=gy_offset-mean_gy/(giro_deadzone+1);
-
-		if (abs(mean_gz)<=giro_deadzone) ready++;
-		else gz_offset=gz_offset-mean_gz/(giro_deadzone+1);
-
-		if (ready==6) break;
+        usleep(1000);
 	}
+	set_offsets(s_data[0] / j, s_data[1] / j, s_data[2] / j - 16834,s_data[3] / j, s_data[4] / j,s_data[5] / j);
+	printf("\n\n[Output] Calibration Results: \n[Output] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n[Output] %6d | %6d | %6d | %6d | %6d | %6d\n[Output] The running program's offsets have been configured. To configure offsets when running other programs, insert the following line: \n[Output] mpu6050::set_offsets(%d, %d, %d, %d, %d, %d)\n\n", s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n, s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n);
 }
 
 void mpu6050::set_offsets(int x_a, int y_a, int z_a, int x_g, int y_g, int z_g){
