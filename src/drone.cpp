@@ -195,7 +195,7 @@ void sensor_thread_funct(){
     
     double mpu6050_cutoff = 5;
     for(int i = 0; i < 6; i ++){
-        mpu6050_filters = filter::low_pass(sensor_ref_rate, mpu6050_cutoff);
+        mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, mpu6050_cutoff);
     }
 
 
