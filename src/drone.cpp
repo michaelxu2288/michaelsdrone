@@ -202,7 +202,7 @@ void sensor_thread_funct(){
     // double data[6];
     
     for(int i = 0; i < 6; i ++){
-        mpu6050_filters[i] = filter::band_pass(sensor_ref_rate, lower_sensor_freq_cutoff,  upper_sensor_freq_cutoff);
+        mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
     }
 
 
