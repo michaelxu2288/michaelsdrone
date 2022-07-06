@@ -430,7 +430,7 @@ void message_thread_funct(){
     char send[1024];
     char recv[1024];
     while(alive){
-        std::lock_guard<std::mutex> message_lock_guard(message_thread_mutex);
+        // std::lock_guard<std::mutex> message_lock_guard(message_thread_mutex);
         
 
         // | zero | calibrate | Reload Config |
@@ -453,6 +453,7 @@ void message_thread_funct(){
             case 2:
                 logger::info("Reloading configuration");
                 rel_config = std::thread(reload_config_thread);
+                rel_config.join();
                 break;
             default:
                 logger::warn("Unknown cmd \"{}\"", cmd);
