@@ -263,37 +263,6 @@ double bmp390::get_press(){
 
 double bmp390::get_press(double temp){
     return compensate_pressure(temp);
-    double raw_press = (float) get_raw_press();
-    temp *= 100;
-    // temp *= 16384;
-    // temp /= 25;
-    // std::cout << "temp: " << temp << "\n";
-    // std::cout << "raw pressure: " << raw_press << "\n";
-    double partial_data1;
-    double partial_data2;
-    double partial_data3;
-    double partial_data4;
-    double partial_out1;
-    double partial_out2;
-
-    partial_data1 = par_p6 * temp;
-    partial_data2 = par_p7 * (temp * temp);
-    partial_data3 = par_p8 * (temp * temp * temp);
-    partial_out1 = par_p5 + partial_data1 + partial_data2 + partial_data3;
-    // std::cout << "part out 1: " << partial_out1 << "\n";
-    partial_data1 = par_p2 * temp;
-    partial_data2 = par_p3 * (temp * temp);
-    partial_data3 = par_p4 * (temp * temp * temp);
-    partial_out2 = raw_press * (par_p1 + partial_data1 + partial_data2 + partial_data3);
-    // std::cout << "part out 2: " << partial_out2 << "\n";
-
-    partial_data1 = raw_press * raw_press;
-    partial_data2 = par_p9 + par_p10 * temp;
-    partial_data3 = partial_data1 * partial_data2;
-    partial_data4 = partial_data3 + (raw_press * raw_press * raw_press) * par_p11;
-    // std::cout << "part out 3: " << partial_data4 << "\n";
-
-    return partial_out1 + partial_out2 + partial_data4;
 }
 
 
@@ -303,10 +272,14 @@ double height(double temp_c, double pressure_k){
     return - UNV_GAS_CONST * STANDARD_TEMP * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
 }
 
+double bmp390::get_height(double temp, double press){
+    return height(temp, press);
+}
+
 double bmp390::get_height(){
     double temp_c = get_temp();
-    double pressure_k = get_press(temp_c);
-    return height(temp_c, pressure_k);
+    double pressure_P = get_press(temp_c);
+    return height(temp_c, pressure_P);
 }
 
 int bmp390::get_raw_temp(){
@@ -327,11 +300,6 @@ void bmp390::get_data(double * data){
 
 double bmp390::get_temp(){
     return compensate_temp();
-
-    double raw_temp = get_raw_temp();
-    double pd1 = raw_temp - par_t1;
-
-    return par_t2 * pd1 + par_t3 * (pd1 * pd1);
 }
 
 

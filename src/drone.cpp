@@ -47,9 +47,12 @@ static int upper_sensor_freq_cutoff;
 static double lower_sensor_freq_cutoff;
 static std::thread sensor_thread;
 static int settle_length;
-static double sensor_tau;
-static double sensor_tolerance, sensor_tolerance_sqrd;
+static double sensor_roll_pitch_tau;
+static double sensor_g_tolerance, sensor_g_tolerance_sqrd;
 
+static double upper_pressure_freq_cutoff;
+static filter::filter pressure_filter;
+static double sensor_z_tau;
 
 static int message_thread_ref_rate, message_sleep_int;
 static std::thread message_thread;
@@ -127,17 +130,20 @@ void drone::load_configuration(){
     upper_sensor_freq_cutoff = config::get_config_int("upper_sensor_freq_cutoff", 5);
     lower_sensor_freq_cutoff = config::get_config_dbl("lower_sensor_freq_cutoff", 0.01);
     settle_length = config::get_config_int("settle_length", 200);
-    sensor_tau = config::get_config_dbl("sensor_tau", 0.02);
-    sensor_tolerance = config::get_config_dbl("sensor_tolerance", 0.1);
+    sensor_roll_pitch_tau = config::get_config_dbl("sensor_roll_pitch_tau", 0.02);
+    sensor_g_tolerance = config::get_config_dbl("sensor_tolerance", 0.1);
 
     message_thread_ref_rate = config::get_config_int("message_ref_rate", 10);
     socket_path = config::get_config_str("socket_path", "./run/drone");
+
+    upper_pressure_freq_cutoff = config::get_config_int("upper_pressure_freq_cutoff", 5);
+    sensor_z_tau = config::get_config_dbl("sensor_z_tau", 0.02);
 
     config::write_to_file();
     
     sensor_sleep_int = 1000000 / sensor_ref_rate;
     message_sleep_int = 1000000 / message_thread_ref_rate;
-    sensor_tolerance_sqrd = sensor_tolerance * sensor_tolerance;
+    sensor_g_tolerance_sqrd = sensor_g_tolerance * sensor_g_tolerance;
 
     for(int i = 0; i < 3; i ++){
         // mpu6050_filters[i] = filter::high_pass(sensor_ref_rate, lower_sensor_freq_cutoff);
@@ -147,6 +153,8 @@ void drone::load_configuration(){
     for(int i = 3; i < 6; i ++){
         mpu6050_filters[i] = filter::none();
     }
+
+    pressure_filter  filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
 
 }
 
@@ -286,7 +294,10 @@ void settle(){
             filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
         }
 
-        bmp390::get_data(bmp390_data);
+        bmp390_data[0] = bmp390::get_temp();
+        bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
+        bmp390_data[1] = pressure_filter[bmp390_data[1]];
+        bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
         usleep(sensor_sleep_int);
     }
 }
@@ -322,7 +333,18 @@ void sensor_thread_funct(){
             for(int i = 0; i < 6; i ++){
                 filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
             }
-                    
+        }
+
+        { // BMP390 Sensor Read
+            // bmp390::get_data(bmp390_data);
+            bmp390_data[0] = bmp390::get_temp();
+            bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
+            bmp390_data[1] = pressure_filter[bmp390_data[1]];
+            bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
+
+        }
+
+        {
             euler_v = math::vector(filtered_mpu6050_data[3]*dt*DEG_TO_RAD, filtered_mpu6050_data[4]*dt*DEG_TO_RAD, filtered_mpu6050_data[5]*dt*DEG_TO_RAD);
             euler_q = math::quarternion::fromEulerZYX(euler_v);
             orientation = euler_q*orientation;
@@ -330,12 +352,12 @@ void sensor_thread_funct(){
 
 
             double a_dist_from_one_sqrd = filtered_mpu6050_data[0] * filtered_mpu6050_data[0] + filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2] - 1;
-            if((a_dist_from_one_sqrd < 0 ? a_dist_from_one_sqrd > - sensor_tolerance_sqrd : a_dist_from_one_sqrd < sensor_tolerance_sqrd)){
+            if((a_dist_from_one_sqrd < 0 ? a_dist_from_one_sqrd > - sensor_g_tolerance_sqrd : a_dist_from_one_sqrd < sensor_g_tolerance_sqrd)){
                 double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
                 double pitch = atan2((filtered_mpu6050_data[0]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
 
-                orientation_euler.x = orientation_euler.x * (1 - sensor_tau) + roll * sensor_tau;
-                orientation_euler.y = orientation_euler.y * (1 - sensor_tau) + pitch * sensor_tau;
+                orientation_euler.x = orientation_euler.x * (1 - sensor_roll_pitch_tau) + roll * sensor_roll_pitch_tau;
+                orientation_euler.y = orientation_euler.y * (1 - sensor_roll_pitch_tau) + pitch * sensor_roll_pitch_tau;
                 
                 orientation = math::quarternion::fromEulerZYX(orientation_euler);
                 orientation_euler = math::quarternion::toEuler(orientation);
@@ -344,14 +366,9 @@ void sensor_thread_funct(){
             temp = velocity * dt;
             position = position + temp;
             temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, -filtered_mpu6050_data[2]*dt*G);
-            // logger::info("{:.2f} {:.2f} {:.2f}", temp.x, temp.y, temp.z);
             temp = math::quarternion::rotateVector(orientation, temp);
             temp.z += G*dt;
             velocity = velocity + temp;
-        }
-
-        { // BMP390 Sensor Read
-            bmp390::get_data(bmp390_data);
         }
 
         if(zero_flag){
