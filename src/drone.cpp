@@ -318,8 +318,8 @@ void sensor_thread_funct(){
                 double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
                 double pitch = atan2((filtered_mpu6050_data[1]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
 
-                // debug_vals[0] = roll;
-                // debug_vals[1] = pitch;
+                debug_vals[0] = roll;
+                debug_vals[1] = pitch;
                 
                 logger::info("{:.2f} {:.2f}", atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]) * 57.2, pitch);
 
