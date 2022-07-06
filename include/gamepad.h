@@ -3,7 +3,7 @@
 
 namespace gamepad {
 
-    void init();
+    bool init();
     void stop();
 
 

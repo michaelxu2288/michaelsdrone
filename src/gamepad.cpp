@@ -57,14 +57,20 @@ static void polling_thread_function(){
         usleep(10000);
     }
 }
-void gamepad::init(){
+bool gamepad::init(){
     if(!running){
         fd = open("/dev/input/js0", O_RDONLY);
         if(fd >= 0){
+            printf("Controller Found!");
             running = true;
             polling_thread = std::thread(polling_thread_function);
+            return true;
+        }else{
+            printf("Couldn't find a controller!\n");
+            return false;
         }
     }
+    return false;
 }
 
 void gamepad::stop(){
