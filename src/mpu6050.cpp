@@ -25,7 +25,7 @@ extern "C" {
 #include <cstdint>
 
 
-#define Read(r) i2c_smbus_read_byte_data(fd, r)
+#define Read(r) (uint8_t) i2c_smbus_read_byte_data(fd, r)
 #define Write(r,v) i2c_smbus_write_byte_data(fd, r, v)
 
 static int fd;
