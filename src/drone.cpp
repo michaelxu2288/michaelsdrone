@@ -277,11 +277,13 @@ void sensor_thread_funct(){
             orientation = euler_q*orientation;
             orientation_euler = math::quarternion::toEuler(orientation);
 
-            double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]) * 57.3;
-            double pitch = atan2((- filtered_mpu6050_data[1]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2])) * 57.3;
+            double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
+            double pitch = atan2((- filtered_mpu6050_data[1]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
 
             orientation_euler.x = orientation_euler.x * (1 - tau) + roll * tau;
             orientation_euler.y = orientation_euler.y * (1 - tau) + pitch * tau;
+
+            orientation = math::quarternion::fromEulerZYX(orientation_euler);
 
             temp = velocity * dt;
             position = position + temp;
