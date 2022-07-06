@@ -226,7 +226,6 @@ void mpu6050::calibrate(int n){
 	double error_sum[6];
 	double kP[6] = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3};
 	double kI[6] = {90, 90, 90, 20, 20, 20};
-	int offsets[6];
 
 	for(int i = 0; i < 6; i++){
 		offsets[i] = 0;
@@ -257,6 +256,7 @@ void mpu6050::calibrate(int n){
 		}
 	}
 
+	printf("\n\n[Output] Calibration Results: \n[Output] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n[Output] %6d | %6d | %6d | %6d | %6d | %6d\n[Output] The running program's offsets have been configured. To configure offsets when running other programs, insert the following line: \n[Output] mpu6050::set_offsets(%d, %d, %d, %d, %d, %d)\n\n", offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5], offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5]);
 
 }
 
