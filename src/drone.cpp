@@ -300,7 +300,8 @@ void sensor_thread_funct(){
         
         { // MPU6050 Sensor Read, Filter & Dead Reckoning
             mpu6050::read(mpu6050_data);
-
+            mpu6050_data[4] *= -1;
+            mpu6050_data[5] *= -1;
             for(int i = 0; i < 6; i ++){
                 filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
             }
