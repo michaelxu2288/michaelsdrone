@@ -48,3 +48,15 @@ filter::filter filter::none(){
     out.b0 = 1;
     return out;
 }
+
+filter::filter filter::high_pass(){
+    // https://github.com/dimtass/DSP-Cpp-filters/blob/master/lib/so_hpf.h
+    filter out;
+    double c = tan(pi*fc / fs);
+    out.a0 = 1.0 / (1.0 + sqrt2*c + pow(c, 2.0));
+    out.a1 = -2.0 * out.a0;
+    out.a2 = out.a0;
+    out.b1 = 2.0 * out.a0*(pow(c, 2.0) - 1.0);
+    out.b2 = out.a0 * (1.0 - sqrt2*c + pow(c, 2.0));
+    return filter;
+}
