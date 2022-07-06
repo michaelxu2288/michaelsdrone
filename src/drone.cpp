@@ -35,6 +35,8 @@ static math::vector orientation_euler;
 static math::vector position(0, 0, 0), velocity(0, 0, 0);
 
 static double bmp390_data[3];
+static double old_altitude;
+static double initial_altitude;
 
 
 static double throttle = 0.0;
@@ -298,6 +300,9 @@ void settle(){
         bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
         bmp390_data[1] = pressure_filter[bmp390_data[1]];
         bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
+
+        old_altitude = bmp390_data[2];
+        initial_altitude = bmp390_data[2];
         usleep(sensor_sleep_int);
     }
 }
@@ -337,6 +342,7 @@ void sensor_thread_funct(){
 
         { // BMP390 Sensor Read
             // bmp390::get_data(bmp390_data);
+            old_altitude = bmp390_data[1];
             bmp390_data[0] = bmp390::get_temp();
             bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
             bmp390_data[1] = pressure_filter[bmp390_data[1]];
@@ -365,10 +371,12 @@ void sensor_thread_funct(){
 
             temp = velocity * dt;
             position = position + temp;
+            position.z = position.z * sensor_z_tau + (bmp390_data[2] - initial_altitude) * (1 - sensor_z_tau);
             temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, -filtered_mpu6050_data[2]*dt*G);
             temp = math::quarternion::rotateVector(orientation, temp);
             temp.z += G*dt;
             velocity = velocity + temp;
+            velocity.z = velocity.z * sensor_z_tau + ((bmp390_data[2] - old_altitude) / dt) * (1 - sensor_z_tau);
         }
 
         if(zero_flag){
