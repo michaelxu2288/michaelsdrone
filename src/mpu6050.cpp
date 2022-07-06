@@ -209,7 +209,7 @@ void mpu6050::set_register(int reg, int data){
 // 	printf(			"[Debug] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n");
 // 	while(j--){
 // 		mpu6050::read_raw(data);
-		printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
+		// printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
 // 		for(int i = 0; i < 6; i++){
 // 			s_data[i]+=data[i];
 
@@ -235,9 +235,11 @@ void mpu6050::calibrate(int n){
 	for(int i = 0; i < n; i ++){
 		for(int j = 0; j < 100; j ++){
 			mpu6050::read_raw(data);
-			printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
+			// printf("[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
+			// printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
+			
 			double dt = 0.001;
-
+			printf("[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5])
 			for(int k = 0; k < 6; k ++){
 				double error = data[k] - offsets[k];
 				double p_term = error * kP[k];
