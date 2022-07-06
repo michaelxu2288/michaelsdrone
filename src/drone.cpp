@@ -61,7 +61,7 @@ static bool calib_flag = false;
 static pid /* x_controller, y_controller, */ z_controller;
 static pid roll_controller, pitch_controller, yaw_controller;
 
-double debug_vals[6] = {0, 0, 0, 0, 0, 0};
+static double debug_vals[6] = {0, 0, 0, 0, 0, 0};
 
 
 void clear_led(){
@@ -438,7 +438,7 @@ void message_thread_funct(){
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
             );
         unix_connection.send(send, strlen(send));
-        // logger::debug("{:.2f} {:.2f} {:.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
+        logger::debug("{:.2f} {:.2f}", debug_vals[0], debug_vals[1]);
 
 
         usleep(message_sleep_int);
