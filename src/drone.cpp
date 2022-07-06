@@ -342,7 +342,7 @@ void sensor_thread_funct(){
 
         { // BMP390 Sensor Read
             // bmp390::get_data(bmp390_data);
-            old_altitude = bmp390_data[1];
+            old_altitude = bmp390_data[2];
             bmp390_data[0] = bmp390::get_temp();
             bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
             bmp390_data[1] = pressure_filter[bmp390_data[1]];
@@ -378,7 +378,7 @@ void sensor_thread_funct(){
             velocity = velocity + temp;
             velocity.z = velocity.z * sensor_z_tau + ((bmp390_data[2] - old_altitude) / dt) * (1 - sensor_z_tau);
             // debug_vals[0] = (bmp390_data[2] - old_altitude) / dt;
-            logger::info("{:.2f}", (bmp390_data[2] - old_altitude) / dt);
+            // logger::info("{:.2f}", (bmp390_data[2] - old_altitude) / dt);
         }
 
         if(zero_flag){
