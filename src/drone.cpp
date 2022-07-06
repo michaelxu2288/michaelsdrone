@@ -438,7 +438,7 @@ void message_thread_funct(){
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
             );
         unix_connection.send(send, strlen(send));
-        logger::debug("{:.2f} {:.2f}", debug_vals[0], debug_vals[1]);
+        logger::info("{:.2f} {:.2f}", debug_vals[0], debug_vals[1]);
 
 
         usleep(message_sleep_int);
