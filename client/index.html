@@ -26,8 +26,9 @@
     <canvas id="gl-canvas"></canvas>
     <div>
         <div class="bruh">
-            <button onclick="connect(); ">Connect</button>
-            <button onclick="disconnect(); ">disConnect</button>
+            <button id="con-btn" onclick="connect(); ">Connect</button>
+            <button id="zero-btn">zero</button>
+            <button id="calib-btn">calibrate</button>
             <div id="roll-gauges">
                 
             </div>
@@ -38,6 +39,8 @@
             <div id="x-gauges"></div>
             <div id="y-gauges"></div>
             <div id="z-gauges"></div>
+            <div id="bmp-gauges"></div>
+            <div id="motor-gauges"></div>
             <!-- <div id="z-gauges"></div> -->
         </div>
         <!-- <h2>Roll <span id="roll"></span>&deg;</h2>
