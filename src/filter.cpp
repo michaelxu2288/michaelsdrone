@@ -1,7 +1,7 @@
 #include <filter.h>
 #include <cmath>
 
-
+#define sqrt2 1.41421356237 
 double filter::filter::operator[] (double x0){
     double y0 = b0 * x0 + b1 * x1 + b2 * x2 + a1 * y1 + a2 * y2;
     x2 = x1;
@@ -49,14 +49,14 @@ filter::filter filter::none(){
     return out;
 }
 
-filter::filter filter::high_pass(){
+filter::filter filter::high_pass(double samp_rate, double w0){
     // https://github.com/dimtass/DSP-Cpp-filters/blob/master/lib/so_hpf.h
     filter out;
-    double c = tan(pi*fc / fs);
-    out.a0 = 1.0 / (1.0 + sqrt2*c + pow(c, 2.0));
-    out.a1 = -2.0 * out.a0;
-    out.a2 = out.a0;
-    out.b1 = 2.0 * out.a0*(pow(c, 2.0) - 1.0);
-    out.b2 = out.a0 * (1.0 - sqrt2*c + pow(c, 2.0));
+    double c = tan(M_PI*w0 / samp_rate);
+    out.b0 = 1.0 / (1.0 + sqrt2*c + pow(c, 2.0));
+    out.b1 = -2.0 * out.b0;
+    out.b2 = out.b0;
+    out.a1 = 2.0 * out.b0*(pow(c, 2.0) - 1.0);
+    out.a2 = out.b0 * (1.0 - sqrt2*c + pow(c, 2.0));
     return filter;
 }
