@@ -226,7 +226,7 @@ void mpu6050::calibrate(int n){
 	double error_sum[6];
 	double kP[6] = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3};
 	double kI[6] = {90, 90, 90, 20, 20, 20};
-
+	double expect[6] = {0, 0, accl_scale, 0, 0, 0};
 	for(int i = 0; i < 6; i++){
 		offsets[i] = 0;
 		error_sum[i] = 0;
@@ -241,7 +241,7 @@ void mpu6050::calibrate(int n){
 			double dt = 0.001;
 			printf("[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
 			for(int k = 0; k < 6; k ++){
-				double error = data[k] - offsets[k];
+				double error = expect[k] - (data[k] - offsets[k]);
 				double p_term = error * kP[k];
 				error_sum[k] += dt * error * kI[k];
 
