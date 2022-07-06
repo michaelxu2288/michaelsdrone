@@ -305,6 +305,8 @@ void settle(){
         initial_altitude = bmp390_data[2];
         usleep(sensor_sleep_int);
     }
+
+    logger::info("Initial altitude: {:.2f}", 3.281 * initial_altitude);
 }
 
 void sensor_thread_funct(){
