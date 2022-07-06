@@ -318,12 +318,14 @@ void sensor_thread_funct(){
                 double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
                 double pitch = atan2((filtered_mpu6050_data[1]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
 
-                debug_vals[0] = roll;
-                debug_vals[1] = pitch;
+                // debug_vals[0] = roll;
+                // debug_vals[1] = pitch;
+                
+                logger::info("{:.2f} {:.2f}", roll, pitch);
 
                 orientation_euler.x = orientation_euler.x * (1 - sensor_tau) + roll * sensor_tau;
                 orientation_euler.y = orientation_euler.y * (1 - sensor_tau) + pitch * sensor_tau;
-
+                
                 orientation = math::quarternion::fromEulerZYX(orientation_euler);
                 orientation_euler = math::quarternion::toEuler(orientation);
             }
@@ -438,7 +440,7 @@ void message_thread_funct(){
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
             );
         unix_connection.send(send, strlen(send));
-        logger::info("{:.2f} {:.2f}", debug_vals[0], debug_vals[1]);
+        // logger::info("{:.2f} {:.2f}", debug_vals[0], debug_vals[1]);
 
 
         usleep(message_sleep_int);
