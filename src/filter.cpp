@@ -41,3 +41,10 @@ filter::filter filter::band_pass(double sample_rate, double wL, double wH){
     out.a2 = 2.0 * b;
     return out;
 }
+
+
+filter::filter filter::none(){
+    filter out;
+    out.b0 = 1;
+    return out;
+}
