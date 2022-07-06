@@ -12,6 +12,7 @@ double filter::filter::operator[] (double x0){
 }
 
 filter::filter filter::low_pass(double sample_rate, double w0) {
+    // https://stackoverflow.com/questions/20924868/calculate-coefficients-of-2nd-order-butterworth-low-pass-filter
     filter out;
     double ff = w0 / sample_rate;
     const double ita =1.0/ tan(M_PI*ff);
@@ -51,12 +52,28 @@ filter::filter filter::none(){
 
 filter::filter filter::high_pass(double samp_rate, double w0){
     // https://github.com/dimtass/DSP-Cpp-filters/blob/master/lib/so_hpf.h
+    // filter out;
+    // double c = tan(M_PI*w0 / samp_rate);
+    // out.b0 = 1.0 / (1.0 + sqrt2*c + pow(c, 2.0));
+    // out.b1 = -2.0 * out.b0;
+    // out.b2 = out.b0;
+    // out.a1 = 2.0 * out.b0*(pow(c, 2.0) - 1.0);
+    // out.a2 = out.b0 * (1.0 - sqrt2*c + pow(c, 2.0));
+    // return out;
+    // https://stackoverflow.com/questions/20924868/calculate-coefficients-of-2nd-order-butterworth-low-pass-filter
     filter out;
-    double c = tan(M_PI*w0 / samp_rate);
-    out.b0 = 1.0 / (1.0 + sqrt2*c + pow(c, 2.0));
-    out.b1 = -2.0 * out.b0;
-    out.b2 = out.b0;
-    out.a1 = 2.0 * out.b0*(pow(c, 2.0) - 1.0);
-    out.a2 = out.b0 * (1.0 - sqrt2*c + pow(c, 2.0));
+    double ff = w0 / sample_rate;
+    const double ita =1.0/ tan(M_PI*ff);
+    const double q=sqrt(2.0);
+    out.b0 = 1.0 / (1.0 + q*ita + ita*ita);
+    out.b1= 2*out.b0;
+    out.b2= out.b0;
+    out.a1 = 2.0 * (ita*ita - 1.0) * out.b0;
+    out.a2 = -(1.0 - q*ita + ita*ita) * out.b0;
+
+    out.b0 = out.b0*ita*ita;
+    out.b1 = -out.b1*ita*ita;
+    out.b2 = out.b2*ita*ita;
+
     return out;
 }
