@@ -6,7 +6,7 @@ int main(){
     gamepad::init();
 
     while(true){
-        for(int i = 0; i < 12; i ++){
+        for(int i = 0; i < 15; i ++){
             printf("Button %d: %d | ", i, (gamepad::get_button(i) ? 1 : 0));
         }
         printf("\n");
