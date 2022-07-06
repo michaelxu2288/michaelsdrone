@@ -157,6 +157,8 @@ void drone::load_configuration(){
         mpu6050_filters[i] = filter::none();
     }
 
+    mpu6050_filters[5] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
+
     pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
 
 }
@@ -334,7 +336,7 @@ void sensor_thread_funct(){
         int t_since = std::chrono::duration_cast<std::chrono::nanoseconds> (now - start).count();
         then = now;
         
-        { // MPU6050 Sensor Read, Filter & Dead Reckoning
+        { // MPU6050 Sensor Read & Filter
             mpu6050::read(mpu6050_data);
             mpu6050_data[4] *= -1;
             mpu6050_data[5] *= -1;
@@ -343,18 +345,16 @@ void sensor_thread_funct(){
             }
         }
 
-        { // BMP390 Sensor Read
-            // bmp390::get_data(bmp390_data);
+        { // BMP390 Sensor Read & Filter
             old_altitude = bmp390_data[2];
             bmp390_data[0] = bmp390::get_temp();
             bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
             bmp390_data[1] = pressure_filter[bmp390_data[1]];
             bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
             valt = (bmp390_data[2] - old_altitude) / dt;
-
         }
 
-        {
+        {// Dead Reckoning
             euler_v = math::vector(filtered_mpu6050_data[3]*dt*DEG_TO_RAD, filtered_mpu6050_data[4]*dt*DEG_TO_RAD, filtered_mpu6050_data[5]*dt*DEG_TO_RAD);
             euler_q = math::quarternion::fromEulerZYX(euler_v);
             orientation = euler_q*orientation;
@@ -381,8 +381,6 @@ void sensor_thread_funct(){
             temp.z += G*dt;
             velocity = velocity + temp;
             velocity.z = velocity.z * sensor_z_tau + valt * (1 - sensor_z_tau);
-            // debug_vals[0] = (bmp390_data[2] - old_altitude) / dt;
-            // logger::info("{:.2f}", (bmp390_data[2] - old_altitude) / dt);
         }
 
         if(zero_flag){
@@ -390,6 +388,8 @@ void sensor_thread_funct(){
 
             velocity = math::vector(0, 0, 0);
             position = math::vector(0, 0, 0);
+            initial_altitude = old_altitude = bmp390_data[2];
+            valt = 0;
 
             logger::info("Zeroed");
             zero_flag = false;
