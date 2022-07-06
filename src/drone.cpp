@@ -19,7 +19,7 @@
 #include <math.h>
 #include <filter.h>
 #include <pid.h>
-
+#include <cmath>
 
 // #define nan std::numeric_limits<double>::quiet_NaN()
 #define G 9.81
@@ -102,11 +102,13 @@ void drone::arm(){
 
 void drone::set_all(double per){
     motor_bl_spd = motor_br_spd = motor_fl_spd = motor_fr_spd = per;
-    int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
-    pca9685::set_pwm_ms(MOTOR_FL_PIN, pow);
-    pca9685::set_pwm_ms(MOTOR_FR_PIN, pow);
-    pca9685::set_pwm_ms(MOTOR_BL_PIN, pow);
-    pca9685::set_pwm_ms(MOTOR_BR_PIN, pow);
+    #ifdef ENABLE_MOTOR
+        int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
+        pca9685::set_pwm_ms(MOTOR_FL_PIN, pow);
+        pca9685::set_pwm_ms(MOTOR_FR_PIN, pow);
+        pca9685::set_pwm_ms(MOTOR_BL_PIN, pow);
+        pca9685::set_pwm_ms(MOTOR_BR_PIN, pow);
+    #endif
 }
 
 void drone::set_diagonals(short diagonal, double per){
@@ -115,14 +117,17 @@ void drone::set_diagonals(short diagonal, double per){
     {
     case FLBR_DIAGONAL:
         motor_br_spd = motor_fl_spd = per;
-        pca9685::set_pwm_ms(MOTOR_FL_PIN, pow);
-        pca9685::set_pwm_ms(MOTOR_BR_PIN, pow);
-        
+        #ifdef ENABLE_MOTOR
+            pca9685::set_pwm_ms(MOTOR_FL_PIN, pow);
+            pca9685::set_pwm_ms(MOTOR_BR_PIN, pow);
+        #endif
         break;
     case FRBL_DIAGONAL:
         motor_bl_spd = motor_fr_spd = per;
-        pca9685::set_pwm_ms(MOTOR_FR_PIN, pow);
-        pca9685::set_pwm_ms(MOTOR_BL_PIN, pow);
+        #ifdef ENABLE_MOTOR
+            pca9685::set_pwm_ms(MOTOR_FR_PIN, pow);
+            pca9685::set_pwm_ms(MOTOR_BL_PIN, pow);
+        #endif
         break;
     
     default:
@@ -135,19 +140,27 @@ void drone::set_motor(short motor, double per){
     switch(motor){
     case MOTOR_FL:
         motor_fl_spd = per;
-        pca9685::set_pwm_ms(MOTOR_FL_PIN, pow);
+        #ifdef ENABLE_MOTOR
+            pca9685::set_pwm_ms(MOTOR_FL_PIN, pow);
+        #endif
         break;
     case MOTOR_FR:
         motor_fr_spd = per;
-        pca9685::set_pwm_ms(MOTOR_FR_PIN, pow);
+        #ifdef ENABLE_MOTOR
+            pca9685::set_pwm_ms(MOTOR_FR_PIN, pow);
+        #endif
         break;
     case MOTOR_BL:
         motor_bl_spd = per;
-        pca9685::set_pwm_ms(MOTOR_BL_PIN, pow);
+        #ifdef ENABLE_MOTOR
+            pca9685::set_pwm_ms(MOTOR_BL_PIN, pow);
+        #endif
         break;
     case MOTOR_BR:
         motor_br_spd = per;
-        pca9685::set_pwm_ms(MOTOR_BR_PIN, pow);
+        #ifdef ENABLE_MOTOR
+            pca9685::set_pwm_ms(MOTOR_BR_PIN, pow);
+        #endif
         break;
     default:break;
     }
@@ -214,9 +227,12 @@ void sensor_thread_funct(){
     logger::info("Sensor thread alive!");
     int sleep_int = 1000000 / sensor_ref_rate;
     // double data[6];
-    
-    for(int i = 0; i < 6; i ++){
+    double tau = 0.02;
+    for(int i = 0; i < 3; i ++){
         mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
+    }
+    for(int i = 3; i < 6; i ++){
+        mpu6050_filters[i] = filter::none();
     }
 
     orientation = math::quarternion(1, 0, 0, 0);
@@ -256,12 +272,16 @@ void sensor_thread_funct(){
                 filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
             }
                     
-
             euler_v = math::vector(filtered_mpu6050_data[3]*dt*DEG_TO_RAD, filtered_mpu6050_data[4]*dt*DEG_TO_RAD, filtered_mpu6050_data[5]*dt*DEG_TO_RAD);
             euler_q = math::quarternion::fromEulerZYX(euler_v);
             orientation = euler_q*orientation;
-
             orientation_euler = math::quarternion::toEuler(orientation);
+
+            roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]) * 57.3;
+            pitch = atan2((- filtered_mpu6050_data[1]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2])) * 57.3;
+
+            orientation_euler.x = orientation_euler.x * (1 - tau) + roll * tau;
+            orientation_euler.y = orientation_euler.y * (1 - tau) + pitch * tau;
 
             temp = velocity * dt;
             position = position + temp;
@@ -351,7 +371,7 @@ void message_thread_funct(){
         // |18 |19 |20 | 21 | 22 | 23 |  24  |  25   | 26  |27 |28 |29 | 30 | 31 | 32 |  33  |  34   | 35  | 36 | 37 | 38 | 39 |
 
         sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
-            filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2] - 1)*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
+            filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2],
             nan, nan, z_controller.setpoint, nan, nan, nan, roll_controller.setpoint, pitch_controller.setpoint, yaw_controller.setpoint,

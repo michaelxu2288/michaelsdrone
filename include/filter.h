@@ -10,5 +10,6 @@ namespace filter {
     
     filter low_pass(double samp_rate, double w0);
     filter band_pass(double samp_rate, double wL, double wU);
+    // filter complimentary(double samp_rate);
 };
 #endif
