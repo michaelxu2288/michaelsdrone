@@ -64,6 +64,18 @@ static pid roll_controller, pitch_controller, yaw_controller;
 static double debug_vals[6] = {0, 0, 0, 0, 0, 0};
 
 
+pid * drone::get_roll_controller(){
+    return &roll_controller;
+}
+
+pid * drone::get_pitch_controller(){
+    return &pitch_controller;
+}
+
+pid * drone::get_z_controller(){
+    return &z_controller;
+}
+
 void clear_led(){
     pca9685::set_pwm_ms(LED_RUN_PIN, 0);
     pca9685::set_pwm_ms(LED_AUTO_PIN, 0);

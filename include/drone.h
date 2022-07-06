@@ -3,7 +3,7 @@
 #include <settings.h>
 #include <string>
 #include <math.h>
-
+#include <pid.h>
 namespace drone {
 
     extern bool running;
@@ -60,6 +60,14 @@ namespace drone {
     void load_configuration();
 
     void synch_loop();
+
+
+
+    pid * get_roll_controller();
+    pid * get_pitch_controller();
+    pid * get_z_controller();
+    // pid * get_roll_controller();
+
 };
 
 
