@@ -58,5 +58,5 @@ filter::filter filter::high_pass(double samp_rate, double w0){
     out.b2 = out.b0;
     out.a1 = 2.0 * out.b0*(pow(c, 2.0) - 1.0);
     out.a2 = out.b0 * (1.0 - sqrt2*c + pow(c, 2.0));
-    return filter;
+    return out;
 }
