@@ -377,7 +377,8 @@ void sensor_thread_funct(){
             temp.z += G*dt;
             velocity = velocity + temp;
             velocity.z = velocity.z * sensor_z_tau + ((bmp390_data[2] - old_altitude) / dt) * (1 - sensor_z_tau);
-            debug_vals[0] = (bmp390_data[2] - old_altitude) / dt;
+            // debug_vals[0] = (bmp390_data[2] - old_altitude) / dt;
+            logger::info((bmp390_data[2] - old_altitude) / dt);
         }
 
         if(zero_flag){
