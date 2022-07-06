@@ -281,7 +281,7 @@ void sensor_thread_funct(){
 
 
             double a_sqrd = filtered_mpu6050_data[0] * filtered_mpu6050_data[0] + filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2];
-            if(a_sqrd - 1 < 1.1 && a_sqrd - 1 > 0.9){
+            if(a_sqrd - 1 < 1.21 && a_sqrd - 1 > 0.81){
                 double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
                 double pitch = atan2((filtered_mpu6050_data[1]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
 
