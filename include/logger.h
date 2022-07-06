@@ -37,7 +37,6 @@ namespace logger {
 
     std::string _format(const char * formatted, ...);
     void _log(level lvl, std::string_view msg, const char* funct_name, const char * file_name, const int line);
-    #define log(lvl, msg) _log(lvl, msg, __FUNCTION__, __FILE__, __LINE__)
 
     #define debug(msg, ...) _log(logger::DEBUG, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
     #define info(msg, ...) _log(logger::INFO, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
