@@ -224,8 +224,8 @@ void mpu6050::set_register(int reg, int data){
 void mpu6050::calibrate(int n){
 	int data[6];
 	double error_sum[6];
-	double kP = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3};
-	double kI = {90, 90, 90, 20, 20, 20};
+	double kP[6] = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3};
+	double kI[6] = {90, 90, 90, 20, 20, 20};
 	int offsets[6];
 
 	for(int i = 0; i < 6; i++){
@@ -251,8 +251,8 @@ void mpu6050::calibrate(int n){
 		
 
 		for(int j = 0; j < 6; j++){
-			kP[k] *= 0.75;
-			kI[k] *= 0.75;
+			kP[j] *= 0.75;
+			kI[j] *= 0.75;
 			error_sum[j] = 0;
 		}
 	}
