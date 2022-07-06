@@ -435,7 +435,7 @@ void message_thread_funct(){
             nan, nan, z_controller.setpoint, nan, nan, nan, roll_controller.setpoint, pitch_controller.setpoint, yaw_controller.setpoint,
             nan, nan, z_controller.old_error, nan, nan, nan, roll_controller.old_error, pitch_controller.old_error, yaw_controller.old_error,
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
-            debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5],
+            debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
             );
         unix_connection.send(send, strlen(send));
         // logger::debug("{:.2f} {:.2f} {:.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
