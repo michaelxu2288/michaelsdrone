@@ -196,6 +196,7 @@ const Gauges = {
         title: "Roll",
         width: 180,
         height: 180,
+        setpoint: 0,
         valueToPercent: (val) => {
             return val / 180 + .5; 
         },
@@ -308,7 +309,7 @@ const Gauges = {
             return val; 
         },
         textFromValue: (angle) => {
-            return `${processSmallNumbers(angle)}%`;
+            return `${Math.round(angle*100)}%`;
         },
         type: 1,
         gaugeSize: 160,
@@ -323,7 +324,7 @@ const Gauges = {
             return val; 
         },
         textFromValue: (angle) => {
-            return `${processSmallNumbers(angle)}%`;
+            return `${Math.round(angle*100)}%`;
         },
         type: 1,
         gaugeSize: 160,
@@ -338,7 +339,7 @@ const Gauges = {
             return val; 
         },
         textFromValue: (angle) => {
-            return `${processSmallNumbers(angle)}%`;
+            return `${Math.round(angle*100)}%`;
         },
         type: 1,
         gaugeSize: 160,
@@ -353,7 +354,7 @@ const Gauges = {
             return val; 
         },
         textFromValue: (angle) => {
-            return `${processSmallNumbers(angle)}%`;
+            return `${Math.round(angle*100)}%`;
         },
         type: 1,
         gaugeSize: 160,
@@ -388,7 +389,7 @@ const Gauges = {
         type: 2,
         gaugeSize: 45,
         container: "#pitch-gauges",
-    }
+    },
 }
 
 
@@ -447,26 +448,34 @@ function connect(){
             Gauges.roll.gauge.changeValue(rotation.r / DEG_TO_RAD);
             Gauges.pitch.gauge.changeValue(rotation.p / DEG_TO_RAD);
             Gauges.yaw.gauge.changeValue(rotation.y / DEG_TO_RAD);
+
+            Gauges.roll.gauge.changeSetpoint(output[20] / DEG_TO_RAD);
+            Gauges.pitch.gauge.changeSetpoint(output[21] / DEG_TO_RAD);
+            // Gauges.yaw.gauge.changeValue(rotation.y / DEG_TO_RAD);
     
-            Gauges.vroll.gauge.changeValue(output[3]);
-            Gauges.vpitch.gauge.changeValue(output[4]);
-            Gauges.vyaw.gauge.changeValue(output[5]);
+            Gauges.vroll.gauge.changeValue(output[3] / DEG_TO_RAD);
+            Gauges.vpitch.gauge.changeValue(output[4] / DEG_TO_RAD);
+            Gauges.vyaw.gauge.changeValue(output[5] / DEG_TO_RAD);
 
             Gauges.temp.gauge.changeValue(output[15]);
             Gauges.press.gauge.changeValue(output[16]);
             Gauges.alt.gauge.changeValue(output[17]);
 
-            Gauges.mfl.gauge.changeValue(output[36]);
-            Gauges.mfr.gauge.changeValue(output[37]);
-            Gauges.mbl.gauge.changeValue(output[38]);
-            Gauges.mbr.gauge.changeValue(output[39]);
+            Gauges.mfl.gauge.changeValue(output[25]);
+            Gauges.mfr.gauge.changeValue(output[26]);
+            Gauges.mbl.gauge.changeValue(output[27]);
+            Gauges.mbr.gauge.changeValue(output[28]);
 
+            console.log(output);
             
             // double x_Buff = float(x);
             // double y_Buff = float(y);
             // double z_Buff = float(z);
             // roll = atan2(y_Buff , -z_Buff) * 57.3;
             // pitch = atan2((- x_Buff) , sqrt(y_Buff * y_Buff + z_Buff * z_Buff)) * 57.3;
+
+            // Gauges.roll.gauge.changeSetpoint()
+            
             if(Math.abs(a - 9.8) < 0.5){
                 const mu = 0.001;
                 // Roll  = atan2( Y,   sign* sqrt(Z*Z+ miu*X*X));
@@ -480,9 +489,16 @@ function connect(){
                 Gauges.rollA.gauge.changeValue(NaN);
                 Gauges.pitchA.gauge.changeValue(NaN);
             }
+            
+            // console.log(output);
+            // Gauges.rollA.gauge.changeValue(output[40] / DEG_TO_RAD);
+            // Gauges.pitchA.gauge.changeValue(output[41] / DEG_TO_RAD);
+            
             chart.addData(0, k, output[0])
             chart.render();
-    
+            
+            Object.keys(Gauges).forEach((key) => {if(Gauges[key].gauge.updated) {Gauges[key].gauge.drawCanvas();}})
+
             k++;
         });
     }else{
@@ -502,6 +518,7 @@ function disconnect(){
 
 
 
+const tri = [[-5, 0],[5/2, -5 *Math.sqrt(3) / 2],[]]
 
 class Gauge {
     constructor(settings){
@@ -516,7 +533,10 @@ class Gauge {
         settings.type = settings.type ?? 0;
         settings.gaugeSize = settings.gaugeSize ?? settings.height * .3;
         settings.container = settings.container ?? ".bruh";
+        settings.setpoint = settings.setpoint ?? NaN;
+
         this.settings = settings;
+        this.updated = true;
         this.createElements()
     }
 
@@ -546,6 +566,7 @@ class Gauge {
     }
 
     drawCanvas(){
+        this.updated = false;
         if(this.settings.type == 3){ // Text only
 
         }if(this.settings.type == 2) { // Full angle Gauge
@@ -559,6 +580,29 @@ class Gauge {
             const a_end = Math.max(beg, end);
             this.ctx.arc(this.settings.width/2, this.settings.height/2, this.settings.gaugeSize, a_start, a_end);
             this.ctx.stroke();
+
+            if(!isNaN(this.settings.setpoint)){
+                this.ctx.fillStyle = "#ff992b";
+                const tri_size = 5;
+                const offx = this.settings.gaugeSize - tri_size * 3.1, offy = 0;
+                const tri = [[-tri_size-1 - offx, offy], [+tri_size/2-offx, -tri_size * Math.sqrt(3) / 2+offy], [tri_size/2 - offx, tri_size * Math.sqrt(3) / 2 + offy]];
+                const angle = this.settings.valueToPercent(this.settings.setpoint) * Math.PI - Math.PI;
+                // const angle = 0;
+                this.ctx.beginPath();
+                const cos = Math.cos(-angle);
+                const sin = Math.sin(-angle);
+                for(var i = 0; i < 3; i ++){
+                    const x = tri[i][0] * cos - tri[i][1] * sin + this.settings.width/2, y = tri[i][0] * sin + tri[i][1] * cos + this.settings.height/2;
+                    
+                    if(i == 0){
+                        this.ctx.moveTo(x,y);
+                    }else{
+                        this.ctx.lineTo(x,y);
+                    }
+                }
+                this.ctx.fill();
+            }
+
         }else if(this.settings.type == 1) { // Half angle Gauge
             this.ctx.clearRect(0,0,this.settings.width, this.settings.height);
             this.ctx.beginPath();
@@ -585,13 +629,21 @@ class Gauge {
             this.ctx.lineTo(a_end, this.settings.height / 2);
             this.ctx.stroke();
         }
+
     }
 
     changeValue(val){
         this.settings.value = val;
         this.val_disp.text(this.settings.textFromValue(this.settings.value));
-        this.drawCanvas();
-    } 
+        this.updated = true;
+        // this.drawCanvas();
+    }
+
+    changeSetpoint(setpoint){
+        this.settings.setpoint = setpoint;
+        this.updated = true;
+        // this.drawCanvas();
+    }
 }
 
 var chart;

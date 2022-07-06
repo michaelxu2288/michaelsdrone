@@ -6,11 +6,16 @@
 #include <string>
 #include <logger.h>
 #include <settings.h>
+#include <mutex>
 
 static json::JSON configuration;
 static bool loaded = false;
+
+std::mutex config_mutex;
+
 // static char * filename;
 void config::load_file(const char * filename){
+    std::lock_guard<std::mutex> config_lock(config_mutex);
     std::ifstream in(filename);
     if(in){
         std::string str;
@@ -22,6 +27,7 @@ void config::load_file(const char * filename){
 }
 
 void config::write_to_file(const char * filename){
+    std::lock_guard<std::mutex> config_lock(config_mutex);
     if(!loaded){
         logger::warn("You didnt load the config file. This program will not override the config file.");
     }
@@ -46,6 +52,7 @@ void config::write_to_file(){
 }
 
 int config::get_config_int(const char * name, int dft){
+    std::lock_guard<std::mutex> config_lock(config_mutex);
     if(configuration.hasKey(name)){
         return configuration[name].ToInt();
         
@@ -55,6 +62,7 @@ int config::get_config_int(const char * name, int dft){
 }
 
 double config::get_config_dbl(const char * name, double dft){
+    std::lock_guard<std::mutex> config_lock(config_mutex);
     if(configuration.hasKey(name)){
         return configuration[name].ToFloat();
     }
@@ -63,6 +71,7 @@ double config::get_config_dbl(const char * name, double dft){
 }
 
 std::string config::get_config_str(const char * name, std::string dft){
+    std::lock_guard<std::mutex> config_lock(config_mutex);
     if(configuration.hasKey(name)){
         return configuration[name].ToString();
     }
@@ -71,9 +80,11 @@ std::string config::get_config_str(const char * name, std::string dft){
 }
 
 void config::set_config(const char * name, int value){
+    std::lock_guard<std::mutex> config_lock(config_mutex);
     configuration[name]=value;
 }
 
 void config::set_config(const char * name, double value){
+    std::lock_guard<std::mutex> config_lock(config_mutex);
     configuration[name]=value;
 }

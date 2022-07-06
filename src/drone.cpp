@@ -59,7 +59,7 @@ static bool zero_flag = false;
 static bool calib_flag = false;
 
 static pid /* x_controller, y_controller, */ z_controller;
-static pid roll_controller, pitch_controller, yaw_controller;
+static pid roll_controller, pitch_controller, vyaw_controller;
 
 static double debug_vals[6] = {0, 0, 0, 0, 0, 0};
 
@@ -74,6 +74,10 @@ pid * drone::get_pitch_controller(){
 
 pid * drone::get_z_controller(){
     return &z_controller;
+}
+
+pid * drone::get_vyaw_controller(){
+    return &vyaw_controller;
 }
 
 void clear_led(){
@@ -443,8 +447,8 @@ void message_thread_funct(){
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2], // 18
-            z_controller.setpoint, yaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
-            z_controller.old_error, yaw_controller.old_error, roll_controller.old_error, pitch_controller.old_error,
+            z_controller.setpoint, vyaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
+            z_controller.old_error, vyaw_controller.old_error, roll_controller.old_error, pitch_controller.old_error,
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
             );

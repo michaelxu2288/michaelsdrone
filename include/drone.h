@@ -66,7 +66,7 @@ namespace drone {
     pid * get_roll_controller();
     pid * get_pitch_controller();
     pid * get_z_controller();
-    // pid * get_roll_controller();
+    pid * get_vyaw_controller();
 
 };
 
