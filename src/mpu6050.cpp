@@ -239,7 +239,7 @@ void mpu6050::calibrate(int n){
 			// printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
 			
 			double dt = 0.001;
-			printf("[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5])
+			printf("[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
 			for(int k = 0; k < 6; k ++){
 				double error = data[k] - offsets[k];
 				double p_term = error * kP[k];
