@@ -229,8 +229,9 @@ void sensor_thread_funct(){
     // double data[6];
     double tau = 0.02;
     for(int i = 0; i < 3; i ++){
-        mpu6050_filters[i] = filter::high_pass(sensor_ref_rate, lower_sensor_freq_cutoff);
-        // mpu6050_filters[i] = filter::none();
+        // mpu6050_filters[i] = filter::high_pass(sensor_ref_rate, lower_sensor_freq_cutoff);
+        mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
+        mpu6050_filters[i] = filter::none();
     }
     for(int i = 3; i < 6; i ++){
         mpu6050_filters[i] = filter::none();
@@ -420,7 +421,7 @@ void drone::init_sensors(bool thread) {
     mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
     mpu6050::wake_up();
 
-    mpu6050::calibrate(2000);
+    mpu6050::calibrate(7);
 
     logger::info("Finished intializing the MPU6050.");
 
