@@ -316,12 +316,7 @@ void sensor_thread_funct(){
             double a_dist_from_one_sqrd = filtered_mpu6050_data[0] * filtered_mpu6050_data[0] + filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2] - 1;
             if((a_dist_from_one_sqrd < 0 ? a_dist_from_one_sqrd > - sensor_tolerance_sqrd : a_dist_from_one_sqrd < sensor_tolerance_sqrd)){
                 double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
-                double pitch = atan2((filtered_mpu6050_data[1]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
-
-                debug_vals[0] = roll;
-                debug_vals[1] = pitch;
-                
-                logger::info("{:.2f} {:.2f}", roll * 57.2, pitch * 57.2);
+                double pitch = atan2((filtered_mpu6050_data[0]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
 
                 orientation_euler.x = orientation_euler.x * (1 - sensor_tau) + roll * sensor_tau;
                 orientation_euler.y = orientation_euler.y * (1 - sensor_tau) + pitch * sensor_tau;
