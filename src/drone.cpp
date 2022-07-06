@@ -61,6 +61,7 @@ static bool calib_flag = false;
 static pid /* x_controller, y_controller, */ z_controller;
 static pid roll_controller, pitch_controller, yaw_controller;
 
+double debug_vals[6] = {0, 0, 0, 0, 0, 0};
 
 
 void clear_led(){
@@ -317,12 +318,16 @@ void sensor_thread_funct(){
                 double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
                 double pitch = atan2((filtered_mpu6050_data[1]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
 
+                debug_vals[0] = roll;
+                debug_vals[1] = pitch;
+
                 orientation_euler.x = orientation_euler.x * (1 - sensor_tau) + roll * sensor_tau;
                 orientation_euler.y = orientation_euler.y * (1 - sensor_tau) + pitch * sensor_tau;
 
                 orientation = math::quarternion::fromEulerZYX(orientation_euler);
                 orientation_euler = math::quarternion::toEuler(orientation);
             }
+
             temp = velocity * dt;
             position = position + temp;
             temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, (filtered_mpu6050_data[2] - 1)*dt*G);
@@ -419,17 +424,18 @@ void message_thread_funct(){
         // | Type | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude |
         // |  0   | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |
         
-        // |                  Setpoints                    |                      Error                    |     Motor Speed   |
-        // | x | y | z | vx | vy | vz | roll | pitch | yaw | x | y | z | vx | vy | vz | roll | pitch | yaw | fl | fr | bl | br |
-        // |18 |19 |20 | 21 | 22 | 23 |  24  |  25   | 26  |27 |28 |29 | 30 | 31 | 32 |  33  |  34   | 35  | 36 | 37 | 38 | 39 |
+        // |                  Setpoints                    |                      Error                    |     Motor Speed   |         Debug         |
+        // | x | y | z | vx | vy | vz | roll | pitch | yaw | x | y | z | vx | vy | vz | roll | pitch | yaw | fl | fr | bl | br | 0 | 1 | 2 | 3 | 4 | 5 |
+        // |18 |19 |20 | 21 | 22 | 23 |  24  |  25   | 26  |27 |28 |29 | 30 | 31 | 32 |  33  |  34   | 35  | 36 | 37 | 38 | 39 |40 |41 |42 |43 |44 |45 |
 
-        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2],
             nan, nan, z_controller.setpoint, nan, nan, nan, roll_controller.setpoint, pitch_controller.setpoint, yaw_controller.setpoint,
             nan, nan, z_controller.old_error, nan, nan, nan, roll_controller.old_error, pitch_controller.old_error, yaw_controller.old_error,
-            motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd
+            motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
+            debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5],
             );
         unix_connection.send(send, strlen(send));
         // logger::debug("{:.2f} {:.2f} {:.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
