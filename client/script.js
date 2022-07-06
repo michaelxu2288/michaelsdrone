@@ -472,7 +472,7 @@ function connect(){
                 // Roll  = atan2( Y,   sign* sqrt(Z*Z+ miu*X*X));
                 // sign  = 1 if accZ>0, -1 otherwise 
                 // miu = 0.001
-                console.log(output[1], output[2])
+                // console.log(output[1], output[2])
                 // Gauges.rollA.gauge.changeValue(Math.atan2(output[1], (output[2] > 0 ? -1 : 1) * Math.sqrt(output[2] * output[2] + mu * output[0] * output[0])) * 57.3);
                 Gauges.rollA.gauge.changeValue(Math.atan2(output[1], output[2]) * 57.3);
                 Gauges.pitchA.gauge.changeValue(Math.atan2(output[0], Math.sqrt(output[1] * output[1] + output[2] * output[2])) * 57.3);

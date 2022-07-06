@@ -57,6 +57,8 @@ namespace drone {
     void get_orientation(math::vector &euler);
     void get_position(math::vector &pos);
 
+    void load_configuration();
+
     void synch_loop();
 };
 

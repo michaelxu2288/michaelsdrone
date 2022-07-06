@@ -20,7 +20,7 @@
 #include <filter.h>
 #include <pid.h>
 #include <cmath>
-
+#include <mutex>
 // #define nan std::numeric_limits<double>::quiet_NaN()
 #define G 9.81
 
@@ -42,13 +42,16 @@ static double motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd;
 
 static bool alive = true;
 
-static int sensor_ref_rate;
+static int sensor_ref_rate, sensor_sleep_int;
 static int upper_sensor_freq_cutoff;
 static double lower_sensor_freq_cutoff;
 static std::thread sensor_thread;
 static int settle_length;
+static double sensor_tau;
+static double sensor_tolerance, sensor_tolerance_sqrd;
 
-static int message_thread_ref_rate;
+
+static int message_thread_ref_rate, message_sleep_int;
 static std::thread message_thread;
 static std::string socket_path;
 
@@ -97,6 +100,36 @@ void drone::init(){
 }
 
 void drone::arm(){
+
+}
+
+void drone::load_configuration(){
+    config::load_file();
+    
+    sensor_ref_rate = config::get_config_int("sensor_ref_rate", 60);
+    upper_sensor_freq_cutoff = config::get_config_int("upper_sensor_freq_cutoff", 5);
+    lower_sensor_freq_cutoff = config::get_config_dbl("lower_sensor_freq_cutoff", 0.01);
+    settle_length = config::get_config_int("settle_length", 200);
+    sensor_tau = config::get_config_dbl("sensor_tau", 0.02);
+    sensor_tolerance = config::get_config_dbl("sensor_tolerance", 0.1);
+
+    message_thread_ref_rate = config::get_config_int("message_ref_rate", 10);
+    socket_path = config::get_config_str("socket_path", "./run/drone");
+
+    config::write_to_file();
+    
+    sensor_sleep_int = 1000000 / sensor_ref_rate;
+    message_sleep_int = 1000000 / message_thread_ref_rate;
+    sensor_tolerance_sqrd = sensor_tolerance * sensor_tolerance;
+
+    for(int i = 0; i < 3; i ++){
+        // mpu6050_filters[i] = filter::high_pass(sensor_ref_rate, lower_sensor_freq_cutoff);
+        mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
+        // mpu6050_filters[i] = filter::none();
+    }
+    for(int i = 3; i < 6; i ++){
+        mpu6050_filters[i] = filter::none();
+    }
 
 }
 
@@ -223,19 +256,14 @@ void drone::run_command(const std::string& s, std::string& msg){
     }
 }
 
+
+
+static std::mutex sensor_thread_mutex, message_thread_mutex;
+
+
+
 void sensor_thread_funct(){
     logger::info("Sensor thread alive!");
-    int sleep_int = 1000000 / sensor_ref_rate;
-    // double data[6];
-    double tau = 0.02;
-    for(int i = 0; i < 3; i ++){
-        // mpu6050_filters[i] = filter::high_pass(sensor_ref_rate, lower_sensor_freq_cutoff);
-        mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
-        mpu6050_filters[i] = filter::none();
-    }
-    for(int i = 3; i < 6; i ++){
-        mpu6050_filters[i] = filter::none();
-    }
 
     orientation = math::quarternion(1, 0, 0, 0);
 
@@ -262,6 +290,7 @@ void sensor_thread_funct(){
 
     logger::info("Settled sensor filters");
     while(alive){
+        std::lock_guard<std::mutex> sensor_lock_guard(sensor_thread_mutex);
         now = std::chrono::steady_clock::now();
         double dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
         int t_since = std::chrono::duration_cast<std::chrono::nanoseconds> (now - start).count();
@@ -280,13 +309,13 @@ void sensor_thread_funct(){
             orientation_euler = math::quarternion::toEuler(orientation);
 
 
-            double a_sqrd = filtered_mpu6050_data[0] * filtered_mpu6050_data[0] + filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2];
-            if(a_sqrd - 1 < 1.21 && a_sqrd - 1 > 0.81){
+            double a_dist_from_one_sqrd = filtered_mpu6050_data[0] * filtered_mpu6050_data[0] + filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2] - 1;
+            if((a_dist_from_one_sqrd < 0 ? a_dist_from_one_sqrd > - sensor_tolerance_sqrd : a_dist_from_one_sqrd < sensor_tolerance_sqrd)){
                 double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
                 double pitch = atan2((filtered_mpu6050_data[1]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
 
-                orientation_euler.x = orientation_euler.x * (1 - tau) + roll * tau;
-                orientation_euler.y = orientation_euler.y * (1 - tau) + pitch * tau;
+                orientation_euler.x = orientation_euler.x * (1 - sensor_tau) + roll * sensor_tau;
+                orientation_euler.y = orientation_euler.y * (1 - sensor_tau) + pitch * sensor_tau;
 
                 orientation = math::quarternion::fromEulerZYX(orientation_euler);
                 orientation_euler = math::quarternion::toEuler(orientation);
@@ -338,23 +367,32 @@ void sensor_thread_funct(){
             
         }
         
-        usleep(sleep_int);
+        usleep(sensor_sleep_int);
     }
+}
+
+void reload_config_thread(){
+    std::lock_guard<std::mutex> sensor_lock_guard(sensor_thread_mutex);
+    std::lock_guard<std::mutex> message_lock_guard(message_thread_mutex);
+
+    logger::info("Acquired locks!");
+    drone::load_configuration();
+    logger::info("Releasing locks!");
 }
 
 void message_thread_funct(){
     logger::info("Message thread alive!");
-    int sleep_int = 1000000 / message_thread_ref_rate;
 
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect(socket_path.c_str());
     char send[1024];
     char recv[1024];
     while(alive){
+        std::lock_guard<std::mutex> message_lock_guard(message_thread_mutex);
         
 
-        // | zero | calibrate |
-        // |  0   |     1     |
+        // | zero | calibrate | Reload Config |
+        // |  0   |     1     |       2       |
         if(unix_connection.can_read()){
             logger::info("YOO DATA!");
             
@@ -370,6 +408,9 @@ void message_thread_funct(){
                 logger::info("Calibrating");
                 calib_flag = true;
                 break;
+            case 2:
+                logger::info("Reloading configuration");
+                std::thread(reload_config_funct);
             default:
                 logger::warn("Unknown cmd \"{}\"", cmd);
             }
@@ -402,7 +443,7 @@ void message_thread_funct(){
         // logger::debug("{:.2f} {:.2f} {:.2f}", orientation_euler.x, orientation_euler.y, orientation_euler.z);
 
 
-        usleep(sleep_int);
+        usleep(message_sleep_int);
     }
 }
 
@@ -412,18 +453,6 @@ void message_thread_funct(){
 
 
 void drone::init_sensors(bool thread) {
-    logger::info("Loading sensor configuration.");
-    config::load_file();
-    
-    sensor_ref_rate = config::get_config_int("sensor_ref_rate", 60);
-    upper_sensor_freq_cutoff = config::get_config_int("upper_sensor_freq_cutoff", 5);
-    lower_sensor_freq_cutoff = config::get_config_dbl("lower_sensor_freq_cutoff", 0.01);
-    settle_length = config::get_config_int("settle_length", 200);
-
-    config::write_to_file();
-    logger::info("Finished loading sensor configuration.");
-
-
     logger::info("Initializing MPU6050.");
     mpu6050::init();
     mpu6050::set_accl_set(mpu6050::accl_range::g_2);
@@ -443,26 +472,19 @@ void drone::init_sensors(bool thread) {
 
     if(thread){
         logger::info("Starting up sensor thread.");
-        logger::info("MPU6050 Refresh Rate: {}hz ", sensor_ref_rate);
         sensor_thread = std::thread(sensor_thread_funct);
     }
 }
 
 void drone::init_messsage_thread(bool thread){
-    logger::info("Loading reporting configuration");
-    config::load_file();
-
-    message_thread_ref_rate = config::get_config_int("message_ref_rate", 10);
-    socket_path = config::get_config_str("socket_path", "./run/drone");
-
-    config::write_to_file();
-
     if(thread){
         logger::info("Starting up message thread.");
         logger::info("Message rate: {}", message_thread_ref_rate);
         message_thread = std::thread(message_thread_funct);
     }
 }
+
+
 
 void drone::destroy_message_thread(){
     logger::info("Joining message thread.");
@@ -476,60 +498,4 @@ void drone::destroy_sensors(){
     alive = false;
     sensor_thread.join();
     logger::info("Joined sensor thread.");
-}
-
-
-
-
-
-
-
-
-
-
-
-
-void drone::synch_loop(){
-    logger::info("Loading loop configuration.");
-    config::load_file();
-    
-    int ref_rate = config::get_config_int("drone_ref_rate", 60);
-    
-    config::write_to_file();
-    logger::info("Finished loading loop configuration.");
-    
-    int sleep = 1000000/ref_rate;
-
-    
-    orientation = math::quarternion(1, 0, 0, 0);
-
-    math::quarternion euler_q;
-    math::vector euler_v;
-
-    auto then = std::chrono::steady_clock::now();
-    auto start = then;
-    auto now = std::chrono::steady_clock::now();
-
-    while(1){
-        now = std::chrono::steady_clock::now();
-        double dt = std::chrono::duration_cast<std::chrono::milliseconds> (now - then).count() * 0.001;
-        int t_since = std::chrono::duration_cast<std::chrono::milliseconds> (now - start).count();
-        then = now;
-        
-        { // MPU6050 Sensor Read
-            mpu6050::read(mpu6050_data);
-
-            euler_v = math::vector(mpu6050_data[3]*dt*DEG_TO_RAD, mpu6050_data[4]*dt*DEG_TO_RAD, mpu6050_data[5]*dt*DEG_TO_RAD);
-            euler_q = math::quarternion::fromEulerZYX(euler_v);
-            orientation = euler_q*orientation;
-
-            orientation_euler = math::quarternion::toEuler(orientation);
-        }
-
-        { // BMP390 Sensor Read
-            bmp390::get_data(bmp390_data);
-        }
-
-        usleep(sleep);
-    }
 }

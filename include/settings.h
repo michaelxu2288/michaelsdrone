@@ -27,9 +27,10 @@
 #define FRBL_DIAGONAL 2
 
 #define THROTTLE_MIN 1000 // throttle minimum pwm 1 ms
-
 #define THROTTLE_MAX 2000 // throttle maximum pwm 2 ms
 
 #define DEFAULT_CONFIG_FILE "./config/config.json"
+
+// #define ENABLE_MOTOR
 
 #endif
