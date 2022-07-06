@@ -400,7 +400,7 @@ void message_thread_funct(){
                 break;
             case 2:
                 logger::info("Reloading configuration");
-                std::thread(reload_config_funct);
+                std::thread rel = std::thread(reload_config_funct);
                 break;
             default:
                 logger::warn("Unknown cmd \"{}\"", cmd);
