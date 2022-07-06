@@ -24,7 +24,7 @@
 // #define nan std::numeric_limits<double>::quiet_NaN()
 #define G 9.81
 
-static double nan = std::numeric_limits<double>::quiet_NaN();
+// static double nan = std::numeric_limits<double>::quiet_NaN();
 
 static double mpu6050_data[6];
 static double filtered_mpu6050_data[6];
