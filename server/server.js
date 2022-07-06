@@ -58,7 +58,7 @@ server.listen(port, () => {
         connection.on("data", (data) => {
             message = data.toString().split(" ");
             io.emit("sensor", message);
-            console.log(message);
+            // console.log(message);
             
         });
         connection.on("end", () => {
