@@ -261,6 +261,18 @@ void drone::run_command(const std::string& s, std::string& msg){
 static std::mutex sensor_thread_mutex, message_thread_mutex;
 
 
+void settle(){
+    for(int i = 0; i < settle_length; i++){
+        mpu6050::read(mpu6050_data);
+
+        for(int i = 0; i < 6; i ++){
+            filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
+        }
+
+        bmp390::get_data(bmp390_data);
+        usleep(sensor_sleep_int);
+    }
+}
 
 void sensor_thread_funct(){
     logger::info("Sensor thread alive!");
@@ -276,17 +288,7 @@ void sensor_thread_funct(){
 
     logger::info("Settling sensors");
 
-    for(int i = 0; i < settle_length; i++){
-        mpu6050::read(mpu6050_data);
-
-        for(int i = 0; i < 6; i ++){
-            filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
-        }
-
-        bmp390::get_data(bmp390_data);
-        usleep(sleep_int);
-    }
-
+    settle();
 
     logger::info("Settled sensor filters");
     while(alive){
@@ -348,20 +350,8 @@ void sensor_thread_funct(){
             position = math::vector(0, 0, 0);
 
             logger::info("Calibrated");
-
             mpu6050::calibrate(7);
-
-            
-            for(int i = 0; i < settle_length; i++){
-                mpu6050::read(mpu6050_data);
-
-                for(int i = 0; i < 6; i ++){
-                    filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
-                }
-
-                bmp390::get_data(bmp390_data);
-                usleep(sleep_int);
-            }
+            settle();
 
             calib_flag = false;
             
@@ -411,6 +401,7 @@ void message_thread_funct(){
             case 2:
                 logger::info("Reloading configuration");
                 std::thread(reload_config_funct);
+                break;
             default:
                 logger::warn("Unknown cmd \"{}\"", cmd);
             }
