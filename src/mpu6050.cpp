@@ -245,7 +245,7 @@ void mpu6050::calibrate(int n){
 				double p_term = error * kP[k];
 				error_sum[k] += dt * error * kI[k];
 
-				offsets[k] += round((p_term + error_sum[k]) / 4);
+				offsets[k] -= round((p_term + error_sum[k]) / 4);
 			}
 
 			usleep(1000);
