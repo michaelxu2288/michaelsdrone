@@ -50,7 +50,7 @@ filter::filter filter::none(){
     return out;
 }
 
-filter::filter filter::high_pass(double samp_rate, double w0){
+filter::filter filter::high_pass(double sample_rate, double w0){
     // https://github.com/dimtass/DSP-Cpp-filters/blob/master/lib/so_hpf.h
     // filter out;
     // double c = tan(M_PI*w0 / samp_rate);
