@@ -435,16 +435,16 @@ void message_thread_funct(){
         // | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude |
         // | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |
         
-        // |                  Setpoints                    |                      Error                    |     Motor Speed   |         Debug         |
-        // | x | y | z | vx | vy | vz | roll | pitch | yaw | x | y | z | vx | vy | vz | roll | pitch | yaw | fl | fr | bl | br | 0 | 1 | 2 | 3 | 4 | 5 |
-        // |18 |19 |20 | 21 | 22 | 23 |  24  |  25   | 26  |27 |28 |29 | 30 | 31 | 32 |  33  |  34   | 35  | 36 | 37 | 38 | 39 |40 |41 |42 |43 |44 |45 |
+        // |        Setpoints        |          Error          |     Motor Speed   |         Debug         |
+        // | z | vyaw | roll | pitch | z | vyaw | roll | pitch | fl | fr | bl | br | 0 | 1 | 2 | 3 | 4 | 5 |
+        // |18 |  19  |  20  |  21   |22 |  23  |  24  |  25   | 25 | 26 | 27 | 28 |29 |30 |31 |32 |33 |34 |
 
-        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2], // 18
-            nan, nan, z_controller.setpoint, nan, nan, nan, roll_controller.setpoint, pitch_controller.setpoint, yaw_controller.setpoint,
-            nan, nan, z_controller.old_error, nan, nan, nan, roll_controller.old_error, pitch_controller.old_error, yaw_controller.old_error,
+            z_controller.setpoint, yaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
+            z_controller.old_error, yaw_controller.old_error, roll_controller.old_error, pitch_controller.old_error,
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
             );
