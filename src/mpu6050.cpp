@@ -214,7 +214,7 @@ void mpu6050::calibrate(int n){
 		}
         usleep(500);
 	}
-	set_offsets(s_data[0] / n,s_data[1] / n,s_data[2] / n - accl_scale,s_data[3] / n,s_data[4] / n,s_data[5] / n);
+	set_offsets(s_data[0] / n,s_data[1] / n,s_data[2] / n + accl_scale,s_data[3] / n,s_data[4] / n,s_data[5] / n);
 	printf("\n\n[Output] Calibration Results: \n[Output] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n[Output] %6d | %6d | %6d | %6d | %6d | %6d\n[Output] The running program's offsets have been configured. To configure offsets when running other programs, insert the following line: \n[Output] mpu6050::set_offsets(%d, %d, %d, %d, %d, %d)\n\n", s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n, s_data[0] / n,s_data[1] / n,s_data[2] / n - 16834,s_data[3] / n,s_data[4] / n,s_data[5] / n);
 }
 
