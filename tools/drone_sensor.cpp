@@ -17,6 +17,8 @@ void ctrl_thrd(){
     while(1){
         roll_ctrl->change_setpoint(gamepad::get_axis(3) * deg_5);
         pitch_ctrl->change_setpoint(gamepad::get_axis(4) * deg_5);
+        logger::info("{:.2f} {:.2f}", roll_ctrl->setpoint * 57.2, pitch_ctrl->setpoint * 57.2);
+        usleep(100000);
     }
     gamepad::stop();
 }
