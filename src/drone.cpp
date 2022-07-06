@@ -329,7 +329,7 @@ void sensor_thread_funct(){
             position = position + temp;
             temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, filtered_mpu6050_data[2]*dt*G);
             temp = math::quarternion::rotateVector(orientation, temp);
-            temp.z -= G;
+            temp.z += G;
             velocity = velocity + temp;
         }
 
