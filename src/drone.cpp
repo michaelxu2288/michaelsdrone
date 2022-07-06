@@ -259,7 +259,7 @@ void drone::run_command(const std::string& s, std::string& msg){
 
 
 static std::mutex sensor_thread_mutex, message_thread_mutex;
-
+static std::thread rel_config;
 
 void settle(){
     for(int i = 0; i < settle_length; i++){
@@ -400,7 +400,7 @@ void message_thread_funct(){
                 break;
             case 2:
                 logger::info("Reloading configuration");
-                std::thread rel = std::thread(reload_config_funct);
+                rel_config = std::thread(reload_config_thread);
                 break;
             default:
                 logger::warn("Unknown cmd \"{}\"", cmd);
