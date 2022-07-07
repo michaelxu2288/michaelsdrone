@@ -159,10 +159,17 @@ void drone::load_configuration(){
 
     mpu6050_filters[5] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
 
-    // pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
-    
-    pressure_filter = filter::low_pass(sensor_ref_rate, 1);
+    logger::info("Settle Length: {}", sensor_ref_rate);
+    logger::info("Sensor Refresh Rate: {}hz", sensor_ref_rate);
+    logger::info("Message Refresh Rate: {}hz", message_thread_ref_rate);
+    logger::info("Socket Location: {}", socket_path);
+    logger::info("Sensor G Tolerance: {}", sensor_g_tolerance);
+    logger::info("Sensor Roll Pitch Tau: {}", sensor_roll_pitch_tau);
+    logger::info("Sensor Z Tau: {}", sensor_z_tau);
+    logger::info("Upper Accelerometer Frequency Cutoff: {}", upper_sensor_freq_cutoff);
+    logger::info("Upper Pressure Frequency Cutoff: {}", upper_pressure_freq_cutoff);
 
+    pressure_filter = filter::low_pass(sensor_ref_rate, 0.1);
 }
 
 void drone::set_all(double per){
