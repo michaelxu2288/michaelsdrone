@@ -9,6 +9,7 @@
 void exit(){
     logger::info("Closing.");
     drone::destroy_sensors();
+    drone::destroy_message_thread();
 }
 
 void ctrl_thrd(){
@@ -20,7 +21,7 @@ void ctrl_thrd(){
     double vyaw = config::get_config_dbl("ctrl_max_vyaw", 5) * deg_t_rad;
     config::write_to_file();
 
-    if(gamepad::init()){
+    if(!gamepad::init()){
         logger::info("Couldn't find controller!");
         exit(-1);
     }
