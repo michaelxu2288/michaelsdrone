@@ -47,7 +47,7 @@ void mpu6050::init(int addr){
 	int status = ioctl(fd, I2C_SLAVE, addr); //Set the I2C bus to use the correct address
 	if (status < 0) {
 		// std::cout << "ERR (mpu6050.cpp:open()): Could not get I2C bus with " << addr << " address. Please confirm that this address is correct\n"; //Print error message
-		logger::err("Could not get I2C bus with {} address. Please confirm that this address is correct", addr)
+		logger::err("Could not get I2C bus with {} address. Please confirm that this address is correct", addr);
 	}
 	
 	offsets[0] = X_ACCL_SHIFT;
@@ -217,7 +217,7 @@ void mpu6050::calibrate(int n){
 	double error_sum[6];
 	double kP[6] = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3};
 	double kI[6] = {90, 90, 90, 20, 20, 20};
-	double expect[6] = {0, 0, accl_scale, 0, 0, 0};
+	double expect[6] = {0, 0, accl_scale * 1.0, 0, 0, 0};
 	for(int i = 0; i < 6; i++){
 		offsets[i] = 0;
 		error_sum[i] = 0;
