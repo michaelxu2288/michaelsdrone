@@ -15,7 +15,7 @@ const io = new Server(server, {
 });
 const port = 80;
 
-const videoStream = require('raspberrypi-node-camera-web-streamer');
+const videoStream = require('raspberrypi-node-camera-web-streamer/videoStream.js');
 
 const config = require("../config/config.json");
 
