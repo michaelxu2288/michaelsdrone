@@ -54,7 +54,7 @@ process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 
 
 
-
+console.log(videoStream)
 
 
 videoStream.acceptConnections(app, {
@@ -71,7 +71,6 @@ videoStream.acceptConnections(app, {
 server.listen(port, () => {
     console.log("listenen");
 
-    var lastSensorOutput = [];
     var lastconn = null;
 
     var server = net.createServer((connection) =>{
