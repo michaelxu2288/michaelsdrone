@@ -59,11 +59,6 @@ void mpu6050::init(int addr){
 }
 
 
-inline void debug (int reg){
-	// printf("[DEBUG] Value of register %2x: %5d\n", reg, Read(reg));
-	logger::debug("Value of Register {:2x}: {:5d}", reg, Read(reg));
-}
-
 inline void debug2 (const char * name, int reg){
 	logger::debug("Register {:20s} : Value of Register {:2x}: {:5d}", name, reg, Read(reg));
 }
@@ -83,13 +78,11 @@ void mpu6050::print_debug(){
 void mpu6050::wake_up(){
 	Write(REG_PWR_MNG_1, Read(REG_PWR_MNG_1) & (~0b01000000));
 	usleep(1000);
-	debug(REG_PWR_MNG_1);
 }
 
 void mpu6050::sleep(){
 	Write(REG_PWR_MNG_1, Read(REG_PWR_MNG_1) | 0b01000000);
 	usleep(1000);
-	debug(REG_PWR_MNG_1);
 }
 
 void mpu6050::set_accl_set(accl_range::accl_range set){
@@ -109,7 +102,6 @@ void mpu6050::set_accl_set(accl_range::accl_range set){
 	}
 	Write(REG_ACCL_CFG, Read(REG_ACCL_CFG) & (~0b00011000) | (set << 3));
 	usleep(1000);
-	debug(REG_ACCL_CFG);
 }
 
 void mpu6050::set_gyro_set(gyro_range::gyro_range set){
@@ -129,7 +121,6 @@ void mpu6050::set_gyro_set(gyro_range::gyro_range set){
 	}
 	Write(REG_GYRO_CFG, Read(REG_GYRO_CFG) & (~0b00011000) | (set << 3));
 	usleep(1000);
-	debug(REG_GYRO_CFG);
 
 
 }
@@ -137,20 +128,17 @@ void mpu6050::set_gyro_set(gyro_range::gyro_range set){
 void mpu6050::set_clk(clk::clk set){
 	Write(REG_PWR_MNG_1, Read(REG_PWR_MNG_1) & (~0b00000111) | set);
 	usleep(1000);
-	debug(REG_PWR_MNG_1);
 }
 
 void mpu6050::set_dlpf_bandwidth(dlpf::dlpf set){
 	Write(REG_CFG, Read(REG_CFG) & (~0b00000111) | set);
 	
 	usleep(1000);
-	debug(REG_CFG);
 }
 
 void mpu6050::set_fsync(fsync::fsync set){
 	Write(REG_CFG, Read(REG_CFG) & (~0b00111000) | (set << 3));
 	usleep(1000);
-	debug(REG_CFG);
 }
 
 void mpu6050::set_pwr_set(int set){
