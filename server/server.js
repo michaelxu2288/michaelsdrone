@@ -58,9 +58,9 @@ process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 videoStream.acceptConnections(app, {
     width: 2560,
     height: 1440,
-    fps: 24,
+    fps: 15,
     encoding: 'JPEG',
-    quality: 15 //lower is faster
+    quality: 12 //lower is faster
 }, '/stream.mjpg', true);
 
 

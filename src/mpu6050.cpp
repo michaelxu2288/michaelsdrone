@@ -24,6 +24,7 @@ extern "C" {
 #include <string>
 #include <cstdint>
 
+#include <logger.h>
 
 #define Read(r) (uint16_t) i2c_smbus_read_byte_data(fd, r)
 #define Write(r,v) i2c_smbus_write_byte_data(fd, r, v)
@@ -40,12 +41,13 @@ static double gyro_scale = 16.4;
 void mpu6050::init(int addr){
     fd = open("/dev/i2c-1", O_RDWR); //Open the I2C device file
 	if (fd < 0) { //Catch errors
-		std::cout << "ERR (mpu6050.cpp:open()): Failed to open /dev/i2c-1. Please check that I2C is enabled with raspi-config\n"; //Print error message
+		logger::err("Failed to open /dev/i2c-1. Please check that I2C is enabled with raspi-config"); //Print error message
 	}
 
 	int status = ioctl(fd, I2C_SLAVE, addr); //Set the I2C bus to use the correct address
 	if (status < 0) {
-		std::cout << "ERR (mpu6050.cpp:open()): Could not get I2C bus with " << addr << " address. Please confirm that this address is correct\n"; //Print error message
+		// std::cout << "ERR (mpu6050.cpp:open()): Could not get I2C bus with " << addr << " address. Please confirm that this address is correct\n"; //Print error message
+		logger::err("Could not get I2C bus with {} address. Please confirm that this address is correct", addr)
 	}
 	
 	offsets[0] = X_ACCL_SHIFT;
@@ -58,15 +60,16 @@ void mpu6050::init(int addr){
 
 
 inline void debug (int reg){
-	printf("[DEBUG] Value of register %2x: %5d\n", reg, Read(reg));
+	// printf("[DEBUG] Value of register %2x: %5d\n", reg, Read(reg));
+	logger::debug("Value of Register {:2x}: {:5d}", reg, Read(reg));
 }
 
 inline void debug2 (const char * name, int reg){
-	printf("[DEBUG] Register %20s: Value of register %2x: %5d\n", name, reg, Read(reg));
+	logger::debug("Register {:20s} : Value of Register {:2x}: {:5d}", name, reg, Read(reg));
 }
 
 inline void debug3(int val){
-	printf("[DEBUG] Changing value to %5d", val);
+	// printf("[DEBUG] Changing value to %5d", val);
 }
 
 void mpu6050::print_debug(){
@@ -239,7 +242,7 @@ void mpu6050::calibrate(int n){
 			// printf(	"[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
 			
 			double dt = 0.001;
-			printf("[Debug] %6d | %6d | %6d | %6d | %6d | %6d\n",data[0],data[1],data[2],data[3],data[4],data[5]);
+			logger::debug("{:6d} | {:6d} | {:6d} | {:6d} | {:6d} | {:6d}",data[0],data[1],data[2],data[3],data[4],data[5]);
 			for(int k = 0; k < 6; k ++){
 				double error = expect[k] - (data[k] - offsets[k]);
 				double p_term = error * kP[k];
@@ -259,7 +262,8 @@ void mpu6050::calibrate(int n){
 		}
 	}
 
-	printf("\n\n[Output] Calibration Results: \n[Output] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n[Output] %6d | %6d | %6d | %6d | %6d | %6d\n[Output] The running program's offsets have been configured. To configure offsets when running other programs, insert the following line: \n[Output] mpu6050::set_offsets(%d, %d, %d, %d, %d, %d)\n\n", offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5], offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5]);
+	logger::info("Offset: {:6d} | {:6d} | {:6d} | {:6d} | {:6d} | {:6d}",offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5]);
+	// printf("\n\n[Output] Calibration Results: \n[Output] X Accl | Y Accl | Z Accl | X Gyro | Y Gyro | Z Gyro\n[Output] %6d | %6d | %6d | %6d | %6d | %6d\n[Output] The running program's offsets have been configured. To configure offsets when running other programs, insert the following line: \n[Output] mpu6050::set_offsets(%d, %d, %d, %d, %d, %d)\n\n", offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5], offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5]);
 
 }
 
