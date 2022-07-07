@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <cstdio>
 #include <iostream>
+#include <logger.h>
 
 #define JS_EVENT_BUTTON         0x01    /* button pressed/released */
 #define JS_EVENT_AXIS           0x02    /* joystick moved */
@@ -47,6 +48,16 @@ static void polling_thread_function(){
         // if(bytes > 0){
         //     printf("| Time: %10d | Event Type: %#3d | Number: %2d | Value: %8d |\n", event.time, event.type, event.number, event.value);
         
+        if(bytes < 0) {
+            logger::info("Lost contact with joystick");
+            fd = -1;
+            while(fd < 0){
+                fd = open("/dev/input/js0", O_RDONLY);
+                usleep(10000);
+            }
+            logger:info("Restablished contact with joystick.");
+        }
+
         if((event.type & JS_EVENT_AXIS) == JS_EVENT_AXIS){
             axises[event.number] = ((double)(event.value)) / 32767.0;
         }else if((event.type & JS_EVENT_BUTTON) ==JS_EVENT_BUTTON){
