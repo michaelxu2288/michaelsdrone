@@ -62,7 +62,7 @@ videoStream.acceptConnections(app, {
     height: 720,
     fps: 16,
     encoding: 'JPEG',
-    quality: 7 //lower is faster
+    quality: 15 //lower is faster
 }, '/stream.mjpg', true);
 
 
