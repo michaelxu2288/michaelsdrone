@@ -159,8 +159,7 @@ void drone::load_configuration(){
 
     mpu6050_filters[5] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
 
-    // pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
-    pressure_filter = filter::high_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
+    pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
 
 }
 
