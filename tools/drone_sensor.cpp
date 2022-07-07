@@ -20,7 +20,10 @@ void ctrl_thrd(){
     double vyaw = config::get_config_dbl("ctrl_max_vyaw", 5) * deg_t_rad;
     config::write_to_file();
 
-    gamepad::init();
+    if(gamepad::init()){
+        logger::info("Couldn't find controller!");
+        exit(-1);
+    }
     pid * roll_ctrl = drone::get_roll_controller();
     pid * pitch_ctrl = drone::get_pitch_controller();
     pid * vyaw_ctrl = drone::get_vyaw_controller();
