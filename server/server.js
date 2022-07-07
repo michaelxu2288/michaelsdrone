@@ -14,6 +14,9 @@ const io = new Server(server, {
     }
 });
 const port = 80;
+
+const videoStream = require('raspberrypi-node-camera-web-streamer');
+
 const config = require("../config/config.json");
 
 const SOCKET_LOCATION = config.socket_path;
@@ -47,6 +50,24 @@ process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
 //catches uncaught exceptions
 process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 
+
+
+
+
+
+
+
+videoStream.acceptConnections(app, {
+    width: 1280,
+    height: 720,
+    fps: 16,
+    encoding: 'JPEG',
+    quality: 7 //lower is faster
+}, '/stream.mjpg', true);
+
+
+
+
 server.listen(port, () => {
     console.log("listenen");
 
@@ -75,6 +96,15 @@ server.listen(port, () => {
             if(lastconn !== null){
                 lastconn.write(cmd);
             }
+        });
+
+        fs.readdir("./tools/", (err, files) => {
+            socket.emit("proglist", files + ["main.cpp"]);
+        });
+        // socket.emit("proglist", fs);
+
+        socket.on("make", () => {
+
         });
     });
 
