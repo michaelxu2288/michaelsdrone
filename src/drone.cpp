@@ -433,6 +433,19 @@ void reload_config_thread(){
     logger::info("Releasing locks!");
 }
 
+
+void reconnect_node_server(sock::socket& client, sock::un_connection& unix_connection){
+    logger::crit("Lost contact with node server.");
+    unix_connection.close();
+
+    while(alive && !unix_connection.valid) {
+        unix_connection = client.un_connect(socket_path.c_str());    
+        usleep(100000);
+    }
+    logger::crit("Found node server!");
+}
+
+
 void message_thread_funct(){
     logger::info("Message thread alive!");
 
@@ -450,26 +463,33 @@ void message_thread_funct(){
             logger::info("YOO DATA!");
             
             int len = unix_connection.read(recv, 50);
-            int cmd = atoi(recv);
+            logger::info("len: {}", len);
+            logger::info("{}", recv);
 
-            switch(cmd){
-            case 0:
-                logger::info("Zeroing");
-                zero_flag = true;
-                break;
-            case 1:
-                logger::info("Calibrating");
-                calib_flag = true;
-                break;
-            case 2:
-                logger::info("Reloading configuration");
-                rel_config = std::thread(reload_config_thread);
-                rel_config.join();
-                break;
-            default:
-                logger::warn("Unknown cmd \"{}\"", cmd);
+            if(len > 0){
+                int cmd = atoi(recv);
+                // logger::info("");
+
+                switch(cmd){
+                case 0:
+                    logger::info("Zeroing");
+                    zero_flag = true;
+                    break;
+                case 1:
+                    logger::info("Calibrating");
+                    calib_flag = true;
+                    break;
+                case 2:
+                    logger::info("Reloading configuration");
+                    rel_config = std::thread(reload_config_thread);
+                    rel_config.join();
+                    break;
+                default:
+                    logger::warn("Unknown cmd \"{}\"", cmd);
+                }
+            }else{
+                reconnect_node_server(client, unix_connection);
             }
-
             // logger::info("Message: \"{}\"", recv);
         }
 
@@ -498,13 +518,7 @@ void message_thread_funct(){
         int e = unix_connection.send(send, strlen(send));
         logger::info("{}",e);
         if(e < 0) {
-            logger::crit("Lost contact with node server.");
-            unix_connection.close();
-            while(alive && !unix_connection.valid) {
-                unix_connection = client.un_connect(socket_path.c_str());    
-                usleep(100000);
-            }
-            logger::crit("Found node server!");
+            reconnect_node_server(client, unix_connection);
         }
 
 
