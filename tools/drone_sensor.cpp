@@ -10,7 +10,7 @@ void bruh(){
     logger::info("Closing.");
     drone::destroy_sensors();
     drone::destroy_message_thread();
-    exit();
+    exit(0);
 }
 
 void handle(int sig){
