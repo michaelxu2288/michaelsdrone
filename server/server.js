@@ -123,12 +123,15 @@ server.listen(port, () => {
             // execSync(`sudo ./bin/${bruh}`);
             console.log("git pull: ");
             running_process = exec("git pull", (err, stdout, stderr) => {
+                console.log(err);
                 console.log(stdout);
                 console.log(`make ${bruh}`);
                 running_process = exec(`make ${bruh}`, (err, stdout, stderr) => {
+                    console.log(err);
                     console.log(stdout);
                     console.log(`sudo ./bin/${bruh}`);
                     running_process = exec(`sudo ./bin/${bruh}`, (err, stdout, stderr) => {
+                        console.log(err);
                         console.log(stdout);
                         running_process = null;
                     });
