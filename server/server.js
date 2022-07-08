@@ -112,7 +112,6 @@ server.listen(port, () => {
                 lastconn.write(cmd);
             }
         });
-        socket.
 
         fs.readdir("./tools/", (err, files) => {
             socket.emit("proglist", files);
