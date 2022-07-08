@@ -96,7 +96,7 @@ server.listen(port, () => {
         });
 
         fs.readdir("./tools/", (err, files) => {
-            socket.emit("proglist", files.split(",") + ["main.cpp"]);
+            socket.emit("proglist", files);
         });
         // socket.emit("proglist", fs);
 
