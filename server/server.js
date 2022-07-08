@@ -96,7 +96,7 @@ server.listen(port, () => {
 
     const sockets = new Set();
 
-    function run(cmd, cb){
+    function run(cmd, cb=()=>{}){
         // if(running_process) return;
         // const args = cmd.split(" ");
         const args =parseArgsStringToArgv(cmd);
