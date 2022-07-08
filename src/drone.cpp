@@ -441,7 +441,9 @@ void reconnect_node_server(sock::socket& client, sock::un_connection& unix_conne
     }
 
     while(alive && !unix_connection.valid) {
-        unix_connection = client.un_connect(socket_path.c_str());    
+        client.close();
+        client = sock::socket(sock::unix, sock::tcp);
+        unix_connection = client.un_connect(socket_path.c_str());  
         usleep(100000);
     }
     logger::crit("Found node server!");
