@@ -31,7 +31,7 @@ const { exec, execSync, spawn } = require('child_process');
 function exitHandler(options, exitCode){
     console.log(`Exiting with code "${exitCode}"`);
 
-    server.close();
+    // server.close();
     // fs.unlinkSync(SOCKET_LOCATION);
 
     
