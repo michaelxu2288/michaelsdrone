@@ -471,7 +471,7 @@ void message_thread_funct(){
             logger::info("YOO DATA!");
             
             int len = unix_connection.read(recv, 50);
-            
+
             if(len > 0){
                 int cmd = atoi(recv);
                 // logger::info("");
@@ -522,7 +522,6 @@ void message_thread_funct(){
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
             );
         int e = unix_connection.send(send, strlen(send));
-        logger::info("{}",e);
         if(e < 0) {
             reconnect_node_server(client, unix_connection);
         }
