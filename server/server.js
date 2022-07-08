@@ -23,7 +23,7 @@ const SOCKET_LOCATION = config.socket_path;
 
 const process = require("process");
 
-const { exec, execSync } = require('child_process');
+const { exec, execSync, spawn } = require('child_process');
 
 function exitHandler(options, exitCode){
     console.log(`Exiting with code "${exitCode}"`);
@@ -88,29 +88,23 @@ server.listen(port, () => {
         })
     });
 
-    
-    function make(b){
-        if(running_process !== null){
-            console.log("Process already running. Killing")
-            running_process.kill();
-            running_process = exec("git pull; make drone_sensor; sudo ./bin/drone_sensor;");
-            
-            running_process.on("exit", (code, signal) => {
-                console.log(code, signal);
-                running_process = null;
+
+    // const sockets = [];
+
+    const sockets = new Set();
+
+    function run(cmd){
+        if(running_process) return;
+        running_process = spawn(cmd);
+        running_process.on("message", (msg) => {
+            sockets.forEach((socket) => {
+                socket.emit("prog-console", 0, running_process.pid, msg);
             });
-            // running_process = null;
-        }else{
-            running_process = exec("git pull; make drone_sensor; sudo ./bin/drone_sensor;");
-            
-            running_process.on("exit", (code, signal) => {
-                console.log(code, signal);
-                running_process = null;
-            });
-        }
+        });
     }
 
     io.on("connection", (socket) => {
+        sockets.add(socket);
         socket.on("cmd", (cmd) => {
             cmd = `${cmd}`;
             console.log(`Sending command "${cmd}"`);
@@ -118,6 +112,7 @@ server.listen(port, () => {
                 lastconn.write(cmd);
             }
         });
+        socket.
 
         fs.readdir("./tools/", (err, files) => {
             socket.emit("proglist", files);
@@ -127,8 +122,12 @@ server.listen(port, () => {
         socket.on("make", (file) => {
             const bruh = file.split(".")[0];
             
-            make(bruh);
-        }); 
+            run("git pull");
+            // make(bruh);
+        });
+        socket.on("disconnect", ()=>{
+            sockets.delete(socket);
+        }) 
     });
 
     server.listen(SOCKET_LOCATION, () => {
