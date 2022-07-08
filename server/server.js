@@ -113,6 +113,7 @@ server.listen(port, () => {
                 running_process.kill();
             }
 
+            console.log("Running test");
             const test = exec("sudo ./bin/drone_sensor", (err, stdout, stderr) => {
                 console.log("bruh why", err);
             });
