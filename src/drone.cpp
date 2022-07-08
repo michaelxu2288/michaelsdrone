@@ -436,7 +436,9 @@ void reload_config_thread(){
 
 void reconnect_node_server(sock::socket& client, sock::un_connection& unix_connection){
     logger::crit("Lost contact with node server.");
-    unix_connection.close();
+    if(unix_connection.valid){
+        unix_connection.close();
+    }
 
     while(alive && !unix_connection.valid) {
         unix_connection = client.un_connect(socket_path.c_str());    
@@ -451,6 +453,9 @@ void message_thread_funct(){
 
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect(socket_path.c_str());
+
+    reconnect_node_server(client, unix_connection);
+
     char send[1024];
     char recv[1024];
     while(alive){

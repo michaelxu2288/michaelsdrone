@@ -43,9 +43,9 @@ int sock::socket::inBind(int addr, int port){
     address.sin_port = htons(port);
     int len = sizeof(address);
     int e = bind(fd, (sockaddr *) &address, len);
-    if(e<0){
-        printf("Failed to bind.\n");
-    }
+    // if(e<0){
+    //     printf("Failed to bind.\n");
+    // }
     return e;
 }
 
@@ -55,17 +55,17 @@ int sock::socket::unixBind(const char* path){
     strcpy(address.sun_path, path);
     int len = sizeof(address);
     int e = bind(fd, (sockaddr *) &address, len);
-    if(e<0){
-        perror("Failed to bind.\n");
-    }
+    // if(e<0){
+    //     perror("Failed to bind.\n");
+    // }
     return e;
 }
 
 int sock::socket::listen(int backlog){
     int e = _listen(fd, backlog);
-    if(e<0){
-        perror("Failed to listen.\n");
-    }
+    // if(e<0){
+    //     perror("Failed to listen.\n");
+    // }
     return e;
 }
 
@@ -75,9 +75,9 @@ sock::un_connection sock::socket::un_accept(){
     int len = sizeof(c.addr);
     c.fd = _accept(fd, (sockaddr *)&c.addr, (socklen_t *) &len);
     c.valid = c.fd>=0;
-    if(!c.valid){
-        perror("Failed to accept.\n");
-    }
+    // if(!c.valid){
+    //     perror("Failed to accept.\n");
+    // }
     return c;
 }
 
@@ -87,9 +87,9 @@ sock::in_connection sock::socket::in_accept(){
     int len = sizeof(c.addr);
     c.fd = _accept(fd, (sockaddr *)&c.addr, (socklen_t *) &len);
     c.valid = c.fd>=0;
-    if(!c.valid){
-        perror("Failed to accept.\n");
-    }
+    // if(!c.valid){
+    //     perror("Failed to accept.\n");
+    // }
     return c;
 }
 
@@ -103,9 +103,9 @@ sock::in_connection sock::socket::in_connect(int addr, int port){
     int len = sizeof(c.addr);
     c.valid = connect(fd, (sockaddr *) &c.addr, len) >= 0;
     c.fd = fd;
-    if(!c.valid){
-        perror("Failed to connect.\n");
-    }
+    // if(!c.valid){
+    //     perror("Failed to connect.\n");
+    // }
     return c;
 
 }
@@ -117,9 +117,9 @@ sock::un_connection sock::socket::un_connect(const char * path){
     int len = sizeof(c.addr);
     c.valid = connect(fd, (sockaddr *) &c.addr, len) >= 0;
     c.fd = fd;
-    if(!c.valid){
-        perror("Failed to connect.\n");
-    }
+    // if(!c.valid){
+    //     perror("Failed to connect.\n");
+    // }
     return c;
 }
 
