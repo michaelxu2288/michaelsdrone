@@ -97,6 +97,7 @@ server.listen(port, () => {
         if(running_process) return;
         running_process = spawn("git", ["pull"]);
         running_process.stdout.on("data", (msg) => {
+            console.log(msg);
             sockets.forEach((socket) => {
                 socket.emit("prog-console", 0, running_process.pid, msg);
             });
