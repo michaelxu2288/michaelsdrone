@@ -20,7 +20,9 @@ static logger::level allowed = logger::INFO;
 static const char * titles [5] = {"debug", "info", "WARNING", "CRITICAL", "ERROR"};
 
 #define RESET "\x1b[0m"
-static const char* colors [5] = {"\x1b[37;49m", "\x1b[36;49m", "\x1b[33;49m", "\x1b[35;49m", "\x1b[31;49m"};
+// static const char* colors [5] = {"\x1b[37;49m", "\x1b[36;49m", "\x1b[33;49m", "\x1b[35;49m", "\x1b[31;49m"};
+
+static const char* colors [5] = {"\x1b[37m", "\x1b[36m", "\x1b[33m", "\x1b[31m", "\x1b[31m"};
 
 inline void localtime(tm &bruh){
     time_t now = time(0);
