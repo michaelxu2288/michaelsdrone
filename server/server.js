@@ -108,7 +108,7 @@ server.listen(port, () => {
         running_process.on("close", (code, sig) => {
             // console.log(running_process.pid, `Exited with code ${code} signal ${sig}`);
             sockets.forEach((socket) => {
-                socket.emit("prog-console", 0, running_process.pid, `"${cmd}" exited with code ${code}`);
+                socket.emit("prog-console", 0, running_process.pid, `"\n${cmd}" exited with code ${code}\n`);
             });
             running_process = null;
         });
@@ -142,7 +142,7 @@ server.listen(port, () => {
         socket.on("kill" , () => {
             running_process.kill();
             sockets.forEach((socket) => {
-                socket.emit("prog-console", 0, process.pid, `killed current running process`);
+                socket.emit("prog-console", 0, process.pid, `\nkilled current running process\n`);
             });
         });
     });
