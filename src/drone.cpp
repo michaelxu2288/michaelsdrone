@@ -471,9 +471,7 @@ void message_thread_funct(){
             logger::info("YOO DATA!");
             
             int len = unix_connection.read(recv, 50);
-            logger::info("len: {}", len);
-            logger::info("{}", recv);
-
+            
             if(len > 0){
                 int cmd = atoi(recv);
                 // logger::info("");
@@ -575,15 +573,19 @@ void drone::init_messsage_thread(bool thread){
 
 
 void drone::destroy_message_thread(){
-    logger::info("Joining message thread.");
-    alive = false;
-    message_thread.join();
-    logger::info("Joined message thread.");
+    if(message_thread.joinable()){
+        logger::info("Joining message thread.");
+        alive = false;
+        message_thread.join();
+        logger::info("Joined message thread.");
+    }
 }
 
 void drone::destroy_sensors(){
-    logger::info("Joining sensor thread.");
-    alive = false;
-    sensor_thread.join();
-    logger::info("Joined sensor thread.");
+    if(sensor_thread.joinable()){
+        logger::info("Joining sensor thread.");
+        alive = false;
+        sensor_thread.join();
+        logger::info("Joined sensor thread.");
+    }
 }
