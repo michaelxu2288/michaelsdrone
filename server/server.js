@@ -142,7 +142,7 @@ server.listen(port, () => {
             if(!running_process){
                 run("git pull", () => {
                     run(`make ${bruh}`, () => {
-                        run(`sudo ./bin/${bruh}`);
+                        run(`./bin/${bruh}`);
                     })
                 });
             }
