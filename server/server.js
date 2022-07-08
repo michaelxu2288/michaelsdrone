@@ -13,6 +13,9 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     }
 });
+
+const { parseArgsStringToArgv } = require('string-argv');
+
 const port = 80;
 
 const videoStream = require('raspberrypi-node-camera-web-streamer/videoStream.js');
@@ -93,9 +96,12 @@ server.listen(port, () => {
 
     const sockets = new Set();
 
-    function run(cmd){
-        if(running_process) return;
-        running_process = spawn("git", ["pull"]);
+    function run(cmd, cb){
+        // if(running_process) return;
+        // const args = cmd.split(" ");
+        const args =parseArgsStringToArgv(cmd);
+        const c = args.shift();
+        running_process = spawn(c, args);
         running_process.stdout.on("data", (msg) => {
             // console.log(msg);
             msg = msg.toString("utf-8");
@@ -108,9 +114,10 @@ server.listen(port, () => {
         running_process.on("close", (code, sig) => {
             // console.log(running_process.pid, `Exited with code ${code} signal ${sig}`);
             sockets.forEach((socket) => {
-                socket.emit("prog-console", 0, running_process.pid, `"\n${cmd}" exited with code ${code}\n`);
+                socket.emit("prog-console", 0, running_process.pid, `\n"${cmd}" exited with code ${code}\n`);
             });
             running_process = null;
+            cb();
         });
     }
 
@@ -132,7 +139,13 @@ server.listen(port, () => {
         socket.on("make", (file) => {
             const bruh = file.split(".")[0];
             
-            run("git pull");
+            if(!running_process){
+                run("git pull", () => {
+                    run(`make ${bruh}`, () => {
+                        run(`sudo ./bin/${bruh}`);
+                    })
+                });
+            }
             // make(bruh);
         });
         socket.on("disconnect", ()=>{
