@@ -131,32 +131,8 @@ server.listen(port, () => {
             }
         });
 
-        fs.readdir("./tools/", (err, files) => {
-            socket.emit("proglist", files);
-        });
-        // socket.emit("proglist", fs);
-
-        socket.on("make", (file) => {
-            const bruh = file.split(".")[0];
-            
-            if(!running_process){
-                run("git pull", () => {
-                    run(`make ${bruh}`, () => {
-                        run(`./bin/${bruh}`);
-                    })
-                });
-            }
-            // make(bruh);
-        });
         socket.on("disconnect", ()=>{
             sockets.delete(socket);
-        });
-
-        socket.on("kill" , () => {
-            running_process.kill();
-            sockets.forEach((socket) => {
-                socket.emit("prog-console", 0, process.pid, `\nkilled current running process\n`);
-            });
         });
     });
 
