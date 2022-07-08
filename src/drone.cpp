@@ -496,7 +496,7 @@ void message_thread_funct(){
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
             );
         int e = unix_connection.send(send, strlen(send));
-
+        logger::info("{}",e);
         if(e < 0) {
             logger::crit("Lost contact with node server.");
             unix_connection.close();
@@ -506,7 +506,7 @@ void message_thread_funct(){
             }
             logger::crit("Found node server!");
         }
-        
+
 
 
         usleep(message_sleep_int);
