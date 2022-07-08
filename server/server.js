@@ -28,10 +28,12 @@ const process = require("process");
 
 const { exec, execSync, spawn } = require('child_process');
 
+var socket_server;
+
 function exitHandler(options, exitCode){
     console.log(`Exiting with code "${exitCode}"`);
 
-    // server.close();
+    socket_server.close();
     // fs.unlinkSync(SOCKET_LOCATION);
 
     
@@ -78,10 +80,10 @@ videoStream.acceptConnections(app, {
 server.listen(port, () => {
     console.log("listenen");
 
-    var running_process = null;
+    // var running_process = null;
     var lastconn = null;
 
-    var server = net.createServer((connection) =>{
+    socket_server = net.createServer((connection) =>{
         lastconn = connection;
         connection.on("data", (data) => {
             message = data.toString().split(" ");
