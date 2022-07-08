@@ -5,11 +5,17 @@
 #include <gamepad.h>
 #include <unistd.h>
 #include <config.h>
-
-void exit(){
+#include <csignal>
+void bruh(){
     logger::info("Closing.");
     drone::destroy_sensors();
     drone::destroy_message_thread();
+    exit();
+}
+
+void handle(int sig){
+
+    bruh();
 }
 
 void ctrl_thrd(){
@@ -43,7 +49,8 @@ void ctrl_thrd(){
 }
 
 int main(){
-    std::atexit(exit);
+    signal(SIGINT, handle);  
+    std::atexit(bruh);
 
     std::thread ctrl = std::thread(ctrl_thrd);
     // logger::set_level(logger::DEBUG);
