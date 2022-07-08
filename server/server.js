@@ -90,15 +90,22 @@ server.listen(port, () => {
 
     
     function make(b){
-        console.log(running_process);
         if(running_process !== null){
             console.log("Process already running. Killing")
             running_process.kill();
-            running_process = null;
-        }else{
-            running_process = exec("sudo ./bin/drone_sensor");
+            running_process = exec("git pull; make drone_sensor; sudo ./bin/drone_sensor;");
+            
             running_process.on("exit", (code, signal) => {
                 console.log(code, signal);
+                running_process = null;
+            });
+            // running_process = null;
+        }else{
+            running_process = exec("git pull; make drone_sensor; sudo ./bin/drone_sensor;");
+            
+            running_process.on("exit", (code, signal) => {
+                console.log(code, signal);
+                running_process = null;
             });
         }
     }
