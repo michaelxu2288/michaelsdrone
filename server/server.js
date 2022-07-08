@@ -20,7 +20,7 @@ const port = 80;
 
 const videoStream = require('raspberrypi-node-camera-web-streamer/videoStream.js');
 
-const config = require("../config/config.json");
+var config = require("../config/config.json");
 
 const SOCKET_LOCATION = config.socket_path;
 
@@ -69,6 +69,10 @@ videoStream.acceptConnections(app, {
 }, '/stream.mjpg', true);
 
 
+// app.get("/", (req, res) => {
+
+// });
+
 
 
 server.listen(port, () => {
@@ -91,35 +95,7 @@ server.listen(port, () => {
         })
     });
 
-
-    // const sockets = [];
-
     const sockets = new Set();
-
-    function run(cmd, cb=()=>{}){
-        // if(running_process) return;
-        // const args = cmd.split(" ");
-        const args =parseArgsStringToArgv(cmd);
-        const c = args.shift();
-        running_process = spawn(c, args);
-        running_process.stdout.on("data", (msg) => {
-            // console.log(msg);
-            msg = msg.toString("utf-8");
-            console.log(running_process.pid,msg);
-            sockets.forEach((socket) => {
-                socket.emit("prog-console", 0, running_process.pid, msg);
-            });
-        });
-
-        running_process.on("close", (code, sig) => {
-            // console.log(running_process.pid, `Exited with code ${code} signal ${sig}`);
-            sockets.forEach((socket) => {
-                socket.emit("prog-console", 0, running_process.pid, `\n"${cmd}" exited with code ${code}\n`);
-            });
-            running_process = null;
-            cb();
-        });
-    }
 
     io.on("connection", (socket) => {
         sockets.add(socket);
@@ -129,6 +105,15 @@ server.listen(port, () => {
             if(lastconn !== null){
                 lastconn.write(cmd);
             }
+        });
+
+        socket.on("req-json", () => {
+            socket.emit("json" , config);
+        });
+        
+        socket.on("update-json", (newjson) => {
+            config = newjson;
+            fs.writeFileSync("./config/config.json", newjson);
         });
 
         socket.on("disconnect", ()=>{

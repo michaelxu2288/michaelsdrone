@@ -136,30 +136,30 @@ inline int _send(int fd, const char * n, int l, int f){
 
 int sock::un_connection::read(char * buffer, int len){
     int e = _read(fd, buffer, len);
-    if(e<0){
-        perror("Error reading!\n");
-    }
+    // if(e<0){
+    //     perror("Error reading!\n");
+    // }
     return e;
 }
 int sock::un_connection::send(const char * buffer, int len){
     int e = _send(fd, buffer, len, 0);
-    if(e<0){
-        perror("Error sending!\n");
-    }
+    // if(e<0){
+    //     perror("Error sending!\n");
+    // }
     return e;
 }
 int sock::in_connection::read(char * buffer, int len){
     int e = _read(fd, buffer, len);
-    if(e<0){
-        perror("Error reading!\n");
-    }
+    // if(e<0){
+    //     perror("Error reading!\n");
+    // }
     return e;
 }
 int sock::in_connection::send(const char * buffer, int len){
     int e = _send(fd, buffer, len, 0);
-    if(e<0){
-        perror("Error sending!\n");
-    }
+    // if(e<0){
+    //     perror("Error sending!\n");
+    // }
     return e;
 }
 
@@ -173,4 +173,23 @@ bool sock::un_connection::can_read(){
     fds.events = POLLIN;
     fds.revents = 0;
     return poll(&fds, 1, 0);
+}
+
+int _close(int fd){
+    return close(fd);
+}
+
+int sock::un_connection::close(){
+    valid = false;
+    return _close(fd);
+}
+
+int sock::in_connection::close(){
+    valid = false;
+    return _close(fd);
+}
+
+int sock::socket::close(){
+    opened = false;
+    return _close(fd);
 }

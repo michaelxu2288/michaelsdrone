@@ -26,6 +26,7 @@ namespace sock{
         int read(char * buffer, int len);
         bool can_read();
         int send(const char * buffer, int len);
+        int close();
     };
     struct in_connection{
         socket * s;
@@ -35,6 +36,7 @@ namespace sock{
         int read(char * buffer, int len);
         bool can_read();
         int send(const char * buffer, int len);
+        int close();
     };
     struct socket{
         int fd;
@@ -58,6 +60,8 @@ namespace sock{
     
         un_connection un_connect(const char* path);
         in_connection in_connect(int addr, int port);
+
+        int close();
     };
 }
 #endif

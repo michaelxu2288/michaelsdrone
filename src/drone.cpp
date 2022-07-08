@@ -495,8 +495,18 @@ void message_thread_funct(){
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
             );
-        unix_connection.send(send, strlen(send));
-        // logger::info("{:.2f} {:.2f}", debug_vals[0], debug_vals[1]);
+        int e = unix_connection.send(send, strlen(send));
+
+        if(e < 0) {
+            logger::crit("Lost contact with node server.");
+            unix_connection.close();
+            while(alive && !unix_connection.valid) {
+                unix_connection = client.un_connect(socket_path.c_str());    
+                usleep(100000);
+            }
+            logger::crit("Found node server!");
+        }
+        
 
 
         usleep(message_sleep_int);
