@@ -32,7 +32,7 @@ function exitHandler(options, exitCode){
     console.log(`Exiting with code "${exitCode}"`);
 
     server.close();
-    fs.unlinkSync(SOCKET_LOCATION);
+    // fs.unlinkSync(SOCKET_LOCATION);
 
     
 
@@ -110,7 +110,7 @@ server.listen(port, () => {
         socket.on("req-json", () => {
             socket.emit("json" , config);
         });
-        
+
         socket.on("update-json", (newjson) => {
             config = newjson;
             fs.writeFileSync("./config/config.json", newjson);
