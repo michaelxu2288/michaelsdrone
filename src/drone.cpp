@@ -454,8 +454,9 @@ void message_thread_funct(){
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect(socket_path.c_str());
 
-    reconnect_node_server(client, unix_connection);
-
+    if(!unix_connection.valid){
+        reconnect_node_server(client, unix_connection);
+    }
     char send[1024];
     char recv[1024];
     while(alive){
