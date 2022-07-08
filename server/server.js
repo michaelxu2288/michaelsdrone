@@ -98,7 +98,7 @@ server.listen(port, () => {
         }else{
             running_process = exec("sudo ./bin/drone_sensor");
             running_process.on("exit", (code, signal) => {
-                console.log(code);
+                console.log(code, signal);
             });
         }
     }
