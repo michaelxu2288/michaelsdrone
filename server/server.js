@@ -104,6 +104,11 @@ server.listen(port, () => {
                 socket.emit("prog-console", 0, running_process.pid, msg);
             });
         });
+
+        running_process.on("close", (code, sig) => {
+            console.log(running_process.pid, `Exited with code ${code} signal ${sig}`);
+            running_process = null;
+        });
     }
 
     io.on("connection", (socket) => {
