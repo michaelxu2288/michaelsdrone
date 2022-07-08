@@ -123,7 +123,7 @@ server.listen(port, () => {
         });
     });
 
-    server.listen(SOCKET_LOCATION, () => {
+    socket_server.listen(SOCKET_LOCATION, () => {
         console.log(`Socket Server created at ${SOCKET_LOCATION}.`);
     });
 });
