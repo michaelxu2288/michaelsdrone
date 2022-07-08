@@ -90,7 +90,9 @@ server.listen(port, () => {
 
     
     function make(b){
+        console.log(running_process);
         if(running_process !== null){
+            console.log("Process already running. Killing")
             running_process.kill();
             running_process = null;
         }else{
