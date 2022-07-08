@@ -117,9 +117,9 @@ sock::un_connection sock::socket::un_connect(const char * path){
     int len = sizeof(c.addr);
     c.valid = connect(fd, (sockaddr *) &c.addr, len) >= 0;
     c.fd = fd;
-    // if(!c.valid){
-    //     perror("Failed to connect.\n");
-    // }
+    if(!c.valid){
+        perror("Failed to connect.\n");
+    }
     return c;
 }
 
