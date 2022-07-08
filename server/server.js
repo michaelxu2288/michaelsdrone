@@ -71,6 +71,7 @@ videoStream.acceptConnections(app, {
 server.listen(port, () => {
     console.log("listenen");
 
+    var running_process = null;
     var lastconn = null;
 
     var server = net.createServer((connection) =>{
@@ -106,17 +107,22 @@ server.listen(port, () => {
             const bruh = file.split(".")[0];
             // execSync("git pull");
             // execSync(`make ${bruh}`);
-        
+            
+            if(running_process !== null){
+                running_process.kill();
+            }
+
             // execSync(`sudo ./bin/${bruh}`);
-            exec("git pull", (err, stdout, stderr) => {
+            running_process = exec("git pull", (err, stdout, stderr) => {
                 console.log("git pull: ");
                 console.log(stdout);
-                exec(`make ${bruh}`, (err, stdout, stderr) => {
+                running_process = exec(`make ${bruh}`, (err, stdout, stderr) => {
                     console.log(`make ${bruh}`);
                     console.log(stdout);
-                    exec(`sudo ./bin/${bruh}`, (err, stdout, stderr) => {
+                    running_process = exec(`sudo ./bin/${bruh}`, (err, stdout, stderr) => {
                         console.log(`sudo ./bin/${bruh}`);
                         console.log(stdout);
+                        running_process = null;
                     });
                 });
             });
