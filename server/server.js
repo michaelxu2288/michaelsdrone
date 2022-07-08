@@ -109,23 +109,30 @@ server.listen(port, () => {
             // execSync(`make ${bruh}`);
             
             if(running_process !== null){
+                console.log("Process already running. Killing");
                 running_process.kill();
             }
 
-            // execSync(`sudo ./bin/${bruh}`);
-            running_process = exec("git pull", (err, stdout, stderr) => {
-                console.log("git pull: ");
-                console.log(stdout);
-                running_process = exec(`make ${bruh}`, (err, stdout, stderr) => {
-                    console.log(`make ${bruh}`);
-                    console.log(stdout);
-                    running_process = exec(`sudo ./bin/${bruh}`, (err, stdout, stderr) => {
-                        console.log(`sudo ./bin/${bruh}`);
-                        console.log(stdout);
-                        running_process = null;
-                    });
-                });
+            const test = exec("sudo ./bin/drone_sensor", (err, stdout, stderr) => {
+                console.log("bruh why", err);
             });
+
+            test.kill();
+
+            // execSync(`sudo ./bin/${bruh}`);
+            // console.log("git pull: ");
+            // running_process = exec("git pull", (err, stdout, stderr) => {
+            //     console.log(stdout);
+            //     console.log(`make ${bruh}`);
+            //     running_process = exec(`make ${bruh}`, (err, stdout, stderr) => {
+            //         console.log(stdout);
+            //         console.log(`sudo ./bin/${bruh}`);
+            //         running_process = exec(`sudo ./bin/${bruh}`, (err, stdout, stderr) => {
+            //             console.log(stdout);
+            //             running_process = null;
+            //         });
+            //     });
+            // });
         }); 
     });
 
