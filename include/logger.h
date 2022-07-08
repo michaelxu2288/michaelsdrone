@@ -40,8 +40,8 @@ namespace logger {
 
     #define debug(msg, ...) _log(logger::DEBUG, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
     #define info(msg, ...) _log(logger::INFO, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
-    #define crit(msg, ...) _log(logger::WARN, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
-    #define warn(msg, ...) _log(logger::CRITICAL, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
+    #define crit(msg, ...) _log(logger::CRITICAL, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
+    #define warn(msg, ...) _log(logger::WARN, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
     #define err(msg, ...) _log(logger::ERROR, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
     #endif
 };
