@@ -23,6 +23,8 @@ const SOCKET_LOCATION = config.socket_path;
 
 const process = require("process");
 
+const { exec, execSync } = require('child_process');
+
 function exitHandler(options, exitCode){
     console.log(`Exiting with code "${exitCode}"`);
 
@@ -101,7 +103,23 @@ server.listen(port, () => {
         // socket.emit("proglist", fs);
 
         socket.on("make", (file) => {
-
+            const bruh = file.split(".")[0];
+            // execSync("git pull");
+            // execSync(`make ${bruh}`);
+        
+            // execSync(`sudo ./bin/${bruh}`);
+            exec("git pull", (err, stdout, stderr) => {
+                console.log("git pull: ");
+                console.log(stdout);
+                exec(`make ${bruh}`, (err, stdout, stderr) => {
+                    console.log(`make ${bruh}`);
+                    console.log(stdout);
+                    exec(`sudo ./bin/${bruh}`, (err, stdout, stderr) => {
+                        console.log(`sudo ./bin/${bruh}`);
+                        console.log(stdout);
+                    });
+                });
+            });
         }); 
     });
 
