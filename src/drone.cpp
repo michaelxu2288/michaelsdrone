@@ -31,6 +31,8 @@ static double filtered_mpu6050_data[6];
 static filter::filter mpu6050_filters[6];
 static math::quarternion orientation;
 
+static double dt;
+
 static math::vector orientation_euler;
 static math::vector position(0, 0, 0), velocity(0, 0, 0);
 
@@ -69,6 +71,13 @@ static pid /* x_controller, y_controller, */ z_controller;
 static pid roll_controller, pitch_controller, vyaw_controller;
 
 static double debug_vals[6] = {0, 0, 0, 0, 0, 0};
+
+static enum state {
+    configuring = 0, ready = 1, calibrating = 2, idle = 3, init = 4, settling = 5, destroying = 6
+};
+
+static state curr_state = state::init;
+
 
 
 pid * drone::get_roll_controller(){
@@ -128,6 +137,8 @@ void drone::arm(){
 }
 
 void drone::load_configuration(){
+    state old = curr_state;
+    curr_state = state::configuring;
     config::load_file();
     
     sensor_ref_rate = config::get_config_int("sensor_ref_rate", 60);
@@ -150,10 +161,24 @@ void drone::load_configuration(){
     message_sleep_int = 1000000 / message_thread_ref_rate;
     sensor_g_tolerance_sqrd = sensor_g_tolerance * sensor_g_tolerance;
 
+    logger::lconfig("Settle Length: {}", sensor_ref_rate);
+    logger::lconfig("Sensor Refresh Rate: {}hz", sensor_ref_rate);
+    logger::lconfig("Message Refresh Rate: {}hz", message_thread_ref_rate);
+    logger::lconfig("Socket Location: {}", socket_path);
+    logger::lconfig("Sensor G Tolerance: {}", sensor_g_tolerance);
+    logger::lconfig("Sensor Roll Pitch Tau: {}", sensor_roll_pitch_tau);
+    logger::lconfig("Sensor Z Tau: {}", sensor_z_tau);
+    logger::lconfig("Upper Accelerometer Frequency Cutoff: {}", upper_sensor_freq_cutoff);
+    logger::lconfig("Upper Pressure Frequency Cutoff: {}", upper_pressure_freq_cutoff);
+    logger::lconfig("Upper Vz Frequency Cutoff: {}", upper_vz_freq_cutoff);
+
+    setup_filters();
+    curr_state = old;
+}
+
+void setup_filters(){
     for(int i = 0; i < 3; i ++){
-        // mpu6050_filters[i] = filter::high_pass(sensor_ref_rate, lower_sensor_freq_cutoff);
         mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
-        // mpu6050_filters[i] = filter::none();
     }
     for(int i = 3; i < 6; i ++){
         mpu6050_filters[i] = filter::none();
@@ -161,19 +186,7 @@ void drone::load_configuration(){
 
     mpu6050_filters[5] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
 
-    logger::info("Settle Length: {}", sensor_ref_rate);
-    logger::info("Sensor Refresh Rate: {}hz", sensor_ref_rate);
-    logger::info("Message Refresh Rate: {}hz", message_thread_ref_rate);
-    logger::info("Socket Location: {}", socket_path);
-    logger::info("Sensor G Tolerance: {}", sensor_g_tolerance);
-    logger::info("Sensor Roll Pitch Tau: {}", sensor_roll_pitch_tau);
-    logger::info("Sensor Z Tau: {}", sensor_z_tau);
-    logger::info("Upper Accelerometer Frequency Cutoff: {}", upper_sensor_freq_cutoff);
-    logger::info("Upper Pressure Frequency Cutoff: {}", upper_pressure_freq_cutoff);
-
-    // pressure_filter = filter::low_pass(sensor_ref_rate, 0.1);
     pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
-    // pressure_filter = filter::none();
     vzfilter = filter::low_pass(sensor_ref_rate, upper_vz_freq_cutoff);
 }
 
@@ -306,6 +319,9 @@ static std::mutex sensor_thread_mutex, message_thread_mutex;
 static std::thread rel_config;
 
 void settle(){
+    logger::info("Settling sensors");
+    state old = curr_state;
+    curr_state = state::settling;
     for(int i = 0; i < settle_length; i++){
         mpu6050::read(mpu6050_data);
 
@@ -323,13 +339,29 @@ void settle(){
         usleep(sensor_sleep_int);
     }
 
-    logger::info("Initial altitude: {:.2f}", 3.281 * initial_altitude);
+    // logger::info("Initial altitude: {:.2f} m", 3.281 * initial_altitude);
+    logger::info("Settled sensors");
+    curr_state = old;
+}
+
+void calibrate(){
+    logger::info("Calibrating sensors");
+    state old = curr_state;
+    curr_state = state::calibrating;
+    orientation = math::quarternion(1, 0, 0, 0);
+
+    velocity = math::vector(0, 0, 0);
+    position = math::vector(0, 0, 0);
+
+    mpu6050::calibrate(7);
+    logger::info("Calibrated sensors");
+    curr_state = old;
 }
 
 void sensor_thread_funct(){
     logger::info("Sensor thread alive!");
 
-    orientation = math::quarternion(1, 0, 0, 0);
+    // orientation = math::quarternion(1, 0, 0, 0);
 
     math::quarternion euler_q;
     math::vector euler_v;
@@ -338,15 +370,14 @@ void sensor_thread_funct(){
     auto start = then;
     auto now = std::chrono::steady_clock::now();
 
-    logger::info("Settling sensors");
-
+    calibrate();
     settle();
-
-    logger::info("Settled sensor filters");
+    
+    curr_state = state::ready;
     while(alive){
         std::lock_guard<std::mutex> sensor_lock_guard(sensor_thread_mutex);
         now = std::chrono::steady_clock::now();
-        double dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
+        dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
         int t_since = std::chrono::duration_cast<std::chrono::nanoseconds> (now - start).count();
         then = now;
         
@@ -411,17 +442,9 @@ void sensor_thread_funct(){
         }
 
         if(calib_flag){
-            orientation = math::quarternion(1, 0, 0, 0);
-
-            velocity = math::vector(0, 0, 0);
-            position = math::vector(0, 0, 0);
-
-            logger::info("Calibrated");
-            mpu6050::calibrate(7);
+            calibrate();
             settle();
-
             calib_flag = false;
-            
         }
         
         usleep(sensor_sleep_int);
@@ -512,9 +535,9 @@ void message_thread_funct(){
         // | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude | Initial Altitude | Valt |
         // | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |         18       |  19  |
         
-        // |        Setpoints        |          Error          |     Motor Speed   |         Debug         |
-        // | z | vyaw | roll | pitch | z | vyaw | roll | pitch | fl | fr | bl | br | 0 | 1 | 2 | 3 | 4 | 5 |
-        // |20 |  21  |  22  |  23   |24 |  25  |  26  |  27   | 28 | 29 | 30 | 31 |32 |33 |34 |35 |36 |37 |
+        // |        Setpoints        |          Error          |     Motor Speed   |         State and Sysinfo       |         Debug         |
+        // | z | vyaw | roll | pitch | z | vyaw | roll | pitch | fl | fr | bl | br | State | CPU Usg% | Battery | dt | 0 | 1 | 2 | 3 | 4 | 5 |
+        // |20 |  21  |  22  |  23   |24 |  25  |  26  |  27   | 28 | 29 | 30 | 31 |  32   |    33    |   34    | 35 |36 |37 |38 |39 |40 |41 |
 
         sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
@@ -522,9 +545,10 @@ void message_thread_funct(){
             bmp390_data[0], bmp390_data[1], bmp390_data[2], initial_altitude, valt,
             z_controller.setpoint, vyaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
             z_controller.old_error, vyaw_controller.old_error, roll_controller.old_error, pitch_controller.old_error,
+            curr_state, -1, -1, dt
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
-            debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]
-            );
+
+            debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
         int e = unix_connection.send(send, strlen(send));
         if(e < 0) {
             reconnect_node_server(client, unix_connection);
@@ -542,6 +566,7 @@ void message_thread_funct(){
 
 
 void drone::init_sensors(bool thread) {
+    curr_state = state::init;
     logger::info("Initializing MPU6050.");
     mpu6050::init();
     mpu6050::set_accl_set(mpu6050::accl_range::g_2);
@@ -550,27 +575,16 @@ void drone::init_sensors(bool thread) {
     mpu6050::set_fsync(mpu6050::fsync::input_dis);
     mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
     mpu6050::wake_up();
-
-    mpu6050::calibrate(7);
-
     logger::info("Finished intializing the MPU6050.");
 
     logger::info("Initializing BMP390.");
     bmp390::init();
     bmp390::soft_reset();
-    // usleep(1000000);
-    // // usleep(10000);
     bmp390::set_oversample(bmp390::HIGH, bmp390::ULTRA_LOW_POWER);
     bmp390::set_iir_filter(bmp390::COEFF_3);
     bmp390::set_output_data_rate(bmp390::hz50);
     bmp390::set_enable(true, true);
     bmp390::set_pwr_mode(bmp390::NORMAL);
-// usleep(10000);
-    // bmp390::set_pwr_ctrl(BMP390_PRES_ENABLE|BMP390_TEMP_ENABLE|BMP390_NORM_MODE);
-    // usleep(1000000);
-
-    logger::info("Value of Register {:x} is {:x}", BMP390_REG_PWR_CTRL, bmp390::query_register(BMP390_REG_PWR_CTRL));
-
     logger:info("Finished initializing the BMP390.");
 
     if(thread){
@@ -599,6 +613,7 @@ void drone::destroy_message_thread(){
 }
 
 void drone::destroy_sensors(){
+    curr_state = state::destroying;
     if(sensor_thread.joinable()){
         logger::info("Joining sensor thread.");
         alive = false;

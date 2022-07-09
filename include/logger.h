@@ -15,7 +15,7 @@ namespace logger {
 
 
     enum level {
-        DEBUG=0, INFO=1, WARN=2, CRITICAL=3, ERROR=4
+        DEBUG=0, INFO=1, WARN=2, CRITICAL=3, ERROR=4, CONFIG=5
     };
 
     void set_level(level lvl);
@@ -43,6 +43,7 @@ namespace logger {
     #define crit(msg, ...) _log(logger::CRITICAL, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
     #define warn(msg, ...) _log(logger::WARN, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
     #define err(msg, ...) _log(logger::ERROR, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
+    #define lconfig(msg, ...) _log(logger::CONFIG, fmt::format(msg, ##__VA_ARGS__), __FUNCTION__, __FILE__, __LINE__)
     #endif
 };
 
