@@ -22,19 +22,15 @@ void config::load_file(const char * filename){
         std::getline(in, str, '\0');
         
         configuration = json::JSON::Load(str);
-        loaded = true;
     }
 }
 
 void config::write_to_file(const char * filename){
     std::lock_guard<std::mutex> config_lock(config_mutex);
-    if(!loaded){
-        logger::warn("You didnt load the config file. This program will not override the config file.");
-    }
+
     std::ofstream out(filename);    
     if(out){
         logger::info("Saving configuration to \"{}\".", filename);
-        loaded = false;
         out << configuration;
         out.close();
     }else{
@@ -43,9 +39,7 @@ void config::write_to_file(const char * filename){
 }
 
 void config::load_file(){
-    if(!loaded){
-        config::load_file(DEFAULT_CONFIG_FILE);
-    }
+    config::load_file(DEFAULT_CONFIG_FILE);
 }
 
 void config::write_to_file(){
