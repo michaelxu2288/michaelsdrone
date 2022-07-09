@@ -567,6 +567,7 @@ void message_thread_funct(){
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
             static_cast<int>(curr_state), -1.0, -1.0, dt,
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
+        logger::info("state: {}",curr_state);
         int e = unix_connection.send(send, strlen(send));
         if(e < 0) {
             reconnect_node_server(client, unix_connection);
