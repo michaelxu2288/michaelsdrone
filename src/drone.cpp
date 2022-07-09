@@ -555,11 +555,12 @@ void drone::init_sensors(bool thread) {
     bmp390::init();
     bmp390::soft_reset();
     // usleep(1000000);
-    bmp390::set_enable(true, true);
     // // usleep(10000);
-    bmp390::set_pwr_mode(bmp390::NORMAL);
     bmp390::set_oversample(bmp390::STANDARD, bmp390::ULTRA_LOW_POWER);
     bmp390::set_iir_filter(bmp390::COEFF_3);
+    bmp390::set_output_data_rate(bmp390::hz50);
+    bmp390::set_enable(true, true);
+    bmp390::set_pwr_mode(bmp390::NORMAL);
 // usleep(10000);
     // bmp390::set_pwr_ctrl(BMP390_PRES_ENABLE|BMP390_TEMP_ENABLE|BMP390_NORM_MODE);
     // usleep(1000000);
