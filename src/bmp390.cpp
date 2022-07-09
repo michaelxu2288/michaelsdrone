@@ -81,7 +81,9 @@ void bmp390::set_output_data_rate(bmp390::output_data_rate rate){
     WRITE(BMP390_REG_ODR, rate);
 }
 void bmp390::set_pwr_mode(bmp390::pwr mode){
-    WRITE(BMP390_REG_PWR_CTRL, (READ(BMP390_REG_PWR_CTRL) & (~0b00110000)) | (mode << 4));
+    int k = (READ(BMP390_REG_PWR_CTRL) & (~0b00110000));
+    logger::info("bruh {:x} -> {:x}", k, k | (mode << 4));
+    WRITE(BMP390_REG_PWR_CTRL, k | (mode << 4));
 }
 void bmp390::set_enable_pressure(bool enable){
     WRITE(BMP390_REG_PWR_CTRL, (READ(BMP390_REG_PWR_CTRL) & (~0b00000001)) | (enable));
