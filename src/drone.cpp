@@ -53,8 +53,9 @@ static int settle_length;
 static double sensor_roll_pitch_tau;
 static double sensor_g_tolerance, sensor_g_tolerance_sqrd;
 
-static double upper_pressure_freq_cutoff;
+static double upper_pressure_freq_cutoff, upper_vz_freq_cutoff;
 static filter::filter pressure_filter;
+static filter::filter vzfilter;
 static double sensor_z_tau;
 
 static int message_thread_ref_rate, message_sleep_int;
@@ -130,7 +131,7 @@ void drone::load_configuration(){
     config::load_file();
     
     sensor_ref_rate = config::get_config_int("sensor_ref_rate", 60);
-    upper_sensor_freq_cutoff = config::get_config_int("upper_sensor_freq_cutoff", 5);
+    upper_sensor_freq_cutoff = config::get_config_dbl("upper_sensor_freq_cutoff", 5);
     lower_sensor_freq_cutoff = config::get_config_dbl("lower_sensor_freq_cutoff", 0.01);
     settle_length = config::get_config_int("settle_length", 200);
     sensor_roll_pitch_tau = config::get_config_dbl("sensor_roll_pitch_tau", 0.02);
@@ -139,7 +140,8 @@ void drone::load_configuration(){
     message_thread_ref_rate = config::get_config_int("message_ref_rate", 10);
     socket_path = config::get_config_str("socket_path", "./run/drone");
 
-    upper_pressure_freq_cutoff = config::get_config_int("upper_pressure_freq_cutoff", 5);
+    upper_vz_freq_cutoff = config::get_config_dbl("upper_vz_freq_cutoff", 2)
+    upper_pressure_freq_cutoff = config::get_config_dbl("upper_pressure_freq_cutoff", 5);
     sensor_z_tau = config::get_config_dbl("sensor_z_tau", 0.02);
 
     config::write_to_file();
@@ -172,6 +174,7 @@ void drone::load_configuration(){
     // pressure_filter = filter::low_pass(sensor_ref_rate, 0.1);
     pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
     // pressure_filter = filter::none();
+    vzfilter = filter::low_pass(sensor_ref_rate, upper_vz_freq_cutoff);
 }
 
 void drone::set_all(double per){
@@ -391,6 +394,7 @@ void sensor_thread_funct(){
             temp = math::quarternion::rotateVector(orientation, temp);
             temp.z += G*dt;
             velocity = velocity + temp;
+            velocity = vzfilter[velocity];
             velocity.z = velocity.z * sensor_z_tau + valt * (1 - sensor_z_tau);
         }
 
