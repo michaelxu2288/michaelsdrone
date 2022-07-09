@@ -49,7 +49,13 @@ void config::write_to_file(){
 int config::get_config_int(const char * name, int dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
     if(configuration.hasKey(name)){
-        return configuration[name].ToInt();
+        double k = configuration[name].ToFloat();
+        int j = configuration[name].ToInt()
+        if(k == 0){
+            return (int) j;
+        }
+        return k;
+        // return configuration[name].ToInt();
         
     }
     configuration[name]=dft;
@@ -60,7 +66,12 @@ double config::get_config_dbl(const char * name, double dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
     // logger::crit("fdskjfsadkl {} ", configuration.hasKey(name));
     if(configuration.hasKey(name)){
-        return configuration[name].ToFloat();
+        double k = configuration[name].ToFloat();
+        int j = configuration[name].ToInt()
+        if(k == 0){
+            return j;
+        }
+        return k;
     }
     configuration[name]=dft;
     return dft;
