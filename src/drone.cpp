@@ -523,7 +523,7 @@ void message_thread_funct(){
             logger::info("YOO DATA!");
             
             int len = unix_connection.read(recv, 50);
-
+            recv[len] = '\0';
             if(len > 0){
                 int cmd = atoi(recv);
                 // logger::info("");
