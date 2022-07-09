@@ -49,7 +49,11 @@
 #define NVM_PAR_T1_H 0x32
 #define NVM_PAR_T1_L 0x31
 
-
+#define BMP390_PRES_ENABLE 0b1
+#define BMP390_TEMP_ENABLE 0b10
+#define BMP390_NORM_MODE 0x30
+#define BMP390_FORCE_MODE 0x10
+#define BMP390_SLEEP_MODE 0x00
 namespace bmp390 {
 
     enum pwr {
@@ -120,6 +124,7 @@ namespace bmp390 {
     void set_enable_pressure(bool enabled);
     void set_enable_temperature(bool enabled);
     void set_enable(bool pressure, bool temperature);
+    void set_pwr_ctrl(int val);
 
     int query_register(int reg);
 
