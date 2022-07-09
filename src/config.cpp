@@ -58,6 +58,8 @@ int config::get_config_int(const char * name, int dft){
 
 double config::get_config_dbl(const char * name, double dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
+    logger::crit("fdskjfsadkl \"{}\" {} ", name, (configuration.hasKey(name) ? "exists" : "doesnt exist"));
+    // logger::crit("fdskjfsadkl {} ", configuration.hasKey(name));
     if(configuration.hasKey(name)){
         return configuration[name].ToFloat();
     }
