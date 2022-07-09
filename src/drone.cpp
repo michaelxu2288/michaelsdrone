@@ -140,7 +140,7 @@ void drone::load_configuration(){
     message_thread_ref_rate = config::get_config_int("message_ref_rate", 10);
     socket_path = config::get_config_str("socket_path", "./run/drone");
 
-    upper_vz_freq_cutoff = config::get_config_dbl("upper_vz_freq_cutoff", 2)
+    upper_vz_freq_cutoff = config::get_config_dbl("upper_vz_freq_cutoff", 2);
     upper_pressure_freq_cutoff = config::get_config_dbl("upper_pressure_freq_cutoff", 5);
     sensor_z_tau = config::get_config_dbl("sensor_z_tau", 0.02);
 
