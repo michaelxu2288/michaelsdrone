@@ -50,7 +50,7 @@ int config::get_config_int(const char * name, int dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
     if(configuration.hasKey(name)){
         double k = configuration[name].ToFloat();
-        int j = configuration[name].ToInt()
+        int j = configuration[name].ToInt();
         if(k == 0){
             return (int) j;
         }
@@ -67,7 +67,7 @@ double config::get_config_dbl(const char * name, double dft){
     // logger::crit("fdskjfsadkl {} ", configuration.hasKey(name));
     if(configuration.hasKey(name)){
         double k = configuration[name].ToFloat();
-        int j = configuration[name].ToInt()
+        int j = configuration[name].ToInt();
         if(k == 0){
             return j;
         }
