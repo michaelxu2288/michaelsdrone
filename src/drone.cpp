@@ -72,7 +72,7 @@ static pid roll_controller, pitch_controller, vyaw_controller;
 
 static double debug_vals[6] = {0, 0, 0, 0, 0, 0};
 
-static enum state {
+enum state {
     configuring = 0, ready = 1, calibrating = 2, idle = 3, init = 4, settling = 5, destroying = 6
 };
 
@@ -172,7 +172,6 @@ void drone::load_configuration(){
     logger::lconfig("Upper Pressure Frequency Cutoff: {}", upper_pressure_freq_cutoff);
     logger::lconfig("Upper Vz Frequency Cutoff: {}", upper_vz_freq_cutoff);
 
-    setup_filters();
     curr_state = old;
 }
 
@@ -354,6 +353,28 @@ void calibrate(){
     position = math::vector(0, 0, 0);
 
     mpu6050::calibrate(7);
+
+    for(int i = 0; i < 1000; i ++){
+        bmp390_data[0] = bmp390::get_temp();
+        bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
+        bmp390_data[1] = pressure_filter[bmp390_data[1]];
+        bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
+
+        usleep(sensor_sleep_int);
+    }
+
+    int n = 1000;
+    double sum = 0;
+    for(int i = 0; i< n; i ++){
+        bmp390_data[0] = bmp390::get_temp();
+        bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
+        bmp390_data[1] = pressure_filter[bmp390_data[1]];
+        bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
+        sum += bmp390_data[2];
+    }
+
+    initial_altitude = old_altitude = sum / n;
+
     logger::info("Calibrated sensors");
     curr_state = old;
 }
@@ -370,6 +391,7 @@ void sensor_thread_funct(){
     auto start = then;
     auto now = std::chrono::steady_clock::now();
 
+    setup_filters();
     calibrate();
     settle();
     
@@ -525,12 +547,6 @@ void message_thread_funct(){
             }
             // logger::info("Message: \"{}\"", recv);
         }
-
-        // |                  Setpoints                    |                      Error                    |     Motor Speed   |
-        // | x | y | z | vx | vy | vz | roll | pitch | yaw | x | y | z | vx | vy | vz | roll | pitch | yaw | fl | fr | bl | br |
-        // | 0 | 1 | 2 | 3  | 4  | 5  |  6   |   7   |  8  | 9 |10 |11 | 12 | 13 | 14 |  15  |  16   | 17  | 18 | 19 | 20 | 21 |
-
-
         // |                MPU6050                  |                 Dead Reckoned                 |             BMP390                |      BMP390 Related
         // | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude | Initial Altitude | Valt |
         // | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |         18       |  19  |
@@ -539,15 +555,14 @@ void message_thread_funct(){
         // | z | vyaw | roll | pitch | z | vyaw | roll | pitch | fl | fr | bl | br | State | CPU Usg% | Battery | dt | 0 | 1 | 2 | 3 | 4 | 5 |
         // |20 |  21  |  22  |  23   |24 |  25  |  26  |  27   | 28 | 29 | 30 | 31 |  32   |    33    |   34    | 35 |36 |37 |38 |39 |40 |41 |
 
-        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2], initial_altitude, valt,
             z_controller.setpoint, vyaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
             z_controller.old_error, vyaw_controller.old_error, roll_controller.old_error, pitch_controller.old_error,
-            curr_state, -1, -1, dt
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
-
+            curr_state, -1, -1, dt,
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
         int e = unix_connection.send(send, strlen(send));
         if(e < 0) {
