@@ -61,7 +61,7 @@ namespace drone {
 
     void synch_loop();
 
-
+    void set_ctrller_connected_flag(bool connected);
 
     pid * get_roll_controller();
     pid * get_pitch_controller();

@@ -8,6 +8,8 @@
 #include <iostream>
 #include <logger.h>
 
+#include <drone.h>
+
 #define JS_EVENT_BUTTON         0x01    /* button pressed/released */
 #define JS_EVENT_AXIS           0x02    /* joystick moved */
 #define JS_EVENT_INIT           0x80    /* initial state of device */
@@ -50,11 +52,13 @@ static void polling_thread_function(){
         
         if(bytes < 0) {
             logger::info("Lost contact with joystick");
+            drone::set_ctrller_connected_flag(false);
             fd = -1;
             while(fd < 0){
                 fd = open("/dev/input/js0", O_RDONLY);
                 usleep(10000);
             }
+            drone::set_ctrller_connected_flag(true);
             logger:info("Restablished contact with joystick.");
         }
 
@@ -72,6 +76,7 @@ bool gamepad::init(){
     if(!running){
         fd = open("/dev/input/js0", O_RDONLY);
         if(fd >= 0){
+            drone::set_ctrller_connected_flag(true);
             running = true;
             polling_thread = std::thread(polling_thread_function);
             return true;
