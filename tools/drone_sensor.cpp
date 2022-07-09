@@ -14,7 +14,6 @@ void bruh(){
 }
 
 void handle(int sig){
-
     bruh();
 }
 

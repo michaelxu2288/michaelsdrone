@@ -13,6 +13,7 @@ extern "C" {
 #include <sys/types.h>
 #include <cstdlib>
 #include <cmath>
+#include <logger.h>
 
 static int fd = -1;
 
@@ -22,28 +23,22 @@ static int fd = -1;
 #define UNV_GAS_CONST 8.3143 // (N*m) / (mol * K)
 #define GRAVITATIONAL_ACCELERATION 9.807 // m/s^2
 
+#define READ(reg) i2c_smbus_read_byte_data(fd, reg)
+#define WRITE(reg, data) i2c_smbus_write_byte_data(fd, reg, data)
+
 void bmp390::init(){
 
 	fd = open("/dev/i2c-1", O_RDWR); //Open the I2C device file
 	if (fd < 0) { //Catch errors
-		std::cout << "ERR (bmp390.cpp:init()): Failed to open /dev/i2c-1. Please check that I2C is enabled with raspi-config\n"; //Print error message
-	}
+        logger::crit("Failed to open /dev/i2c-1.");
+    }
 
 	int status = ioctl(fd, I2C_SLAVE,BMP390_ADDR); //Set the I2C bus to use the correct address
 	if (status < 0) {
-		std::cout << "ERR (bmp390.cpp:init()): Could not get I2C bus with " << BMP390_ADDR << " address. Please confirm that this address is correct\n"; //Print error message
+        logger::crit("Could not get i2c bus device with address {:x}.", BMP390_ADDR);
 	}
 
-    bmp390::soft_reset();
-    i2c_smbus_write_byte_data(fd, REG_PWR_CTRL, BMP390_MODE);
-    while((query_register(REG_PWR_CTRL) & 0b110000) == 0){
-        i2c_smbus_write_byte_data(fd, REG_PWR_CTRL, BMP390_MODE);
-        usleep(1000);
-    }
     bmp390::acquire_calib_vars();
-    //i2c_smbus_write_byte_data(fd, REG_CONFIG, BMP390_CONFIG);
-    //i2c_smbus_write_byte_data(fd, REG_OSR, BMP390_OSRS);
-
 }
 
 double compensate_temp();
@@ -53,54 +48,73 @@ double compensate_pressure(double temp);
 double par_t1, par_t2, par_t3;
 double par_p1, par_p2, par_p3, par_p4, par_p5, par_p6, par_p7, par_p8, par_p9, par_p10, par_p11;
 
-// int par_t1, par_t2, par_t3;
-// int par_p1, par_p2, par_p3, par_p4, par_p5, par_p6, par_p7, par_p8, par_p9, par_p10, par_p11;
-// int8_t par_t3, par_p3, par_p4, par_p7, par_p8, par_p10, par_p11;
-// uint16_t par_t1, par_t2, par_p5, par_p6;
-// int16_t par_p1, par_p2, par_p9;
-
-
 int16_t combine(int byte1, int byte2) {
   // This code assumes that byte1 is in range, but allows for the possibility
   // that the values were originally in a signed char and so is now negative.
   return (int16_t) (((uint16_t) byte1 << 8) | byte2);
 }
 
-// void bmp390::acquire_calib_vars(){
-//     int nvm_part_p11 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P11);
-//     int nvm_part_p10 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P10);
-//     int nvm_part_p9 = combine(i2c_smbus_read_byte_data(fd, NVM_PAR_P9_H),i2c_smbus_read_byte_data(fd, NVM_PAR_P9_L));
-//     //nvm_part_p9 = ((nvm_part_p9 & 0x80) == 0x80 ? -(nvm_part_p9 & 0x7F) : nvm_part_p9 & 0x7F);
-//     int nvm_part_p8 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P8);
-//     int nvm_part_p7 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P7);
-//     int nvm_part_p6 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_P6_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_P6_L);
-//     int nvm_part_p5 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_P5_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_P5_L);
-//     int nvm_part_p4 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P4);
-//     int nvm_part_p3 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_P3);
-//     int nvm_part_p2 = combine(i2c_smbus_read_byte_data(fd, NVM_PAR_P2_H),i2c_smbus_read_byte_data(fd, NVM_PAR_P2_L));
-//     //nvm_part_p2 = ((nvm_part_p2 & 0x80) == 0x80 ? -(nvm_part_p2 & 0x7F) : nvm_part_p2 & 0x7F);
-//     int nvm_part_p1 = combine(i2c_smbus_read_byte_data(fd, NVM_PAR_P1_H),i2c_smbus_read_byte_data(fd, NVM_PAR_P1_L));
-//     //nvm_part_p1 = ((nvm_part_p1 & 0x80) == 0x80 ? -(nvm_part_p1 & 0x7F) : nvm_part_p1 & 0x7F);
-//     int nvm_part_t3 =  (int8_t) i2c_smbus_read_byte_data(fd, NVM_PAR_T3);
-//     int nvm_part_t2 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_T2_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_T2_L);
-//     int nvm_part_t1 = (uint16_t) (i2c_smbus_read_byte_data(fd, NVM_PAR_T1_H)<<8)|i2c_smbus_read_byte_data(fd, NVM_PAR_T1_L);
+void bmp390::stop(){
+    close(fd);
+}
 
-//     par_t1 = ((double) nvm_part_t1) * (256.0);
-//     par_t2 = ((double) nvm_part_t2) / (1073741824.0);
-//     par_t3 = ((double) nvm_part_t3) / (281474976710656.0);
-    
-//     par_p1 = (((double) nvm_part_p1) - 16384.0) / (137438953472.0);
-//     par_p2 = (((double) nvm_part_p2) - 16384.0) / (536870912.0);
-//     par_p3 = ((double) nvm_part_p3) / (4294967296.0);
-//     par_p4 = ((double) nvm_part_p4) / (137438953472.0);
-//     par_p5 = ((double) nvm_part_p5) * (8.0);
-//     par_p6 = ((double) nvm_part_p6) / (64.0);
-//     par_p7 = ((double) nvm_part_p7) / (256.0);
-//     par_p8 = ((double) nvm_part_p8) / (32768.0);
-//     par_p9 = ((double) nvm_part_p9) / (281474976710656.0);
-//     par_p10 = ((double) nvm_part_p10) / (281474976710656.0);
-//     par_p11 = ((double) nvm_part_p11) / (36893488147419103232.0);
-// }
+int bmp390::query_register(int reg){
+    return i2c_smbus_read_byte_data(fd, reg);
+}
+
+void bmp390::soft_reset(){
+    // std::cout << "FUCK SHIT CUNT DICK\n";
+    i2c_smbus_write_byte_data(fd, BMP390_REG_CMD, BMP390_SOFT_RESET);
+}
+
+
+void bmp390::set_oversample(bmp390::oversampling pressure, bmp390::oversampling temperature){
+    WRITE(BMP390_REG_OSR, pressure | (temperature << 3));
+}
+void bmp390::set_pressure_oversample(bmp390::oversampling pressure){
+    WRITE(BMP390_REG_OSR, READ(BMP390_REG_OSR) & (~0b00000111) | pressure);
+}
+void bmp390::set_temperature_oversample(bmp390::oversampling temperature){
+    WRITE(BMP390_REG_OSR, READ(BMP390_REG_OSR) & (~0b00111000) | (temperature << 3));
+}
+void bmp390::set_output_data_rate(bmp390::output_data_rate rate){
+    WRITE(BMP390_REG_ODR, rate);
+}
+void bmp390::set_pwr_mode(bmp390::pwr mode){
+    WRITE(BMP390_REG_PWR_CTRL, READ(BMP390_REG_PWR_CTRL) & (~0b00110000) | (mode << 4));
+}
+void bmp390::set_enable_pressure(bool enable){
+    WRITE(BMP390_REG_PWR_CTRL, READ(BMP390_REG_PWR_CTRL) & (~0b00000001) | (enable));
+}
+void bmp390::set_enable_temperature(bool enable){
+    WRITE(BMP390_REG_PWR_CTRL, READ(BMP390_REG_PWR_CTRL) & (~0b00000010) | (enable << 1));
+}
+void bmp390::set_enable(bool pressure, bool temperature){
+    WRITE(BMP390_REG_PWR_CTRL, READ(BMP390_REG_PWR_CTRL) & (~0b00000011) | (temperature << 1) | pressure);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void bmp390::acquire_calib_vars(){
@@ -218,8 +232,8 @@ void bmp390::print_compensations(){
 
 
 int bmp390::get_raw_press(){
-    int high = (uint32_t) i2c_smbus_read_byte_data(fd, REG_PRESS_23_16);
-    int low = ((uint32_t) i2c_smbus_read_byte_data(fd, REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, REG_PRESS_7_0));
+    int high = (uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_23_16);
+    int low = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_7_0));
     // std::cout << "PRESSURE: " << high << " / " << low << "\n";
     //Two's complement?
 
@@ -283,8 +297,8 @@ double bmp390::get_height(){
 }
 
 int bmp390::get_raw_temp(){
-    int high = ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_23_16));
-    int low = ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, REG_TEMP_7_0));
+    int high = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_23_16));
+    int low = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_7_0));
     // std::cout << "TEMPERATURE: " << high << " / " << low << "\n";
     return (high << 16) | low;
 }
@@ -417,42 +431,6 @@ double compensate_pressure(double temp)
     return comp_press;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void bmp390::stop(){
-    close(fd);
-}
-
-int bmp390::query_register(int reg){
-    return i2c_smbus_read_byte_data(fd, reg);
-}
-
-void bmp390::soft_reset(){
-    // std::cout << "FUCK SHIT CUNT DICK\n";
-    i2c_smbus_write_byte_data(fd, REG_CMD, BMP390_SOFT_RESET);
-}
 
 
 
