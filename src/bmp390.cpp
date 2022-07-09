@@ -72,25 +72,25 @@ void bmp390::set_oversample(bmp390::oversampling pressure, bmp390::oversampling 
     WRITE(BMP390_REG_OSR, pressure | (temperature << 3));
 }
 void bmp390::set_pressure_oversample(bmp390::oversampling pressure){
-    WRITE(BMP390_REG_OSR, READ(BMP390_REG_OSR) & (~0b00000111) | pressure);
+    WRITE(BMP390_REG_OSR, (READ(BMP390_REG_OSR) & (~0b00000111)) | pressure);
 }
 void bmp390::set_temperature_oversample(bmp390::oversampling temperature){
-    WRITE(BMP390_REG_OSR, READ(BMP390_REG_OSR) & (~0b00111000) | (temperature << 3));
+    WRITE(BMP390_REG_OSR, (READ(BMP390_REG_OSR) & (~0b00111000)) | (temperature << 3));
 }
 void bmp390::set_output_data_rate(bmp390::output_data_rate rate){
     WRITE(BMP390_REG_ODR, rate);
 }
 void bmp390::set_pwr_mode(bmp390::pwr mode){
-    WRITE(BMP390_REG_PWR_CTRL, READ(BMP390_REG_PWR_CTRL) & (~0b00110000) | (mode << 4));
+    WRITE(BMP390_REG_PWR_CTRL, (READ(BMP390_REG_PWR_CTRL) & (~0b00110000)) | (mode << 4));
 }
 void bmp390::set_enable_pressure(bool enable){
-    WRITE(BMP390_REG_PWR_CTRL, READ(BMP390_REG_PWR_CTRL) & (~0b00000001) | (enable));
+    WRITE(BMP390_REG_PWR_CTRL, (READ(BMP390_REG_PWR_CTRL) & (~0b00000001)) | (enable));
 }
 void bmp390::set_enable_temperature(bool enable){
-    WRITE(BMP390_REG_PWR_CTRL, READ(BMP390_REG_PWR_CTRL) & (~0b00000010) | (enable << 1));
+    WRITE(BMP390_REG_PWR_CTRL, (READ(BMP390_REG_PWR_CTRL) & (~0b00000010)) | (enable << 1));
 }
 void bmp390::set_enable(bool pressure, bool temperature){
-    WRITE(BMP390_REG_PWR_CTRL, READ(BMP390_REG_PWR_CTRL) & (~0b00000011) | (temperature << 1) | pressure);
+    WRITE(BMP390_REG_PWR_CTRL, (READ(BMP390_REG_PWR_CTRL) & (~0b00000011)) | (temperature << 1) | pressure);
 }
 void bmp390::set_iir_filter(bmp390::iir_filter filter) {
     WRITE(BMP390_REG_CONFIG, filter);
