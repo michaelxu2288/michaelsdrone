@@ -95,7 +95,7 @@ namespace bmp390 {
         hz25_4096 = 0x0F,
         hz25_8192 = 0x10,
         hz25_16384 = 0x11,
-    }
+    };
 
     void init();
 
