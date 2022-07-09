@@ -565,7 +565,7 @@ void message_thread_funct(){
             z_controller.setpoint, vyaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
             z_controller.old_error, vyaw_controller.old_error, roll_controller.old_error, pitch_controller.old_error,
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
-            ((int) curr_state), -1.0, -1.0, dt,
+            static_cast<int>(curr_state), -1.0, -1.0, dt,
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
         int e = unix_connection.send(send, strlen(send));
         if(e < 0) {
