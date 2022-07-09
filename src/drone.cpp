@@ -558,6 +558,9 @@ void drone::init_sensors(bool thread) {
     bmp390::set_oversample(bmp390::STANDARD, bmp390::ULTRA_LOW_POWER);
     bmp390::set_iir_filter(bmp390::COEFF_3);
     bmp390::set_pwr_mode(bmp390::NORMAL);
+
+    logger::info("Value of Register {:x} is {:x}", BMP390_REG_PWR_CTRL, bmp390::query_register(BMP390_REG_PWR_CTRL));
+
     logger:info("Finished initializing the BMP390.");
 
     if(thread){
