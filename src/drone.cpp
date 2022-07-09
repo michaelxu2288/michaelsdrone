@@ -344,8 +344,9 @@ void settle(){
 }
 
 void calibrate(){
-    logger::info("Calibrating sensors");
     state old = curr_state;
+    logger::info("Calibrating sensors");
+    logger::info("Calibrating MPU6050");
     curr_state = state::calibrating;
     orientation = math::quarternion(1, 0, 0, 0);
 
@@ -354,7 +355,9 @@ void calibrate(){
 
     mpu6050::calibrate(7);
 
-    for(int i = 0; i < 1000; i ++){
+    logger::info("Calibrating BMP390");
+    int n = 500;
+    for(int i = 0; i < n; i ++){
         bmp390_data[0] = bmp390::get_temp();
         bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
         bmp390_data[1] = pressure_filter[bmp390_data[1]];
@@ -363,14 +366,14 @@ void calibrate(){
         usleep(sensor_sleep_int);
     }
 
-    int n = 1000;
     double sum = 0;
-    for(int i = 0; i< n; i ++){
+    for(int i = 0; i < n; i ++){
         bmp390_data[0] = bmp390::get_temp();
         bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
         bmp390_data[1] = pressure_filter[bmp390_data[1]];
         bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
         sum += bmp390_data[2];
+        usleep(sensor_sleep_int);
     }
 
     initial_altitude = old_altitude = sum / n;
@@ -562,7 +565,7 @@ void message_thread_funct(){
             z_controller.setpoint, vyaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
             z_controller.old_error, vyaw_controller.old_error, roll_controller.old_error, pitch_controller.old_error,
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
-            curr_state, -1, -1, dt,
+            ((int) curr_state), -1, -1, dt,
             debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
         int e = unix_connection.send(send, strlen(send));
         if(e < 0) {
