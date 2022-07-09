@@ -33,7 +33,8 @@ void config::write_to_file(const char * filename){
     }
     std::ofstream out(filename);    
     if(out){
-        loaded = true;
+        logger::info("Saving configuration to \"{}\".", filename);
+        loaded = false;
         out << configuration;
         out.close();
     }else{
