@@ -563,6 +563,7 @@ void drone::init_sensors(bool thread) {
 // usleep(10000);
     // bmp390::set_pwr_ctrl(BMP390_PRES_ENABLE|BMP390_TEMP_ENABLE|BMP390_NORM_MODE);
     // usleep(1000000);
+
     logger::info("Value of Register {:x} is {:x}", BMP390_REG_PWR_CTRL, bmp390::query_register(BMP390_REG_PWR_CTRL));
 
     logger:info("Finished initializing the BMP390.");
