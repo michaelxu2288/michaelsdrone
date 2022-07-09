@@ -170,8 +170,8 @@ void drone::load_configuration(){
     logger::info("Upper Pressure Frequency Cutoff: {}", upper_pressure_freq_cutoff);
 
     // pressure_filter = filter::low_pass(sensor_ref_rate, 0.1);
-    // pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
-    pressure_filter = filter::none();
+    pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
+    // pressure_filter = filter::none();
 }
 
 void drone::set_all(double per){
