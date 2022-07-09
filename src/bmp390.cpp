@@ -98,7 +98,7 @@ void bmp390::set_enable(bool pressure, bool temperature){
     WRITE(BMP390_REG_PWR_CTRL, (READ(BMP390_REG_PWR_CTRL) & (~0b00000011)) | (temperature << 1) | pressure);
 }
 void bmp390::set_iir_filter(bmp390::iir_filter filter) {
-    WRITE(BMP390_REG_CONFIG, filter);
+    WRITE(BMP390_REG_CONFIG, filter << 1);
 }
 void bmp390::set_pwr_ctrl(int val){
     WRITE(BMP390_REG_PWR_CTRL, val);
