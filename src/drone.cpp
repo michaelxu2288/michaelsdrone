@@ -394,7 +394,7 @@ void sensor_thread_funct(){
             temp = math::quarternion::rotateVector(orientation, temp);
             temp.z += G*dt;
             velocity = velocity + temp;
-            velocity = vzfilter[velocity];
+            velocity.z = vzfilter[velocity.z];
             velocity.z = velocity.z * sensor_z_tau + valt * (1 - sensor_z_tau);
         }
 
