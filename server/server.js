@@ -102,7 +102,7 @@ server.listen(port, () => {
     io.on("connection", (socket) => {
         sockets.add(socket);
         socket.on("cmd", (cmd) => {
-            cmd = `${cmd}`;
+            cmd = `${cmd}\0`;
             console.log(`Sending command "${cmd}"`);
             if(lastconn !== null){
                 lastconn.write(cmd);
