@@ -1,5 +1,5 @@
-// #include <config.h>
-// #include <logger.h>
+#include <config.h>
+#include <logger.h>
 #include <json.hpp>
 
 int main(){
