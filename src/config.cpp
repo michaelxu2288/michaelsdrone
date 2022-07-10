@@ -98,7 +98,7 @@ int config::get_config_int(const char * name, int dft){
     substr(buf, name, l+1, -1);
 
     if(curr->contains(buf)){
-        return curr[buf]->get<int>();
+        return (*curr)[buf].get<int>();
     }
 
     (*curr)[buf]=dft;
@@ -121,7 +121,7 @@ double config::get_config_dbl(const char * name, double dft){
     substr(buf, name, l+1, -1);
 
     if(curr->contains(buf)){
-        return curr[buf]->get<double>();
+        return (*curr)[buf].get<double>();
     }
 
     (*curr)[buf]=dft;
@@ -144,7 +144,7 @@ std::string config::get_config_str(const char * name, std::string dft){
     substr(buf, name, l+1, -1);
 
     if(curr->contains(buf)){
-        return curr[buf]->get<std::string>();
+        return (*curr)[buf].get<std::string>();
     }
 
     (*curr)[buf]=dft;
