@@ -13,6 +13,37 @@ static bool loaded = false;
 
 std::mutex config_mutex;
 
+int index_of(const char * str, char c, int start = 0) {
+    for(int i = start; str[i] != '\0'; i++){
+        if(str[i] == c) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void substr(char * out, const char * bruh, int a, int b){
+    int k = 0;
+    for(int i = a; i != b && bruh[i] != '\0'; i ++){
+        out[k++] = bruh[i];
+    }
+    out[k] = '\0';
+}
+
+void substr_chr(char * out, const char * bruh, char c, int a, int b){
+    int k = 0;
+    for(int i = a; i != b && bruh[i] != '\0'; i ++){
+        if(bruh[i] == c){
+            out[k++] = '\0';
+            return i;
+        }
+        out[k++] = bruh[i];
+    }
+    out[k] = '\0';
+    return -1;
+}
+
+
 // static char * filename;
 void config::load_file(const char * filename){
     std::lock_guard<std::mutex> config_lock(config_mutex);
@@ -46,11 +77,32 @@ void config::write_to_file(){
     config::write_to_file(DEFAULT_CONFIG_FILE);
 }
 
+
+
+
+
+char buf[100];
 int config::get_config_int(const char * name, int dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
-    if(configuration.hasKey(name)){
-        double k = configuration[name].ToFloat();
-        int j = configuration[name].ToInt();
+
+    json::JSON curr = configuration;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        l = i;
+        if(configuration.hasKey(buf)){
+            configuration = configuration[buf];
+        }else {
+            configuration[buf] = json::JSON();
+        }
+        i = substr_chr(buf, name, '.', i, -1);
+    }
+
+    substr(buf, name, l, -1);
+
+    if(curr.hasKey(buf)){
+        double k = curr[buf].ToFloat();
+        int j = curr[buf].ToInt();
         if(k == 0){
             return (int) j;
         }
@@ -58,7 +110,7 @@ int config::get_config_int(const char * name, int dft){
         // return configuration[name].ToInt();
         
     }
-    configuration[name]=dft;
+    curr[buf]=dft;
     return dft;
 }
 
@@ -79,6 +131,7 @@ double config::get_config_dbl(const char * name, double dft){
 
 std::string config::get_config_str(const char * name, std::string dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
+    if(find)
     if(configuration.hasKey(name)){
         return configuration[name].ToString();
     }
