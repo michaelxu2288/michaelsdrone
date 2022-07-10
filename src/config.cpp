@@ -138,7 +138,7 @@ double config::get_config_dbl(const char * name, double dft){
 
 std::string config::get_config_str(const char * name, std::string dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
-    if(configuration.contians(name)){
+    if(configuration.contains(name)){
         return configuration[name].get<std::string>();
     }
     configuration[name]=dft;
