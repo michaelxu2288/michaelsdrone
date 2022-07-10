@@ -148,7 +148,6 @@ void drone::load_configuration(){
     
 
 
-
     sensor_ref_rate = config::get_config_int("sensor.ref_rate", 60);
     upper_sensor_freq_cutoff = config::get_config_dbl("sensor.mpu6050.upper_freq_cutoff", 5);
     lower_sensor_freq_cutoff = config::get_config_dbl("sensor.mpu6050.lower_freq_cutoff", 0.01);
