@@ -169,7 +169,7 @@ void drone::load_configuration(){
     message_sleep_int = 1000000 / message_thread_ref_rate;
     sensor_g_tolerance_sqrd = sensor_g_tolerance * sensor_g_tolerance;
 
-    logger::lconfig("Settle Length: {}", sensor_ref_rate);
+    logger::lconfig("Settle Length: {}", settle_length);
     logger::lconfig("Sensor Refresh Rate: {}hz", sensor_ref_rate);
     logger::lconfig("Message Refresh Rate: {}hz", message_thread_ref_rate);
     logger::lconfig("Socket Location: {}", socket_path);
