@@ -22,7 +22,7 @@ const videoStream = require('raspberrypi-node-camera-web-streamer/videoStream.js
 
 var config = require("../config/config.json");
 
-const SOCKET_LOCATION = config.socket_path;
+const SOCKET_LOCATION = config.message.socket_path;
 
 const process = require("process");
 
