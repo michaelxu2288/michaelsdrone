@@ -131,7 +131,6 @@ double config::get_config_dbl(const char * name, double dft){
 
 std::string config::get_config_str(const char * name, std::string dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
-    if(find)
     if(configuration.hasKey(name)){
         return configuration[name].ToString();
     }
