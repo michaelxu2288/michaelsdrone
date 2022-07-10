@@ -1,7 +1,7 @@
 
 #include <config.h>
 // #include <rapidjson/document.h>
-#include <json.hpp>
+#include <json.h>
 #include <fstream>
 #include <string>
 #include <logger.h>
