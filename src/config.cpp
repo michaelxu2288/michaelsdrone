@@ -85,84 +85,69 @@ char buf[100];
 int config::get_config_int(const char * name, int dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
     
-    nlohmann::json curr = configuration;
+    nlohmann::json *curr = &configuration;
     int i = substr_chr(buf, name, '.', 0, -1);
     int l = 0;
     while(i >= 0){
         // logger::info("{}, {}", curr.dump(), buf);
         // logger::info("{}", i);
         l = i;
-        if(curr.contains(buf)){
-            curr = curr[buf];
-        }else {
-            curr[buf] = nlohmann::json::object();
-            curr = curr[buf];
-        }
+        curr = &((*curr)[buf]);
         i = substr_chr(buf, name, '.', i+1, -1);
     }
     substr(buf, name, l+1, -1);
 
-    if(curr.contains(buf)){
-        return curr[buf].get<int>();
+    if(curr->contains(buf)){
+        return curr[buf]->get<int>();
     }
 
-    curr[buf]=dft;
+    (*curr)[buf]=dft;
     return dft;
 }
 
 double config::get_config_dbl(const char * name, double dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
     
-    nlohmann::json curr = configuration;
+    nlohmann::json *curr = &configuration;
     int i = substr_chr(buf, name, '.', 0, -1);
     int l = 0;
     while(i >= 0){
         // logger::info("{}, {}", curr.dump(), buf);
         // logger::info("{}", i);
         l = i;
-        if(curr.contains(buf)){
-            curr = curr[buf];
-        }else {
-            curr[buf] = nlohmann::json::object();
-            curr = curr[buf];
-        }
+        curr = &((*curr)[buf]);
         i = substr_chr(buf, name, '.', i+1, -1);
     }
     substr(buf, name, l+1, -1);
 
-    if(curr.contains(buf)){
-        return curr[buf].get<double>();
+    if(curr->contains(buf)){
+        return curr[buf]->get<double>();
     }
-    
-    curr[buf]=dft;
+
+    (*curr)[buf]=dft;
     return dft;
 }
 
 std::string config::get_config_str(const char * name, std::string dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
     
-    nlohmann::json curr = configuration;
+    nlohmann::json *curr = &configuration;
     int i = substr_chr(buf, name, '.', 0, -1);
     int l = 0;
     while(i >= 0){
         // logger::info("{}, {}", curr.dump(), buf);
         // logger::info("{}", i);
         l = i;
-        if(curr.contains(buf)){
-            curr = curr[buf];
-        }else {
-            curr[buf] = nlohmann::json::object();
-            curr = curr[buf];
-        }
+        curr = &((*curr)[buf]);
         i = substr_chr(buf, name, '.', i+1, -1);
     }
     substr(buf, name, l+1, -1);
 
-    if(curr.contains(buf)){
-        return curr[buf].get<std::string>();
+    if(curr->contains(buf)){
+        return curr[buf]->get<std::string>();
     }
-    
-    curr[buf]=dft;
+
+    (*curr)[buf]=dft;
     return dft;
 }
 
