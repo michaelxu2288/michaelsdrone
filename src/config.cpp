@@ -1,14 +1,14 @@
 
 #include <config.h>
 // #include <rapidjson/document.h>
-#include <json.h>
+#include <json.hpp>
 #include <fstream>
 #include <string>
 #include <logger.h>
 #include <settings.h>
 #include <mutex>
 
-static json::JSON configuration;
+static nlohmann::json configuration;
 static bool loaded = false;
 
 std::mutex config_mutex;
@@ -86,7 +86,7 @@ int config::get_config_int(const char * name, int dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
 
     
-    json::JSON curr = configuration;
+    nlohmann::json curr = configuration;
     int i = substr_chr(buf, name, '.', 0, -1);
     int l = 0;
     while(i >= 0){
