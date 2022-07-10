@@ -95,6 +95,7 @@ int config::get_config_int(const char * name, int dft){
             curr = curr[buf];
         }else {
             curr[buf] = json::JSON();
+            curr = curr[buf];
         }
         i = substr_chr(buf, name, '.', i+1, -1);
     }
