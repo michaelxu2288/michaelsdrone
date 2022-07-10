@@ -6,7 +6,8 @@
  * Origin: https://github.com/nbsdx/SimpleJSON.git
  */
 
-
+#ifndef JSON_H_GUARD
+#define JSON_H_GUARD
 #pragma once
 
 #include <cstdint>
@@ -655,3 +656,5 @@ JSON JSON::Load( const string &str ) {
 }
 
 } // End Namespace json
+
+#endif
