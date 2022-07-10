@@ -90,7 +90,7 @@ int config::get_config_int(const char * name, int dft){
     int i = substr_chr(buf, name, '.', 0, -1);
     int l = 0;
     while(i >= 0){
-        logger::info({}, curr.dump());
+        logger::info("{}", curr.dump());
         logger::info("{}", i);
         l = i;
         if(curr.hasKey(buf)){
