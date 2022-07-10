@@ -89,6 +89,7 @@ int config::get_config_int(const char * name, int dft){
     int i = substr_chr(buf, name, '.', 0, -1);
     int l = 0;
     while(i >= 0){
+        logging::info("{}", i);
         l = i;
         if(configuration.hasKey(buf)){
             configuration = configuration[buf];
