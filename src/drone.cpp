@@ -146,19 +146,22 @@ void drone::load_configuration(){
     curr_state = state::configuring;
     config::load_file();
     
-    sensor_ref_rate = config::get_config_int("sensor_ref_rate", 60);
-    upper_sensor_freq_cutoff = config::get_config_dbl("upper_sensor_freq_cutoff", 5);
-    lower_sensor_freq_cutoff = config::get_config_dbl("lower_sensor_freq_cutoff", 0.01);
-    settle_length = config::get_config_int("settle_length", 200);
-    sensor_roll_pitch_tau = config::get_config_dbl("sensor_roll_pitch_tau", 0.02);
-    sensor_g_tolerance = config::get_config_dbl("sensor_tolerance", 0.1);
 
-    message_thread_ref_rate = config::get_config_int("message_ref_rate", 10);
-    socket_path = config::get_config_str("socket_path", "./run/drone");
 
-    upper_vz_freq_cutoff = config::get_config_dbl("upper_vz_freq_cutoff", 2);
-    upper_pressure_freq_cutoff = config::get_config_dbl("upper_pressure_freq_cutoff", 5);
-    sensor_z_tau = config::get_config_dbl("sensor_z_tau", 0.02);
+
+    sensor_ref_rate = config::get_config_int("sensor.ref_rate", 60);
+    upper_sensor_freq_cutoff = config::get_config_dbl("sensor.mpu6050.upper_freq_cutoff", 5);
+    lower_sensor_freq_cutoff = config::get_config_dbl("sensor.mpu6050.lower_freq_cutoff", 0.01);
+    settle_length = config::get_config_int("sensor.settle_length", 200);
+    sensor_roll_pitch_tau = config::get_config_dbl("sensor.roll_pitch_tau", 0.02);
+    sensor_g_tolerance = config::get_config_dbl("sensor.g_tolerance", 0.1);
+
+    message_thread_ref_rate = config::get_config_int("message.ref_rate", 10);
+    socket_path = config::get_config_str("message.socket_path", "./run/drone");
+
+    upper_vz_freq_cutoff = config::get_config_dbl("sensor.vertical_v.upper_freq_cutoff", 2);
+    upper_pressure_freq_cutoff = config::get_config_dbl("sensor.pressure.upper_freq_cutoff", 5);
+    sensor_z_tau = config::get_config_dbl("sensor.z_tau", 0.02);
 
     config::write_to_file();
     
