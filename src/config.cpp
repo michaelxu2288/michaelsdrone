@@ -85,10 +85,12 @@ char buf[100];
 int config::get_config_int(const char * name, int dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
 
+    
     json::JSON curr = configuration;
     int i = substr_chr(buf, name, '.', 0, -1);
     int l = 0;
     while(i >= 0){
+        logger::info({}, curr.dump());
         logger::info("{}", i);
         l = i;
         if(curr.hasKey(buf)){
