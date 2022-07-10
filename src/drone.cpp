@@ -141,6 +141,20 @@ void drone::arm(){
 
 }
 
+void setup_filters(){
+    for(int i = 0; i < 3; i ++){
+        mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
+    }
+    for(int i = 3; i < 6; i ++){
+        mpu6050_filters[i] = filter::none();
+    }
+
+    mpu6050_filters[5] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
+
+    pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
+    vzfilter = filter::low_pass(sensor_ref_rate, upper_vz_freq_cutoff);
+}
+
 void drone::load_configuration(){
     state old = curr_state;
     curr_state = state::configuring;
@@ -182,20 +196,6 @@ void drone::load_configuration(){
     setup_filters();
 
     curr_state = old;
-}
-
-void setup_filters(){
-    for(int i = 0; i < 3; i ++){
-        mpu6050_filters[i] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
-    }
-    for(int i = 3; i < 6; i ++){
-        mpu6050_filters[i] = filter::none();
-    }
-
-    mpu6050_filters[5] = filter::low_pass(sensor_ref_rate, upper_sensor_freq_cutoff);
-
-    pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
-    vzfilter = filter::low_pass(sensor_ref_rate, upper_vz_freq_cutoff);
 }
 
 void drone::set_all(double per){
