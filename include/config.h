@@ -22,8 +22,6 @@ namespace config{
     double get_config_dbl(const char * name, double dft=0   );
     std::string get_config_str(const char * name, std::string dft = "");
 
-    config get_config(const char * name);
-
     void set_config(const char * name, int value);
     void set_config(const char * name, double value);
 }

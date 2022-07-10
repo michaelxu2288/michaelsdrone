@@ -30,7 +30,7 @@ void substr(char * out, const char * bruh, int a, int b){
     out[k] = '\0';
 }
 
-void substr_chr(char * out, const char * bruh, char c, int a, int b){
+int substr_chr(char * out, const char * bruh, char c, int a, int b){
     int k = 0;
     for(int i = a; i != b && bruh[i] != '\0'; i ++){
         if(bruh[i] == c){
