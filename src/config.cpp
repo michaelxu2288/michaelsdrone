@@ -84,14 +84,13 @@ void config::write_to_file(){
 char buf[100];
 int config::get_config_int(const char * name, int dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
-
     
     nlohmann::json curr = configuration;
     int i = substr_chr(buf, name, '.', 0, -1);
     int l = 0;
     while(i >= 0){
-        logger::info("{}, {}", curr.dump(), buf);
-        logger::info("{}", i);
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
         l = i;
         if(curr.contains(buf)){
             curr = curr[buf];
@@ -101,47 +100,69 @@ int config::get_config_int(const char * name, int dft){
         }
         i = substr_chr(buf, name, '.', i+1, -1);
     }
-
     substr(buf, name, l+1, -1);
 
     if(curr.contains(buf)){
-        // double k = curr[buf].get<double>();
-        int j = curr[buf].get<int>();
-        // if(k == 0){
-        //     return (int) j;
-        // }
-        return j;
-        // return configuration[name].ToInt();
-        
+        return curr[buf].get<int>();
     }
+
     curr[buf]=dft;
     return dft;
 }
 
 double config::get_config_dbl(const char * name, double dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
-    // logger::crit("fdskjfsadkl {} ", configuration.hasKey(name));
-    // configuration.contains()
-    // configuration.at()
-    // configuration.is_
-    if(configuration.contains(name)){
-        double k = configuration[name].get<double>();
-        // int j = configuration[name].ToInt();
-        // if(k == 0){
-        //     return j;
-        // }
-        return k;
+    
+    nlohmann::json curr = configuration;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        if(curr.contains(buf)){
+            curr = curr[buf];
+        }else {
+            curr[buf] = nlohmann::json::object();
+            curr = curr[buf];
+        }
+        i = substr_chr(buf, name, '.', i+1, -1);
     }
-    configuration[name]=dft;
+    substr(buf, name, l+1, -1);
+
+    if(curr.contains(buf)){
+        return curr[buf].get<double>();
+    }
+    
+    curr[buf]=dft;
     return dft;
 }
 
 std::string config::get_config_str(const char * name, std::string dft){
     std::lock_guard<std::mutex> config_lock(config_mutex);
-    if(configuration.contains(name)){
-        return configuration[name].get<std::string>();
+    
+    nlohmann::json curr = configuration;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        if(curr.contains(buf)){
+            curr = curr[buf];
+        }else {
+            curr[buf] = nlohmann::json::object();
+            curr = curr[buf];
+        }
+        i = substr_chr(buf, name, '.', i+1, -1);
     }
-    configuration[name]=dft;
+    substr(buf, name, l+1, -1);
+
+    if(curr.contains(buf)){
+        return curr[buf].get<std::string>();
+    }
+    
+    curr[buf]=dft;
     return dft;
 }
 
