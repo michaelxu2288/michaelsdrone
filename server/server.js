@@ -115,7 +115,7 @@ server.listen(port, () => {
 
         socket.on("update-json", (newjson) => {
             config = newjson;
-            fs.writeFileSync("./config/config.json", newjson);
+            fs.writeFileSync("./config/config.json", JSON.stringify(newjson));
         });
 
         socket.on("disconnect", ()=>{
