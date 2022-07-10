@@ -96,10 +96,10 @@ int config::get_config_int(const char * name, int dft){
         }else {
             configuration[buf] = json::JSON();
         }
-        i = substr_chr(buf, name, '.', i, -1)+1;
+        i = substr_chr(buf, name, '.', i+1, -1);
     }
 
-    substr(buf, name, l, -1);
+    substr(buf, name, l+1, -1);
 
     if(curr.hasKey(buf)){
         double k = curr[buf].ToFloat();
