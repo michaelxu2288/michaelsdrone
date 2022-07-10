@@ -91,10 +91,10 @@ int config::get_config_int(const char * name, int dft){
     while(i >= 0){
         logger::info("{}", i);
         l = i;
-        if(configuration.hasKey(buf)){
-            configuration = configuration[buf];
+        if(curr.hasKey(buf)){
+            curr = curr[buf];
         }else {
-            configuration[buf] = json::JSON();
+            curr[buf] = json::JSON();
         }
         i = substr_chr(buf, name, '.', i+1, -1);
     }
