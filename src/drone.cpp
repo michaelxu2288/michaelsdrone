@@ -179,6 +179,8 @@ void drone::load_configuration(){
     logger::lconfig("Upper Pressure Frequency Cutoff: {}", upper_pressure_freq_cutoff);
     logger::lconfig("Upper Vz Frequency Cutoff: {}", upper_vz_freq_cutoff);
 
+    setup_filters();
+
     curr_state = old;
 }
 
