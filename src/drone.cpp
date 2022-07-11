@@ -639,7 +639,7 @@ void message_thread_funct(){
             z_controller.p, vyaw_controller.p, roll_controller.p, pitch_controller.p,
             z_controller.i, vyaw_controller.i, roll_controller.i, pitch_controller.i,
             z_controller.d, vyaw_controller.d, roll_controller.d, pitch_controller.d,
-            z_controller.output, vyaw_controller.output, roll_controller.output, pitch_controller.output,
+            z_controller.output, vyaw_controller.output, roll_controller.output, pitch_controller.output
 
             // debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
         );
