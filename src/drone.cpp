@@ -620,13 +620,13 @@ void message_thread_funct(){
         // | z | vyaw | roll | pitch | z | vyaw | roll | pitch | fl | fr | bl | br | State | CPU Usg % | Battery | dt | controller |
         // |20 |  21  |  22  |  23   |24 |  25  |  26  |  27   | 28 | 29 | 30 | 31 |  32   |    33     |   34    | 35 |     36     |
         
-        // |                                                                                            PID Controller Info                                                                                          |
-        // |                    i_term                           |                   derr                      |               p                 |                 i               |                 d               |
-        // | z_i_term | vyaw_i_term | roll_i_term | pitch_i_term | z_derr | vyaw_derr | roll_derr | pitch_derr | z_p | vyaw_p | roll_p | pitch_p | z_i | vyaw_i | roll_i | pitch_i | z_d | vyaw_d | roll_d | pitch_d |
-        // |    37    |      38     |      39     |      40      |   41   |    42     |     43    |      44    | 45  |  46    |   47   |    48   | 49  |   50   |   51   |   52    | 53  |   54   |   56   |   57    |
+        // |                                                                                            PID Controller Info                                                                                                                                    |
+        // |                    i_term                           |                   derr                      |               p                 |                 i               |                 d               |                output                   |
+        // | z_i_term | vyaw_i_term | roll_i_term | pitch_i_term | z_derr | vyaw_derr | roll_derr | pitch_derr | z_p | vyaw_p | roll_p | pitch_p | z_i | vyaw_i | roll_i | pitch_i | z_d | vyaw_d | roll_d | pitch_d | z_out | vyaw_out | roll_out | pitch_out |
+        // |    37    |      38     |      39     |      40      |   41   |    42     |     43    |      44    | 45  |  46    |   47   |    48   | 49  |   50   |   51   |   52    | 53  |   54   |   56   |   57    |  58   |    59    |    60    |     61    |
 
-                //     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57
-        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+                //     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61
+        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2], initial_altitude, valt,
@@ -638,7 +638,9 @@ void message_thread_funct(){
             z_controller.derr, vyaw_controller.derr, roll_controller.derr, pitch_controller.derr,
             z_controller.p, vyaw_controller.p, roll_controller.p, pitch_controller.p,
             z_controller.i, vyaw_controller.i, roll_controller.i, pitch_controller.i,
-            z_controller.d, vyaw_controller.d, roll_controller.d, pitch_controller.d
+            z_controller.d, vyaw_controller.d, roll_controller.d, pitch_controller.d,
+            z_controller.output, vyaw_controller.output, roll_controller.output, pitch_controller.output,
+
             // debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
         );
         // logger::info("state: {}",curr_state);
