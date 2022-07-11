@@ -4,12 +4,12 @@
 pid::pid(){};
 
 pid::pid(double p_p, double p_i, double p_d){
-    p = p_p;
-    i = p_i;
-    d = p_d;
+    kP = p_p;
+    kI = p_i;
+    kD = p_d;
 };
 
-double pid::output(double curr, double dt){
+double pid::update(double curr, double dt){
     double err = setpoint - curr;
 
 
@@ -20,7 +20,14 @@ double pid::output(double curr, double dt){
 
     double derr = (err - old_error) / dt;  
     old_error = err;
-    return i_curr * i + p * err - d * derr;
+
+    p = kP * err;
+    i = kI * i_curr;
+    d = kD * derr;
+
+    output =  p + i + d;
+    return output;
+    // return i_curr * kI + kP * err - kD * derr;
 }
 
 void pid::reset_integral_term(){
@@ -29,5 +36,5 @@ void pid::reset_integral_term(){
 
 void pid::change_setpoint(double new_setpoint){
     setpoint = new_setpoint;
-    i_curr = 0.0;
+    // i_curr = 0.0;
 }

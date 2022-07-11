@@ -20,7 +20,7 @@ void handle(int sig){
 void ctrl_thrd(){
     config::load_file();
     double deg_t_rad = 3.141592 / 180;
-    double roll = config::get_config_dbl("ctrl.max_roll", 5) * deg_t_rad;
+    double roll = config::get_config_dbl("ctrlmax_roll", 5) * deg_t_rad;
     double pitch = config::get_config_dbl("ctrl.max_pitch", 5) * deg_t_rad;
     double vz = config::get_config_dbl("ctrl.max_vz", 5) * deg_t_rad;
     double vyaw = config::get_config_dbl("ctrl.max_vyaw", 5) * deg_t_rad;

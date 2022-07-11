@@ -155,13 +155,32 @@ void setup_filters(){
     vzfilter = filter::low_pass(sensor_ref_rate, upper_vz_freq_cutoff);
 }
 
-void drone::load_configuration(){
-    state old = curr_state;
-    curr_state = state::configuring;
+
+void drone::load_pid_config(){
     config::load_file();
     
+    z_controller.kP = config::get_config_dbl("pid.z.kP", 0.01);
+    z_controller.kI = config::get_config_dbl("pid.z.kI", 0.00);
+    z_controller.kD = config::get_config_dbl("pid.z.kD", 0.00);
+    
+    roll_controller.kP = config::get_config_dbl("pid.r.kP", 0.01);
+    roll_controller.kI = config::get_config_dbl("pid.r.kI", 0.00);
+    roll_controller.kD = config::get_config_dbl("pid.r.kD", 0.00);
+    
+    pitch_controller.kP = config::get_config_dbl("pid.p.kP", 0.01);
+    pitch_controller.kI = config::get_config_dbl("pid.p.kI", 0.00);
+    pitch_controller.kD = config::get_config_dbl("pid.p.kD", 0.00);
+    
+    vyaw_controller.kP = config::get_config_dbl("pid.vyaw.kP", 0.01);
+    vyaw_controller.kI = config::get_config_dbl("pid.vyaw.kI", 0.00);
+    vyaw_controller.kD = config::get_config_dbl("pid.vyaw.kD", 0.00);
 
+    config::write_to_file();
+}
 
+void drone::load_configuration(){
+    config::load_file();
+    
     sensor_ref_rate = config::get_config_int("sensor.ref_rate", 60);
     upper_sensor_freq_cutoff = config::get_config_dbl("sensor.mpu6050.upper_freq_cutoff", 5);
     lower_sensor_freq_cutoff = config::get_config_dbl("sensor.mpu6050.lower_freq_cutoff", 0.01);
@@ -194,8 +213,6 @@ void drone::load_configuration(){
     logger::lconfig("Upper Vz Frequency Cutoff: {}", upper_vz_freq_cutoff);
 
     setup_filters();
-
-    curr_state = old;
 }
 
 void drone::set_all(double per){
@@ -460,7 +477,20 @@ void sensor_thread_funct(){
             temp.z += G*dt;
             velocity = velocity + temp;
             velocity.z = vzfilter[velocity.z];
-            // velocity.z = velocity.z * sensor_z_tau + valt * (1 - sensor_z_tau);
+            velocity.z = velocity.z * sensor_z_tau + valt * (1 - sensor_z_tau);
+        }
+
+        {// PID updates
+            // z_controller.setpoint = 
+            double z = z_controller.update(position.z, dt);
+            double r = roll_controller.update(orientation_euler.x, dt);
+            double p = pitch_controller.update(orientation_euler.y, dt);
+            double vy = vyaw_controller.update(filtered_mpu6050_data[5], dt);
+
+            drone::set_motor(MOTOR_FL, z + r + p + vy);
+            drone::set_motor(MOTOR_FR, z - r + p - vy);
+            drone::set_motor(MOTOR_BL, z + r - p - vy);
+            drone::set_motor(MOTOR_FR, z - r - p + vy);
         }
 
         if(zero_flag){
@@ -481,7 +511,7 @@ void sensor_thread_funct(){
             calib_flag = false;
         }
         
-        usleep(sensor_sleep_int);
+        usleep(sensor_sleep_int - (int) (dt * 10000000));
     }
 }
 
@@ -526,8 +556,8 @@ void message_thread_funct(){
         // std::lock_guard<std::mutex> message_lock_guard(message_thread_mutex);
         
 
-        // | zero | calibrate | Reload Config |
-        // |  0   |     1     |       2       |
+        // | zero | calibrate | Reload Config | Reload PID Config |
+        // |  0   |     1     |       2       |         3         |
         if(unix_connection.can_read()){
             logger::info("YOO DATA!");
             
@@ -547,9 +577,14 @@ void message_thread_funct(){
                     calib_flag = true;
                     break;
                 case 2:
+                    state old = curr_state;
+                    curr_state = state::configuring;
                     logger::info("Reloading configuration");
                     rel_config = std::thread(reload_config_thread);
                     rel_config.join();
+                    curr_state = old;
+                    break;
+                case 3
                     break;
                 default:
                     logger::warn("Unknown cmd \"{}\"", cmd);
@@ -563,11 +598,17 @@ void message_thread_funct(){
         // | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude | Initial Altitude | Valt |
         // | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |         18       |  19  |
 
-        // |        Setpoints        |          Error          |     Motor Speed   |                State and Sysinfo              |         Debug         |
-        // | z | vyaw | roll | pitch | z | vyaw | roll | pitch | fl | fr | bl | br | State | CPU Usg % | Battery | dt | controller | 0 | 1 | 2 | 3 | 4 | 5 |
-        // |20 |  21  |  22  |  23   |24 |  25  |  26  |  27   | 28 | 29 | 30 | 31 |  32   |    33     |   34    | 35 |     36     |37 |38 |39 |40 |41 |42 |
-                //     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42
-        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %d %f %f %f %f %f %f", 
+        // |        Setpoints        |          Error          |     Motor Speed   |                State and Sysinfo              |
+        // | z | vyaw | roll | pitch | z | vyaw | roll | pitch | fl | fr | bl | br | State | CPU Usg % | Battery | dt | controller |
+        // |20 |  21  |  22  |  23   |24 |  25  |  26  |  27   | 28 | 29 | 30 | 31 |  32   |    33     |   34    | 35 |     36     |
+        
+        // |                                                                                            PID Controller Info                                                                                          |
+        // |                    i_term                           |                   derr                      |               p                 |                 i               |                 d               |
+        // | z_i_term | vyaw_i_term | roll_i_term | pitch_i_term | z_derr | vyaw_derr | roll_derr | pitch_derr | z_p | vyaw_p | roll_p | pitch_p | z_i | vyaw_i | roll_i | pitch_i | z_d | vyaw_d | roll_d | pitch_d |
+        // |    37    |      38     |      39     |      40      |   41   |    42     |     43    |      44    | 45  |  46    |   47   |    48   | 49  |   50   |   51   |   52    | 53  |   54   |   56   |   57    |
+
+                //     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57
+        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2], initial_altitude, valt,
@@ -575,7 +616,13 @@ void message_thread_funct(){
             z_controller.old_error, vyaw_controller.old_error, roll_controller.old_error, pitch_controller.old_error,
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
             curr_state, -1.0, -1.0, dt, (cntrller_connected ? 1 : 0),
-            debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
+            z_controller.i_curr, vyaw_controller.i_curr, roll_controller.i_curr, pitch_controller.i_curr,
+            z_controller.derr, vyaw_controller.derr, roll_controller.derr, pitch_controller.derr,
+            z_controller.p, vyaw_controller.p, roll_controller.p, pitch_controller.p,
+            z_controller.i, vyaw_controller.i, roll_controller.i, pitch_controller.i,
+            z_controller.d, vyaw_controller.d, roll_controller.d, pitch_controller.d
+            // debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
+        );
         // logger::info("state: {}",curr_state);
         int e = unix_connection.send(send, strlen(send));
         if(e < 0) {
