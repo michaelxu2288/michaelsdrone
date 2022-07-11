@@ -494,7 +494,7 @@ void sensor_thread_funct(){
             temp.z += G*dt;
             velocity = velocity + temp;
             // velocity.z = vzfilter[velocity.z];
-            velocity.z = velocity.z * sensor_z_tau - valt * (1 - sensor_z_tau);
+            velocity.z = velocity.z * sensor_z_tau + valt * (1 - sensor_z_tau);
         }
 
         {// PID updates
