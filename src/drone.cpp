@@ -584,7 +584,7 @@ void message_thread_funct(){
                     curr_state = state::configuring;
                     logger::info("Reloading configuration");
                     rel_config = std::thread(reload_config_thread);
-                    rel_config.join();
+                    // rel_config.join();
                     curr_state = old;
                     break;
                 case 3:
@@ -687,6 +687,9 @@ void drone::destroy_message_thread(){
         alive = false;
         message_thread.join();
         logger::info("Joined message thread.");
+    }
+    if(rel_config.joinable()){
+        rel_config.join();
     }
 }
 
