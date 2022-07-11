@@ -100,7 +100,7 @@ server.listen(port, () => {
     const sockets = new Set();
 
 
-    const connecting_bluetooth = false;
+    var connecting_bluetooth = false;
 
     io.on("connection", (socket) => {
         sockets.add(socket);
