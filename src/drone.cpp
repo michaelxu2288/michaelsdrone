@@ -218,6 +218,11 @@ void drone::load_configuration(){
 }
 
 void drone::set_all(double per){
+    if(per < 0){
+        per = 0;
+    }else if(per > 1){
+        per = 1;
+    }
     motor_bl_spd = motor_br_spd = motor_fl_spd = motor_fr_spd = per;
     #ifdef ENABLE_MOTOR
         int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
@@ -229,6 +234,11 @@ void drone::set_all(double per){
 }
 
 void drone::set_diagonals(short diagonal, double per){
+    if(per < 0){
+        per = 0;
+    }else if(per > 1){
+        per = 1;
+    }
     int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
     switch (diagonal)
     {
@@ -253,6 +263,11 @@ void drone::set_diagonals(short diagonal, double per){
 }
 
 void drone::set_motor(short motor, double per){
+    if(per < 0){
+        per = 0;
+    }else if(per > 1){
+        per = 1;
+    }
     int pow = (int)(per * (THROTTLE_MAX - THROTTLE_MIN)) + THROTTLE_MIN;
     switch(motor){
     case MOTOR_FL:
@@ -479,7 +494,7 @@ void sensor_thread_funct(){
             temp.z += G*dt;
             velocity = velocity + temp;
             // velocity.z = vzfilter[velocity.z];
-            // velocity.z = velocity.z * sensor_z_tau - valt * (1 - sensor_z_tau);
+            velocity.z = velocity.z * sensor_z_tau - valt * (1 - sensor_z_tau);
         }
 
         {// PID updates
