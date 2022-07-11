@@ -156,7 +156,7 @@ void setup_filters(){
 }
 
 
-void drone::load_pid_config(){
+void load_pid_config(){
     config::load_file();
     
     z_controller.kP = config::get_config_dbl("pid.z.kP", 0.01);
@@ -567,6 +567,7 @@ void message_thread_funct(){
                 int cmd = atoi(recv);
                 // logger::info("");
 
+                state old;
                 switch(cmd){
                 case 0:
                     logger::info("Zeroing");
@@ -577,14 +578,14 @@ void message_thread_funct(){
                     calib_flag = true;
                     break;
                 case 2:
-                    state old = curr_state;
+                    old = curr_state;
                     curr_state = state::configuring;
                     logger::info("Reloading configuration");
                     rel_config = std::thread(reload_config_thread);
                     rel_config.join();
                     curr_state = old;
                     break;
-                case 3
+                case 3:
                     break;
                 default:
                     logger::warn("Unknown cmd \"{}\"", cmd);
