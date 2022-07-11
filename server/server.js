@@ -99,6 +99,9 @@ server.listen(port, () => {
 
     const sockets = new Set();
 
+
+    const connecting_bluetooth = false;
+
     io.on("connection", (socket) => {
         sockets.add(socket);
         socket.on("cmd", (cmd) => {
@@ -120,6 +123,15 @@ server.listen(port, () => {
 
         socket.on("disconnect", ()=>{
             sockets.delete(socket);
+        });
+
+        socket.on("bluetooth", () => {
+            if(!connecting_bluetooth){
+                connecting_bluetooth = true;
+                exec(`echo -e "connect F4:93:9F:3D:BC:77 \nquit" | bluetoothctl `, (error, stdout, stderr) => {
+                    connecting_bluetooth = false;
+                });
+            }
         });
     });
 
