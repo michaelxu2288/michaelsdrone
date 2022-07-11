@@ -1,8 +1,8 @@
 #ifndef PID_H
 #define PID_H
 
-#define I_MAX_ERR 10.0
-#define I_MAX 10.0
+#define I_MAX_ERR 1.0
+#define I_MAX 1.0
 
 struct pid {
 
