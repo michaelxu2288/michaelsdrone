@@ -513,7 +513,7 @@ void sensor_thread_funct(){
             calib_flag = false;
         }
         
-        usleep(sensor_sleep_int - (int) (dt * 10000000));
+        usleep(sensor_sleep_int);
     }
 }
 
