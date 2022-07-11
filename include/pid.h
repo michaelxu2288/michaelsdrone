@@ -18,6 +18,8 @@ struct pid {
     double setpoint = 0.0;
     double old_error = 0.0;
 
+    double derr = 0.0;
+
     double i_max = I_MAX;
     double i_max_err = I_MAX_ERR;
 
