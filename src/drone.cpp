@@ -196,6 +196,8 @@ void drone::load_configuration(){
     sensor_z_tau = config::get_config_dbl("sensor.z_tau", 0.02);
 
     config::write_to_file();
+
+    load_pid_config();
     
     sensor_sleep_int = 1000000 / sensor_ref_rate;
     message_sleep_int = 1000000 / message_thread_ref_rate;
