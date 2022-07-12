@@ -599,7 +599,7 @@ void message_thread_funct(){
                     curr_state = state::configuring;
                     logger::info("Reloading configuration");
                     rel_config = std::thread(reload_config_thread);
-                    // rel_config.join();
+                    rel_config.join();
                     curr_state = old;
                     break;
                 case 3:
