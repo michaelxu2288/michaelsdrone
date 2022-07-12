@@ -520,7 +520,7 @@ void sensor_thread_funct(){
             double p = pitch_controller.update(orientation_euler.y, dt);
             double vy = vyaw_controller.update(filtered_mpu6050_data[5], dt);
 
-            logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
+            // logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
 
             drone::set_motor(MOTOR_FL, z + r + p + vy);
             drone::set_motor(MOTOR_FR, z - r + p - vy);
@@ -595,8 +595,8 @@ void message_thread_funct(){
         // |  0   |     1     |       2       |         3         |
         if(unix_connection.can_read()){
             logger::info("YOO DATA!");
-            
             int len = unix_connection.read(recv, 50);
+            logger::info("{}", recv);
             recv[len] = '\0';
             if(len > 0){
                 int cmd = atoi(recv);
