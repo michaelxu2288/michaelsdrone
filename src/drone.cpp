@@ -598,8 +598,11 @@ void message_thread_funct(){
                     old = curr_state;
                     curr_state = state::configuring;
                     logger::info("Reloading configuration");
-                    rel_config = std::thread(reload_config_thread);
-                    rel_config.join();
+                    logger::info("Acquired locks!");
+                    drone::load_configuration();
+                    logger::info("Releasing locks!");
+                    // rel_config = std::thread(reload_config_thread);
+                    // rel_config.join();
                     curr_state = old;
                     break;
                 case 3:
