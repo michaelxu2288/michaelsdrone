@@ -71,10 +71,7 @@ videoStream.acceptConnections(app, {
 }, '/stream.mjpg', true);
 
 
-// app.get("/", (req, res) => {
-
-// });
-
+app.use("/", express.static("./client"));
 
 
 server.listen(port, () => {
