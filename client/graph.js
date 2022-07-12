@@ -252,6 +252,7 @@ class Line {
     }
 
     add(x, y) {
+        if(isNaN(y)) return;
         this.points.push({ x: x, y: y });
         this.maxX = Math.max(x, this.maxX);
         this.minX = Math.min(x, this.minX);
@@ -313,7 +314,7 @@ class TimeGraph {
 
         this.visible = [];
 
-        this.stepY = options.stepY ?? 1
+        // this.stepY = options.stepY ?? 1
 
         if(options.legend){
             this.legend = options.legend;

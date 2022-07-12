@@ -634,7 +634,7 @@ void message_thread_funct(){
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2], initial_altitude, valt,
             z_controller.setpoint, vyaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
-            z_controller.old_error, vyaw_controller.old_error, roll_controller.old_error, pitch_controller.old_error,
+            z_controller.error, vyaw_controller.error, roll_controller.error, pitch_controller.error,
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
             curr_state, -1.0, -1.0, dt, (cntrller_connected ? 1 : 0),
             z_controller.i_curr, vyaw_controller.i_curr, roll_controller.i_curr, pitch_controller.i_curr,

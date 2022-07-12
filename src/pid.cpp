@@ -10,7 +10,7 @@ pid::pid(double p_p, double p_i, double p_d){
 };
 
 double pid::update(double curr, double dt){
-    double err = setpoint - curr;
+    err = setpoint - curr;
 
 
     if(err < i_max_err && err > -i_max_err){
