@@ -176,6 +176,22 @@ void load_pid_config(){
     vyaw_controller.kD = config::get_config_dbl("pid.vyaw.kD", 0.00);
 
     config::write_to_file();
+
+    logger::lconfig("pid.z.kP: {}", z_controller.kP);
+    logger::lconfig("pid.z.kI: {}", z_controller.kI);
+    logger::lconfig("pid.z.kD: {}", z_controller.kD);
+
+    logger::lconfig("pid.r.kP: {}", roll_controller.kP);
+    logger::lconfig("pid.r.kI: {}", roll_controller.kI);
+    logger::lconfig("pid.r.kD: {}", roll_controller.kD);
+
+    logger::lconfig("pid.p.kP: {}", pitch_controller.kP);
+    logger::lconfig("pid.p.kI: {}", pitch_controller.kI);
+    logger::lconfig("pid.p.kD: {}", pitch_controller.kD);
+
+    logger::lconfig("pid.vy.kP: {}", vyaw_controller.kP);
+    logger::lconfig("pid.vy.kI: {}", vyaw_controller.kI);
+    logger::lconfig("pid.vy.kD: {}", vyaw_controller.kD);
 }
 
 void drone::load_configuration(){
@@ -504,7 +520,7 @@ void sensor_thread_funct(){
             double p = pitch_controller.update(orientation_euler.y, dt);
             double vy = vyaw_controller.update(filtered_mpu6050_data[5], dt);
 
-            logger::info("p: {:.2f} o: {:.2f}", roll_controller.p, roll_controller.output);
+            logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
 
             drone::set_motor(MOTOR_FL, z + r + p + vy);
             drone::set_motor(MOTOR_FR, z - r + p - vy);
