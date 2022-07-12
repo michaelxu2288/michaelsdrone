@@ -25,7 +25,7 @@ double pid::update(double curr, double dt){
     i = kI * i_curr;
     d = kD * derr;
 
-    output =  p + i + d;
+    output =  std::max(min_pwr, std::min(max_pwr, p + i + d));
     return output;
     // return i_curr * kI + kP * err - kD * derr;
 }

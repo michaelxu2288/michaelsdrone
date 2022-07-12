@@ -21,6 +21,7 @@
     <script src="graph.js"></script>
     <script src="gl-matrix.js"></script>
     <script src="gl-utils.js"></script>
+    
     <script src="script.js"></script>
 
     <link rel="stylesheet" href="style.css">
@@ -59,17 +60,25 @@
                     <button id="con-ctrl-btn">connect controller</button>
                 </div>
             </div>
-            <div id="roll-gauges">
-                
+            <div>
+                <div class="tab">
+                    <button class="tablinks" onclick="changeTabs('#gauges')">Gauges</button>
+                    <button class="tablinks" onclick="changeTabs('#pid-tuner')">Tuner</button>
+                </div>
+                <div class="tabcontent shown" id="gauges">
+                    <div id="roll-gauges"></div>
+                    <div id="pitch-gauges">
+                    </div>
+                    <div id="yaw-gauges">
+                    </div>
+                    <div id="accel-gauges"></div>
+                    <div id="z-gauges"></div>
+                    <div id="bmp-gauges"></div>
+                    <div id="motor-gauges"></div>
+                </div>
+                <div class="tabcontent" id="pid-tuner">
+                </div>
             </div>
-            <div id="pitch-gauges">
-            </div>
-            <div id="yaw-gauges">
-            </div>
-            <div id="accel-gauges"></div>
-            <div id="z-gauges"></div>
-            <div id="bmp-gauges"></div>
-            <div id="motor-gauges"></div>
             <!-- <div id="z-gauges"></div> -->
         </div>
         <!-- <h2>Roll <span id="roll"></span>&deg;</h2>

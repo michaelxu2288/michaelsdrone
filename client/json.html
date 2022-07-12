@@ -10,6 +10,65 @@
 
         <script src="json.js"></script>
         <link rel="stylesheet" href="json.css">
+
+        <script>
+                        
+            var socket;
+
+            function connect(){    
+                if(!socket){
+                    $("#con-btn").text("Connecting ...")
+                    socket = io("http://pi@drone/");
+                    $("#conn-dot").removeClass("connected");
+                    $("#conn-dot").addClass("connecting");
+
+                    $("#save-btn").click(() => {
+                        socket.emit("update-json", curr);
+                    })
+                    
+                    $("#rst-btn").click(() => {
+                        socket.emit("req-json");
+                    })
+
+                    socket.on("connect", () => {
+                        $("#zero-btn").click(() => {socket.emit("cmd", 0)});
+                        $("#calib-btn").click(() => {socket.emit("cmd", 1)});
+                        $("#rld-config-btn").click(() => {socket.emit("cmd", 2)});
+
+                        
+                        $("#con-btn").text("Disconnect");
+                        $("#conn-dot").addClass("connected");
+                        $("#conn-dot").removeClass("connecting");
+                        $("#kill").click(() => {socket.emit("kill");});
+
+                        socket.emit("req-json");
+                    });
+
+                    socket.on("json", (obj) => {
+                        // console.log(obj);
+                        $("#root").empty();
+                        curr = obj;
+                        $("#root").append(buildConfigurer(obj, null, "Global Config", curr));
+                        
+                    });
+
+                    socket.on("disconnect", () => {
+                        $("#conn-dot").removeClass("connected");
+                        $("#conn-dot").removeClass("connecting");
+                        curr = null;
+                    });
+
+                }else{
+                    $("#con-btn").text("Connect");
+                    $("#conn-dot").removeClass("connected").removeClass("connecting");
+                    socket.disconnect();
+                    socket = null;
+                    curr = null;
+                }
+                
+            }
+
+        </script>
     </head>
 
     <body onload="main();">

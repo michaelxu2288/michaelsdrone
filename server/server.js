@@ -130,6 +130,12 @@ server.listen(port, () => {
                 });
             }
         });
+
+        socket.on("chg-pid", (type, val) => {
+            const parameter = `${type} ${val}`;
+            console.log(`Changing parameter \"${parameter}\"`);
+            lastconn.write(parameter);
+        })
     });
 
     socket_server.listen(SOCKET_LOCATION, () => {

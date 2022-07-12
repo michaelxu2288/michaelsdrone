@@ -31,6 +31,12 @@ var terminal;
 const states = ["configuring", "ready", "calibrating", "idle", "init", "settling", "destroying"];
 
 
+function changeTabs(id){
+    $(".tabcontent").removeClass("shown");
+    $(id).addClass("shown");
+}
+
+
 function processSmallNumbers(n){
 
     // if(n < .01 && n > -.01){
@@ -466,6 +472,15 @@ var controllerStatusDot;
 
 var lastUpdate = new Date();
 
+
+
+
+
+
+
+const changeTunerVals = [];
+
+
 function connect(){
 
     
@@ -495,6 +510,43 @@ function connect(){
             $("#con-ctrl-btn").unbind("click");
         });
 
+        
+
+        const bruheles = [];
+        const pidTunerEle = $("#pid-tuner");
+        [
+            "Z P", "Z I", "Z D",
+            "VYaw P", "VYaw I", "VYaw D",
+            "Roll P", "Roll I", "Roll D",
+            "Pitch P", "Pitch I", "Pitch D",
+        ].forEach((name, i) => {
+            const ihatethis = $(`<input id="tuner-${i}"/>`);
+            ihatethis.on("change", (e) => {
+                console.log("FUICK THIS SHIT", e);
+                changeTunerVals[i](parseFloat(e.target.value));
+            })
+            bruheles.push(ihatethis);
+            const ele = $(`<div class="key-val"/>`).append($(`<span class="center">${name}</span>`)).append(ihatethis)
+            pidTunerEle.append(ele);
+        }); 
+        // console.log(bruheles);
+        socket.on("json", (config) => {
+            const pid = config.pid;
+            // console.log(pid);
+            ["z", "vyaw", "r", "p"].forEach((name, i) => {
+                // console.log(name);
+                ["kP", "kI", "kD"].forEach((wtf, j) => {
+                    // console.log(wtf);
+                    // console.log(pid[name][wtf])
+                    bruheles[i*3+j].val(pid[name][wtf]);
+                    changeTunerVals.push((val) => {
+                        socket.emit("chg-pid", i*4+j, val);
+                    });
+                })
+            })
+        })
+
+        socket.emit("req-json");
 
         var k = 0;
         var currState = -1;
@@ -548,15 +600,11 @@ function parseOutput(output) {
     rotation.y = output[14];
     
     const a = Math.sqrt(output[0]*output[0] + output[1]*output[1] + output[2]*output[2]);
-    // Gauges.a.gauge.changeValue(a);
-    // Gauges.v.gauge.changeValue(Math.sqrt(output[6]*output[6] + output[7]*output[7] + output[8]*output[8]));
 
     Gauges.ax.gauge.changeValue(output[0]);
     Gauges.ay.gauge.changeValue(output[1]);
     Gauges.az.gauge.changeValue(output[2]);
 
-    // Gauges.vx.gauge.changeValue(output[6]);
-    // Gauges.vy.gauge.changeValue(output[7]);
     Gauges.vz.gauge.changeValue(output[8]);
 
     Gauges.roll.gauge.changeValue(rotation.r / DEG_TO_RAD);
@@ -583,25 +631,11 @@ function parseOutput(output) {
     Gauges.z.gauge.changeValue(output[11]);
     Gauges.valt.gauge.changeValue(output[19]);
     Gauges.initalt.gauge.changeValue(output[18]);
-    // console.log(output);
-    
-    // double x_Buff = float(x);
-    // double y_Buff = float(y);
-    // double z_Buff = float(z);
-    // roll = atan2(y_Buff , -z_Buff) * 57.3;
-    // pitch = atan2((- x_Buff) , sqrt(y_Buff * y_Buff + z_Buff * z_Buff)) * 57.3;
-
-    // Gauges.roll.gauge.changeSetpoint()
     
     var r_a = Math.atan2(output[1], output[2]) * 57.3
     var p_a = Math.atan2(output[0], Math.sqrt(output[1] * output[1] + output[2] * output[2])) * 57.3;
     if(Math.abs(a - 9.8) < 0.5){
         const mu = 0.001;
-        // Roll  = atan2( Y,   sign* sqrt(Z*Z+ miu*X*X));
-        // sign  = 1 if accZ>0, -1 otherwise 
-        // miu = 0.001
-        // console.log(output[1], output[2])
-        // Gauges.rollA.gauge.changeValue(Math.atan2(output[1], (output[2] > 0 ? -1 : 1) * Math.sqrt(output[2] * output[2] + mu * output[0] * output[0])) * 57.3);
         Gauges.rollA.gauge.changeValue(r_a);
         Gauges.pitchA.gauge.changeValue(p_a);
     }else{
@@ -610,17 +644,8 @@ function parseOutput(output) {
         Gauges.pitchA.gauge.changeValue(NaN);
     }
     
-    // console.log(output);
-    // Gauges.rollA.gauge.changeValue(output[40] / DEG_TO_RAD);
-    // Gauges.pitchA.gauge.changeValue(output[41] / DEG_TO_RAD);
-    
     const M_TO_FT = 3.281;
 
-    // alt_graph.addData(0, k, output[8] * M_TO_FT);
-    // alt_graph.addData(1, k, (output[2] - 9.81) * M_TO_FT);
-    // alt_graph.addData(2, k, (output[17] - output[18]) * M_TO_FT);
-    // alt_graph.addData(3, k, (output[11]) * M_TO_FT);
-    // alt_graph.addData(4, k, output[19] * M_TO_FT);
 
     alt_graph.addDataList([output[8] * M_TO_FT, (output[2] - 9.81) * M_TO_FT, (output[17] - output[18]) * M_TO_FT, (output[11]) * M_TO_FT, output[19] * M_TO_FT])
     xyz_graph.addDataList([output[0] * M_TO_FT, output[1] * M_TO_FT, output[2] * M_TO_FT, output[8] * M_TO_FT, output[11] * M_TO_FT])
@@ -635,7 +660,7 @@ function parseOutput(output) {
         k.addDataList([
             output[20 + i],
             output[24 + i],
-            output[58 + i],
+            output[57 + i],
             output[45 + i],
             output[49 + i],
             output[53 + i],
@@ -952,6 +977,11 @@ function main(){
         eles[i].width = 500;
         eles[i].height = 400;
     }
+
+
+
+
+
 
     Object.keys(Gauges).forEach((key) => {
         if(Gauges[key] !== null){

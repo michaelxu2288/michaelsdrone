@@ -525,7 +525,7 @@ void sensor_thread_funct(){
             drone::set_motor(MOTOR_FL, z + r + p + vy);
             drone::set_motor(MOTOR_FR, z - r + p - vy);
             drone::set_motor(MOTOR_BL, z + r - p - vy);
-            drone::set_motor(MOTOR_FR, z - r - p + vy);
+            drone::set_motor(MOTOR_BR, z - r - p + vy);
         }
 
         if(zero_flag){
@@ -576,6 +576,21 @@ void reconnect_node_server(sock::socket& client, sock::un_connection& unix_conne
 }
 
 
+int substr_chr(char * out, const char * bruh, char c, int a, int b){
+    int k = 0;
+    for(int i = a; i != b && bruh[i] != '\0'; i ++){
+        if(bruh[i] == c){
+            out[k++] = '\0';
+            return i;
+        }
+        out[k++] = bruh[i];
+    }
+    out[k] = '\0';
+    return -1;
+}
+
+
+
 void message_thread_funct(){
     logger::info("Message thread alive!");
 
@@ -587,11 +602,12 @@ void message_thread_funct(){
     }
     char send[1024];
     char recv[1024];
+    char buf[100];
     while(alive){
         // std::lock_guard<std::mutex> message_lock_guard(message_thread_mutex);
         
 
-        // | zero | calibrate | Reload Config | Reload PID Config |
+        // | zero | calibrate | Reload Config | Chg PID Config |
         // |  0   |     1     |       2       |         3         |
         if(unix_connection.can_read()){
             logger::info("YOO DATA!");
@@ -624,6 +640,63 @@ void message_thread_funct(){
                     curr_state = old;
                     break;
                 case 3:
+                    int l = substr_chr(buf, recv, ' ', 0, -1);
+                    if(l != -1){
+                        int var = atoi(l);
+                        double val = atof(recv+l+1);
+                        switch(var){
+                        case 0: // z_p
+                            z_controller.kP = val;
+                            z_controller.reset_integral_term()
+                            break;
+                        case 1: // z_i
+                            z_controller.kI = val;
+                            z_controller.reset_integral_term()
+                            break;
+                        case 2: // z_d
+                            z_controller.kD = val;
+                            z_controller.reset_integral_term()
+                            break;
+                        case 3: // vy_p
+                            vyaw_controller.kP = val;
+                            vyaw_controller.reset_integral_term()
+                            break;
+                        case 4: // vy_i
+                            vyaw_controller.kI = val;
+                            vyaw_controller.reset_integral_term()
+                            break;
+                        case 5: // vy_d
+                            vyaw_controller.kD = val;
+                            vyaw_controller.reset_integral_term()
+                            break;
+                        case 6: // r_p
+                            r_controller.kP = val;
+                            roll_controller.reset_integral_term()
+                            break;
+                        case 7: // r_i
+                            r_controller.kI = val;
+                            roll_controller.reset_integral_term()
+                            break;
+                        case 8: // r_d
+                            r_controller.kD = val;
+                            roll_controller.reset_integral_term()
+                            break;
+                        case 9: // p_p
+                            p_controller.kP = val;
+                            pitch_controller.reset_integral_term()
+                            break;
+                        case 10: // p_i
+                            p_controller.kI = val;
+                            pitch_controller.reset_integral_term()
+                            break;
+                        case 11: // p_d
+                            p_controller.kD = val;
+                            pitch_controller.reset_integral_term()
+                            break;
+                        default:
+                            logger::warn("Unknown variable \"{}\"", var);
+                        }
+                    }
                     break;
                 default:
                     logger::warn("Unknown cmd \"{}\"", cmd);
@@ -644,7 +717,7 @@ void message_thread_funct(){
         // |                                                                                            PID Controller Info                                                                                                                                    |
         // |                    i_term                           |                   derr                      |               p                 |                 i               |                 d               |                output                   |
         // | z_i_term | vyaw_i_term | roll_i_term | pitch_i_term | z_derr | vyaw_derr | roll_derr | pitch_derr | z_p | vyaw_p | roll_p | pitch_p | z_i | vyaw_i | roll_i | pitch_i | z_d | vyaw_d | roll_d | pitch_d | z_out | vyaw_out | roll_out | pitch_out |
-        // |    37    |      38     |      39     |      40      |   41   |    42     |     43    |      44    | 45  |  46    |   47   |    48   | 49  |   50   |   51   |   52    | 53  |   54   |   56   |   57    |  58   |    59    |    60    |     61    |
+        // |    37    |      38     |      39     |      40      |   41   |    42     |     43    |      44    | 45  |  46    |   47   |    48   | 49  |   50   |   51   |   52    | 53  |   54   |   55   |   56    |  57   |    58    |    59    |     60    |
 
                 //     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61
         sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 

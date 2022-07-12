@@ -24,6 +24,9 @@ struct pid {
     double i_max = I_MAX;
     double i_max_err = I_MAX_ERR;
 
+    double max_pwr = 1.0;
+    double min_pwr = 0.0;
+
     double output = 0.0;
 
     pid();
