@@ -859,7 +859,7 @@ function main(){
                     // min: -3,
                 }
             },
-            stepY: 5,
+            // stepY: 5,
             g_width: 500,
             g_height: 400,
             legend: {
@@ -877,7 +877,7 @@ function main(){
                 }
 
             },
-            stepY: 5,
+            // stepY: 5,
             g_width: 500,
             g_height: 400,
             legend: {
