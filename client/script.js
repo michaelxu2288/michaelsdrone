@@ -1,11 +1,4 @@
 
-const colors = {
-    grey1:"#b0acb0",
-    grey2:"#e2dddf",
-    light:"#85ebd9",
-    primary:"#3d898d",
-    dak:".0",
-}
 
 const deg_t_rad = 0.017453292519943;
 
@@ -32,20 +25,22 @@ var socket;
 
 var r_graph, p_graph, y_graph;
 
+var terminal;
 
-
+//configuring = 0, ready = 1, calibrating = 2, idle = 3, init = 4, settling = 5, destroying = 6
+const states = ["configuring", "ready", "calibrating", "idle", "init", "settling", "destroying"];
 
 
 function processSmallNumbers(n){
 
-    if(n < .01 && n > -.01){
-        return Math.round(n * 10000) / 10000;
-    }else if(n < .1 && n > -.1){
-        return Math.round(n * 1000) / 1000;
+    // if(n < .01 && n > -.01){
+    //     return Math.round(n * 10000) / 10000;
+    // }else if(n < .1 && n > -.1){
+    //     return Math.round(n * 1000) / 1000;
     
-    }else if(n < 1 && n > -1){
-        return Math.round(n * 100) / 100;
-    }
+    // }else if(n < 1 && n > -1){
+    //     return Math.round(n * 100) / 100;
+    // }
 
     return Math.round(n * 10) / 10;
 
@@ -69,7 +64,7 @@ const Gauges = {
         },
         type: 0,
         gaugeSize: 160,
-        container: "#x-gauges",
+        container: "#accel-gauges",
     },
     ay: {
         value: 0,
@@ -84,7 +79,7 @@ const Gauges = {
         },
         type: 0,
         gaugeSize: 160,
-        container: "#y-gauges",
+        container: "#accel-gauges",
     },
     az: {
         value: 0,
@@ -99,38 +94,38 @@ const Gauges = {
         },
         type: 0,
         gaugeSize: 160,
-        container: "#z-gauges",
+        container: "#accel-gauges",
     },
-    vx: {
-        value: 0,
-        title: "Vx",
-        width: 180,
-        height: 80,
-        valueToPercent: (val) => {
-            return val / 20 + .5; 
-        },
-        textFromValue: (angle) => {
-            return `${processSmallNumbers(angle)} m/s`;
-        },
-        type: 0,
-        gaugeSize: 160,
-        container: "#x-gauges",
-    },
-    vy: {
-        value: 0,
-        title: "Vy",
-        width: 180,
-        height: 80,
-        valueToPercent: (val) => {
-            return val / 20 + .5; 
-        },
-        textFromValue: (angle) => {
-            return `${processSmallNumbers(angle)} m/s`;
-        },
-        type: 0,
-        gaugeSize: 160,
-        container: "#y-gauges",
-    },
+    // vx: {
+    //     value: 0,
+    //     title: "Vx",
+    //     width: 180,
+    //     height: 80,
+    //     valueToPercent: (val) => {
+    //         return val / 20 + .5; 
+    //     },
+    //     textFromValue: (angle) => {
+    //         return `${processSmallNumbers(angle)} m/s`;
+    //     },
+    //     type: 0,
+    //     gaugeSize: 160,
+    //     container: "#x-gauges",
+    // },
+    // vy: {
+    //     value: 0,
+    //     title: "Vy",
+    //     width: 180,
+    //     height: 80,
+    //     valueToPercent: (val) => {
+    //         return val / 20 + .5; 
+    //     },
+    //     textFromValue: (angle) => {
+    //         return `${processSmallNumbers(angle)} m/s`;
+    //     },
+    //     type: 0,
+    //     gaugeSize: 160,
+    //     container: "#y-gauges",
+    // },
     vz: {
         value: 0,
         title: "Vz",
@@ -144,7 +139,7 @@ const Gauges = {
         },
         type: 0,
         gaugeSize: 160,
-        container: "#z-gauges",
+        container: "#accel-gauges",
     },
     vroll: {
         value: 0,
@@ -237,36 +232,36 @@ const Gauges = {
         gaugeSize: 45,
         container: "#yaw-gauges",
     },
-    a: {
-        value: 0,
-        title: "Acceleration",
-        width: 360,
-        height: 80,
-        valueToPercent: (val) => {
-            return val / 20; 
-        },
-        textFromValue: (angle) => {
-            return `${processSmallNumbers(angle)} m/s²`;
-        },
-        type: 0,
-        gaugeSize: 340,
-        container: ".bruh",
-    },
-    v: {
-        value: 0,
-        title: "Velocity",
-        width: 360,
-        height: 80,
-        valueToPercent: (val) => {
-            return val / 20; 
-        },
-        textFromValue: (angle) => {
-            return `${processSmallNumbers(angle)} m/s`;
-        },
-        type: 0,
-        gaugeSize: 340,
-        container: ".bruh",
-    },
+    // a: {
+    //     value: 0,
+    //     title: "Acceleration",
+    //     width: 360,
+    //     height: 80,
+    //     valueToPercent: (val) => {
+    //         return val / 20; 
+    //     },
+    //     textFromValue: (angle) => {
+    //         return `${processSmallNumbers(angle)} m/s²`;
+    //     },
+    //     type: 0,
+    //     gaugeSize: 340,
+    //     container: ".bruh",
+    // },
+    // v: {
+    //     value: 0,
+    //     title: "Velocity",
+    //     width: 360,
+    //     height: 80,
+    //     valueToPercent: (val) => {
+    //         return val / 20; 
+    //     },
+    //     textFromValue: (angle) => {
+    //         return `${processSmallNumbers(angle)} m/s`;
+    //     },
+    //     type: 0,
+    //     gaugeSize: 340,
+    //     container: ".bruh",
+    // },
     temp: {
         value: 0,
         title: "Temp",
@@ -295,7 +290,7 @@ const Gauges = {
         width: 180,
         height: 90,
         textFromValue: (temp) => {
-            return `${processSmallNumbers(temp)} m`;
+            return `${processAltitude(temp)} ft`;
         },
         type: 3,
         container: "#bmp-gauges",
@@ -390,8 +385,45 @@ const Gauges = {
         gaugeSize: 45,
         container: "#pitch-gauges",
     },
+    z: {
+        value: 0,
+        title: "z",
+        width: 160,
+        height: 80,
+        textFromValue: (temp) => {
+            return `${processAltitude(temp)} ft`;
+        },
+        type: 3,
+        container: "#z-gauges",
+    },
+    valt: {
+        value: 0,
+        title: "Valt",
+        width: 180,
+        height: 90,
+        textFromValue: (temp) => {
+            return `${processAltitude(temp)} ft/s`;
+        },
+        type: 3,
+        container: "#bmp-gauges",
+    },
+    initalt: {
+        value: 0,
+        title: "Initial Alt",
+        width: 180,
+        height: 90,
+        textFromValue: (temp) => {
+            return `${processAltitude(temp)} ft`;
+        },
+        type: 3,
+        container: "#bmp-gauges",
+    },
+
 }
 
+function processAltitude(alt){
+    return Math.round(alt * 3.281 * 100) / 100;
+}
 
 const history = {
     ax: [],
@@ -413,100 +445,240 @@ const history = {
 }
 
 
+
+var z_pid_graph;
+var r_pid_graph;
+var p_pid_graph;
+var vy_pid_graph;
+var alt_graph;
+var xyz_graph;
+var rpy_graph;
+var tpa_graph;
+
+var graph1;
+var graph2;
+
+const DEG_TO_RAD = Math.PI / 180;
+var k = 0;
+var currState = -1;
+var droneStatusDot;
+var controllerStatusDot;
+
+var lastUpdate = new Date();
+
 function connect(){
 
     
     if(!socket){
-        $("#con-btn").text("Disconnect")
+        $("#con-btn").text("Connecting ...")
         socket = io("http://pi@drone/");
+        droneStatusDot.connecting();
 
         socket.on("connect", () => {
             $("#zero-btn").click(() => {socket.emit("cmd", 0)});
             $("#calib-btn").click(() => {socket.emit("cmd", 1)});
+            $("#rld-config-btn").click(() => {socket.emit("cmd", 2)});
+            $("#con-ctrl-btn").click(() => {socket.emit("bluetooth")})
+
+            
+            $("#con-btn").text("Disconnect");
+            droneStatusDot.connected();
+            $("#kill").click(() => {socket.emit("kill");});
+
         });
-        const DEG_TO_RAD = Math.PI / 180;
+
+        socket.on("disconnect", () => {
+            droneStatusDot.disconnected();
+            $("#zero-btn").unbind("click");
+            $("#calib-btn").unbind("click");
+            $("#rld-config-btn").unbind("click");
+            $("#con-ctrl-btn").unbind("click");
+        });
+
+
         var k = 0;
+        var currState = -1;
         socket.on("sensor", (output) => {
-            output = output.map((a) => parseFloat(a));
-    
-            rotation.r = output[12];
-            rotation.p = output[13];
-            rotation.y = output[14];
-            
-            const a = Math.sqrt(output[0]*output[0] + output[1]*output[1] + output[2]*output[2]);
-            Gauges.a.gauge.changeValue(a);
-            Gauges.v.gauge.changeValue(Math.sqrt(output[6]*output[6] + output[7]*output[7] + output[8]*output[8]));
-    
-            Gauges.ax.gauge.changeValue(output[0]);
-            Gauges.ay.gauge.changeValue(output[1]);
-            Gauges.az.gauge.changeValue(output[2]);
-    
-            Gauges.vx.gauge.changeValue(output[6]);
-            Gauges.vy.gauge.changeValue(output[7]);
-            Gauges.vz.gauge.changeValue(output[8]);
-    
-            Gauges.roll.gauge.changeValue(rotation.r / DEG_TO_RAD);
-            Gauges.pitch.gauge.changeValue(rotation.p / DEG_TO_RAD);
-            Gauges.yaw.gauge.changeValue(rotation.y / DEG_TO_RAD);
-
-            Gauges.roll.gauge.changeSetpoint(output[20] / DEG_TO_RAD);
-            Gauges.pitch.gauge.changeSetpoint(output[21] / DEG_TO_RAD);
-            // Gauges.yaw.gauge.changeValue(rotation.y / DEG_TO_RAD);
-    
-            Gauges.vroll.gauge.changeValue(output[3] / DEG_TO_RAD);
-            Gauges.vpitch.gauge.changeValue(output[4] / DEG_TO_RAD);
-            Gauges.vyaw.gauge.changeValue(output[5] / DEG_TO_RAD);
-
-            Gauges.temp.gauge.changeValue(output[15]);
-            Gauges.press.gauge.changeValue(output[16]);
-            Gauges.alt.gauge.changeValue(output[17]);
-
-            Gauges.mfl.gauge.changeValue(output[25]);
-            Gauges.mfr.gauge.changeValue(output[26]);
-            Gauges.mbl.gauge.changeValue(output[27]);
-            Gauges.mbr.gauge.changeValue(output[28]);
-
-            console.log(output);
-            
-            // double x_Buff = float(x);
-            // double y_Buff = float(y);
-            // double z_Buff = float(z);
-            // roll = atan2(y_Buff , -z_Buff) * 57.3;
-            // pitch = atan2((- x_Buff) , sqrt(y_Buff * y_Buff + z_Buff * z_Buff)) * 57.3;
-
-            // Gauges.roll.gauge.changeSetpoint()
-            
-            if(Math.abs(a - 9.8) < 0.5){
-                const mu = 0.001;
-                // Roll  = atan2( Y,   sign* sqrt(Z*Z+ miu*X*X));
-                // sign  = 1 if accZ>0, -1 otherwise 
-                // miu = 0.001
-                // console.log(output[1], output[2])
-                // Gauges.rollA.gauge.changeValue(Math.atan2(output[1], (output[2] > 0 ? -1 : 1) * Math.sqrt(output[2] * output[2] + mu * output[0] * output[0])) * 57.3);
-                Gauges.rollA.gauge.changeValue(Math.atan2(output[1], output[2]) * 57.3);
-                Gauges.pitchA.gauge.changeValue(Math.atan2(output[0], Math.sqrt(output[1] * output[1] + output[2] * output[2])) * 57.3);
-            }else{
-                Gauges.rollA.gauge.changeValue(NaN);
-                Gauges.pitchA.gauge.changeValue(NaN);
-            }
-            
-            // console.log(output);
-            // Gauges.rollA.gauge.changeValue(output[40] / DEG_TO_RAD);
-            // Gauges.pitchA.gauge.changeValue(output[41] / DEG_TO_RAD);
-            
-            chart.addData(0, k, output[0])
-            chart.render();
-            
-            Object.keys(Gauges).forEach((key) => {if(Gauges[key].gauge.updated) {Gauges[key].gauge.drawCanvas();}})
-
-            k++;
+            parseOutput(output);
         });
     }else{
-        $("#con-btn").text("Connect")
+        $("#con-btn").text("Connect");
+        droneStatusDot.disconnected();
         socket.disconnect();
+        $("#zero-btn").unbind("click");
+        $("#calib-btn").unbind("click");
+        $("#rld-config-btn").unbind("click");
+        $("#con-ctrl-btn").unbind("click");
         socket = null;
     }
     
+}
+
+class StatusDot {
+    constructor(element){
+        this.ele = element;
+        this.state = 0;
+    }
+    disconnected(){
+        if(this.state == 0) return;
+        this.state = 0;
+        this.ele.removeClass("connected");
+        this.ele.removeClass("connecting");
+    }
+    connecting(){
+        if(this.state == 1) return;
+        this.state = 1;
+        this.ele.removeClass("connected");
+        this.ele.addClass("connecting");
+    }
+    connected(){
+        if(this.state == 2) return;
+        this.state = 2;
+        this.ele.addClass("connected");
+        this.ele.removeClass("connecting");
+    }
+}
+var graph1ctx, graph2ctx;
+function parseOutput(output) {
+    output = output.map((a) => parseFloat(a));
+    lastUpdate = new Date();
+    
+    rotation.r = output[12];
+    rotation.p = output[13];
+    rotation.y = output[14];
+    
+    const a = Math.sqrt(output[0]*output[0] + output[1]*output[1] + output[2]*output[2]);
+    // Gauges.a.gauge.changeValue(a);
+    // Gauges.v.gauge.changeValue(Math.sqrt(output[6]*output[6] + output[7]*output[7] + output[8]*output[8]));
+
+    Gauges.ax.gauge.changeValue(output[0]);
+    Gauges.ay.gauge.changeValue(output[1]);
+    Gauges.az.gauge.changeValue(output[2]);
+
+    // Gauges.vx.gauge.changeValue(output[6]);
+    // Gauges.vy.gauge.changeValue(output[7]);
+    Gauges.vz.gauge.changeValue(output[8]);
+
+    Gauges.roll.gauge.changeValue(rotation.r / DEG_TO_RAD);
+    Gauges.pitch.gauge.changeValue(rotation.p / DEG_TO_RAD);
+    Gauges.yaw.gauge.changeValue(rotation.y / DEG_TO_RAD);
+
+    Gauges.roll.gauge.changeSetpoint(output[22] / DEG_TO_RAD);
+    Gauges.pitch.gauge.changeSetpoint(output[23] / DEG_TO_RAD);
+    Gauges.vyaw.gauge.changeSetpoint(output[21] / DEG_TO_RAD);
+
+    Gauges.vroll.gauge.changeValue(output[3] / DEG_TO_RAD);
+    Gauges.vpitch.gauge.changeValue(output[4] / DEG_TO_RAD);
+    Gauges.vyaw.gauge.changeValue(output[5] / DEG_TO_RAD);
+
+    Gauges.temp.gauge.changeValue(output[15]);
+    Gauges.press.gauge.changeValue(output[16]);
+    Gauges.alt.gauge.changeValue(output[17]);
+
+    Gauges.mfl.gauge.changeValue(output[28]);
+    Gauges.mfr.gauge.changeValue(output[29]);
+    Gauges.mbl.gauge.changeValue(output[30]);
+    Gauges.mbr.gauge.changeValue(output[31]);
+
+    Gauges.z.gauge.changeValue(output[11]);
+    Gauges.valt.gauge.changeValue(output[19]);
+    Gauges.initalt.gauge.changeValue(output[18]);
+    // console.log(output);
+    
+    // double x_Buff = float(x);
+    // double y_Buff = float(y);
+    // double z_Buff = float(z);
+    // roll = atan2(y_Buff , -z_Buff) * 57.3;
+    // pitch = atan2((- x_Buff) , sqrt(y_Buff * y_Buff + z_Buff * z_Buff)) * 57.3;
+
+    // Gauges.roll.gauge.changeSetpoint()
+    
+    var r_a = Math.atan2(output[1], output[2]) * 57.3
+    var p_a = Math.atan2(output[0], Math.sqrt(output[1] * output[1] + output[2] * output[2])) * 57.3;
+    if(Math.abs(a - 9.8) < 0.5){
+        const mu = 0.001;
+        // Roll  = atan2( Y,   sign* sqrt(Z*Z+ miu*X*X));
+        // sign  = 1 if accZ>0, -1 otherwise 
+        // miu = 0.001
+        // console.log(output[1], output[2])
+        // Gauges.rollA.gauge.changeValue(Math.atan2(output[1], (output[2] > 0 ? -1 : 1) * Math.sqrt(output[2] * output[2] + mu * output[0] * output[0])) * 57.3);
+        Gauges.rollA.gauge.changeValue(r_a);
+        Gauges.pitchA.gauge.changeValue(p_a);
+    }else{
+        r_a = p_a = NaN;
+        Gauges.rollA.gauge.changeValue(NaN);
+        Gauges.pitchA.gauge.changeValue(NaN);
+    }
+    
+    // console.log(output);
+    // Gauges.rollA.gauge.changeValue(output[40] / DEG_TO_RAD);
+    // Gauges.pitchA.gauge.changeValue(output[41] / DEG_TO_RAD);
+    
+    const M_TO_FT = 3.281;
+
+    // alt_graph.addData(0, k, output[8] * M_TO_FT);
+    // alt_graph.addData(1, k, (output[2] - 9.81) * M_TO_FT);
+    // alt_graph.addData(2, k, (output[17] - output[18]) * M_TO_FT);
+    // alt_graph.addData(3, k, (output[11]) * M_TO_FT);
+    // alt_graph.addData(4, k, output[19] * M_TO_FT);
+
+    alt_graph.addDataList([output[8] * M_TO_FT, (output[2] - 9.81) * M_TO_FT, (output[17] - output[18]) * M_TO_FT, (output[11]) * M_TO_FT, output[19] * M_TO_FT])
+    xyz_graph.addDataList([output[0] * M_TO_FT, output[1] * M_TO_FT, output[2] * M_TO_FT, output[8] * M_TO_FT, output[11] * M_TO_FT])
+    rpy_graph.addDataList([
+        output[3] / DEG_TO_RAD, output[4] / DEG_TO_RAD, output[5] / DEG_TO_RAD,
+        r_a, p_a,
+        rotation.r / DEG_TO_RAD, rotation.p / DEG_TO_RAD, rotation.y / DEG_TO_RAD
+    ])
+    // alt_graph.render();
+
+    function b(k, i){
+        k.addDataList([
+            output[20 + i],
+            output[24 + i],
+            output[58 + i],
+            output[45 + i],
+            output[49 + i],
+            output[53 + i],
+            output[37 + i],
+            output[41 + i],
+        ])
+    }
+
+    b(z_pid_graph, 0);
+    b(vy_pid_graph, 1);
+    b(r_pid_graph, 2);
+    b(p_pid_graph, 3);
+
+    graph1.render(graph1ctx);
+    graph2.render(graph2ctx);
+    
+    Object.keys(Gauges).forEach((key) => {if(Gauges[key].gauge.updated) {Gauges[key].gauge.drawCanvas();}})
+    // console.log(output);
+    if(output[32] !== currState){
+        // console.log(output[32]);
+        $("#status").text(states[output[32]]);
+        currState = output[32];
+    }
+    if(output[36] === 1) {
+        controllerStatusDot.connected();
+    }else{
+        controllerStatusDot.disconnected();
+    }
+
+    k++;
+}
+
+var connectedStream = false;
+function toggleStream(){
+    if(connectedStream){
+        connectedStream = false;
+        $("#con-strm").text("Connect Stream");
+        $("#stream").attr("src", "");
+    }else{
+        $("#con-strm").text("Disconnect Stream");
+        connectedStream = true;
+        $("#stream").attr("src", "http://drone:80/stream.mjpg");
+    }
 }
 
 function disconnect(){
@@ -516,9 +688,6 @@ function disconnect(){
     socket = null;
 }
 
-
-
-const tri = [[-5, 0],[5/2, -5 *Math.sqrt(3) / 2],[]]
 
 class Gauge {
     constructor(settings){
@@ -649,21 +818,140 @@ class Gauge {
 var chart;
 
 function main(){
+    droneStatusDot = new StatusDot($("#conn-dot"));
+    controllerStatusDot = new StatusDot($("#ctrller-dot"));
 
-    const vals = [];
-    for(var i = 0; i < 100 ; i++){
-        vals.push(i);
+    droneStatusDot.disconnected();
+    controllerStatusDot.disconnected();
+
+    const timeSinceEle = $("#last-update");
+    setInterval(() => {
+        const now = new Date();
+        const s = Math.round((now - lastUpdate) / 1000);
+        if(s < 1){
+            timeSinceEle.text(`just now`);
+        }else{
+            timeSinceEle.text(`${s} s`);
+        }
+    }, 1000);
+    {
+        alt_graph = new TimeGraph(document.getElementById("hidden-canvas"),{
+            range: {
+                data: {
+                    max: 3,
+                    min: -3,
+                }
+            },
+            g_width: 500,
+            g_height: 400,
+            legend: {
+                element: $("#hidden-div"),
+                names: ["vz (ft)", "az (ft)", "altitude (ft)", "z (ft)", "valt (ft)"]
+            }
+        });
+        alt_graph.createLines(5);
+
+        
+        xyz_graph = new TimeGraph(document.getElementById("hidden-canvas"),{
+            range: {
+                data: {
+                    // max: 3,
+                    // min: -3,
+                }
+            },
+            stepY: 5,
+            g_width: 500,
+            g_height: 400,
+            legend: {
+                element: $("#hidden-div"),
+                names: ["ax (ft/s/s)", "ay (ft/s/s)", "az (ft/s/s)", "vz (ft/s)", "z (ft)"]
+            }
+        });
+        xyz_graph.createLines(5);
+        
+        rpy_graph = new TimeGraph(document.getElementById("hidden-canvas"),{
+            range: {
+                data: {
+                    // max: 3,
+                    // min: -3,
+                }
+
+            },
+            stepY: 5,
+            g_width: 500,
+            g_height: 400,
+            legend: {
+                element: $("#hidden-div"),
+                names: [
+                    "Vr (gyro) (°/s)", "Vp (gyro) (°/s)", "Vy (gyro) (°/s)",
+                    "r (accel) (°/s)", "p (accel) (°/s)", 
+                    "r (°)", "p (°)", "y (°)"]
+            }
+        });
+        rpy_graph.createLines(9);
+
+        function a(){
+            const b = new TimeGraph(document.getElementById("hidden-canvas"),{
+                range: {
+                    data: {
+                        // max: 3,
+                        // min: -3,
+                    }
+                },
+                g_width: 500,
+                g_height: 400,
+                legend: {
+                    element: $("#hidden-div"),
+                    names: ["setpoint", "error", "output", "p", "i", "d", "curr i", "derr"]
+                }
+            });
+            b.createLines(8);
+            return b;
+        }
+
+       z_pid_graph = a();
+       r_pid_graph = a();
+       p_pid_graph = a();
+       vy_pid_graph = a();
     }
 
-    chart = new LineGraph(document.getElementById("vroll-graph"),{
-        range: {
-            data: {
-                max: 10,
-                min: -10,
-            }
+    const graphs = [alt_graph, xyz_graph, rpy_graph, z_pid_graph, r_pid_graph, p_pid_graph, vy_pid_graph];
+
+    const sels = $(".graph-select");
+
+    ["altitude", "xyz", "rpy", "z pid", "roll pid", "pitch pid", "vyaw pid"].forEach(
+        (name, i) => {
+            sels.append($(`<option value=${i}>${name}</option>`));
+        });
+
+
+    sels.on("change", (e) => {
+        if(e.target.id == "graph-1-select"){
+            graph1 = graphs[parseInt(e.target.value)];
+            graph1.generateLegend($("#graph-1-legend"));
+        }else if(e.target.id == "graph-2-select"){
+            graph2 = graphs[parseInt(e.target.value)];
+            graph2.generateLegend($("#graph-2-legend"));
         }
-    });
-    chart.createLine();
+    })
+
+    $("#graph-1-select").val(0);
+    $("#graph-2-select").val(1);
+    graph1 = graphs[0];
+    graph2 = graphs[1];
+    graph1.generateLegend($("#graph-1-legend"));
+    graph2.generateLegend($("#graph-2-legend"));
+
+    graph1ctx = document.getElementById("graph-1").getContext("2d");
+    graph2ctx = document.getElementById("graph-2").getContext("2d");
+
+    // $(".graph").width(500).height(400);
+    const eles = document.getElementsByClassName("graph");
+
+    for(var i = 0; i < eles.length; i ++){
+        eles[i].width = 500;
+        eles[i].height = 400;
+    }
 
     Object.keys(Gauges).forEach((key) => {
         if(Gauges[key] !== null){
@@ -679,7 +967,7 @@ function main(){
 
 
 
-
+{
 
     initBuffers();
 
@@ -697,7 +985,7 @@ function main(){
     console.log(prog)
 
     const render = () => {
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clearColor(0.0, 0.0, 0.0, 0.0);
         gl.clearDepth(1.0);
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
@@ -840,6 +1128,7 @@ function main(){
 
 
     requestAnimationFrame(update);
+}
 }
 
 const vsSource = `

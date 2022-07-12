@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" integrity="sha384-PiBR5S00EtOj2Lto9Uu81cmoyZqR57XcOna1oAuVuIEjzj0wpqDVfD0JA9eXlRsj" crossorigin="anonymous"></script>
+        <script src="./jq-dev.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Orbitron:wght@400;500;600;700;800;900&family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Source+Code+Pro&display=swap" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Orbitron:wght@400;500;600;700;800;900&family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet"> 
+
+        <script src="json.js"></script>
+        <link rel="stylesheet" href="json.css">
+    </head>
+
+    <body onload="main();">
+        <div>
+            <span id="conn-dot">&#8226;</span>
+            <button id="con-btn" onclick="connect(); ">Connect</button>
+            <button id="rst-btn">Reset</button>
+            <button id="save-btn">Save Configuration</button>
+        </div>
+        <div id="root"></div>
+    </body>
+</html>

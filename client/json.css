@@ -1,0 +1,132 @@
+
+#conn-dot {
+    color: rgb(240, 18, 18);
+}
+#conn-dot.connecting {
+    color: rgb(255, 234, 0);
+}
+
+#conn-dot.connected {
+    color: rgb(23, 231, 23);
+}
+html, body {
+    background-color: black;
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+}
+
+#root {
+    background-color: #ffffff18;
+    width: 900px;
+}
+
+.cell {
+    margin:0;
+    padding: 10px;
+    border-top: 1px #ffffff60 solid;
+    border-bottom: 1px #ffffff60 solid;
+}
+
+.key-val {
+    display: grid;
+    grid-template-columns: 50% auto 60px;
+    margin:0;
+    padding: 10px;
+    /* border-bottom: 1px #ffffff60 solid; */
+}
+.key-val:not(:first-child){
+    border-top: 1px #ffffff60 solid;
+}
+
+.key-val .key {
+    text-align: left;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    background-color: black;
+    display: grid;
+    grid-template-columns: 50% auto 60px;
+}
+
+input {
+    background-color: #0000002f;
+    font-weight: 500;
+    font-family: 'Source Code Pro', monospace;
+    outline: none;
+    border: none;
+    font-size: 14px;
+    padding: 5px;
+    color: white;
+    margin: 2px;
+}
+
+input.value {
+    color: #239ada;
+    width: 5em;
+}
+
+svg {
+    color: white;
+    width: .8em;
+    margin-right: 10px;
+    transition: rotate .2s;
+}
+
+.rotated {
+    rotate: -90deg;
+}
+
+
+.reduce {
+    overflow: hidden;
+    /* height: fit-content; */
+    max-height: fit-content;
+    transition: max-height .6s;
+    display: grid;
+    grid-template-columns: 10px auto;
+}
+.closed {
+    max-height: 0;
+}
+
+.reduce .color {
+    
+    border-top: 1px #ffffff60 solid;
+    border-bottom: 1px #ffffff60 solid;
+    border-right: 1px #ffffff60 solid;
+}
+
+.col-1 {
+    background-color: #e94513;
+}
+
+.col-2 {
+    background-color: #1390e9;
+}
+
+.col-3 {
+    background-color: #e91313;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.add {
+    user-select: none;
+    background-color: #00000022;
+}
+
+.add:hover {
+    background-color: #00000033;
+}
+
+select {
+    width: fit-content;
+}
