@@ -504,7 +504,7 @@ void sensor_thread_funct(){
             double p = pitch_controller.update(orientation_euler.y, dt);
             double vy = vyaw_controller.update(filtered_mpu6050_data[5], dt);
 
-            logger::info("p: {} o: {}", roll_controller.p, r);
+            logger::info("p: {:.2f} o: {:.2f}", roll_controller.p, roll_controller.output);
 
             drone::set_motor(MOTOR_FL, z + r + p + vy);
             drone::set_motor(MOTOR_FR, z - r + p - vy);
