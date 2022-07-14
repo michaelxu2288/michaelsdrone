@@ -540,7 +540,9 @@ function connect(){
                     // console.log(pid[name][wtf])
                     bruheles[i*3+j].val(pid[name][wtf]);
                     changeTunerVals.push((val) => {
+                        pid[name][wtf] = val;
                         socket.emit("chg-pid", i*4+j, val);
+                        socket.emit("update-json", config);
                     });
                 })
             })
