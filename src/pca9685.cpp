@@ -13,6 +13,8 @@ extern "C" {
 #include <sys/types.h>
 #include <cstdio>
 
+#include <logger.h>
+
 #define read(r) i2c_smbus_read_byte_data(fd, r)
 #define write(r,v) i2c_smbus_write_byte_data(fd, r, v)
 
