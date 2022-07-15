@@ -16,7 +16,7 @@ OPTS:= -Iinclude -pthread -lpthread -L../lib -li2c -std=c++2a -Wno-psabi -L./lib
 .PHONY: drone lib
 
 
-all: drone calibration led read
+all: drone
 
 ${OBJDIR}/%.o: ${SRCDIR}/%.cpp
 	mkdir -p build
@@ -24,7 +24,7 @@ ${OBJDIR}/%.o: ${SRCDIR}/%.cpp
 
 drone: $(OBJ_FILES)
 	mkdir -p bin
-	g++ main/main.cpp $^ ${SRCS} -o bin/drone ${OPTS}
+	g++ main/main.cpp $^ -o bin/drone ${OPTS}
 
 %: ${OBJ_FILES} tools/%.cpp
 	mkdir -p bin
