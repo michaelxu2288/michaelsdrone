@@ -31,6 +31,6 @@
 
 #define DEFAULT_CONFIG_FILE "./config/config.json"
 
-// #define ENABLE_MOTOR
+#define ENABLE_MOTOR
 
 #endif

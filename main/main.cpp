@@ -1,46 +1,61 @@
-#include <iostream>
-#include <unistd.h>
-#include <thread>
-#include <ctime>
-#include <gamepad.h>
 #include <drone.h>
+#include <logger.h>
 #include <stdlib.h>
+#include <thread>
+#include <gamepad.h>
+#include <unistd.h>
+#include <config.h>
+#include <csignal>
+void bruh(){
+    logger::info("Closing.");
+    drone::destroy_sensors();
+    drone::destroy_message_thread();
+    exit(0);
+}
 
-double fall_back_throttle = 0;
-double throttle = 0;
-double dt = 0.01;
+void handle(int sig){
+    bruh();
+}
+
+void ctrl_thrd(){
+    config::load_file();
+    double deg_t_rad = 3.141592 / 180;
+    double roll = config::get_config_dbl("ctrlmax_roll", 5) * deg_t_rad;
+    double pitch = config::get_config_dbl("ctrl.max_pitch", 5) * deg_t_rad;
+    double vz = config::get_config_dbl("ctrl.max_vz", 5) * deg_t_rad;
+    double vyaw = config::get_config_dbl("ctrl.max_vyaw", 5) * deg_t_rad;
+    config::write_to_file();
+    if(!gamepad::init()){
+        logger::warn("Couldn't find controller!");
+        while(!gamepad::init()){
+            usleep(100000);
+        }
+
+    }
+    logger::info("Found a controller!");
+    pid * roll_ctrl = drone::get_roll_controller();
+    pid * pitch_ctrl = drone::get_pitch_controller();
+    pid * vyaw_ctrl = drone::get_vyaw_controller();
+    pid * z_ctrl = drone::get_z_controller();
+    while(1){
+        roll_ctrl->change_setpoint(gamepad::get_axis(3) * roll);
+        pitch_ctrl->change_setpoint(gamepad::get_axis(4) * pitch);
+        z_ctrl->change_setpoint(z_ctrl->setpoint + gamepad::get_axis(1) * vz);
+        vyaw_ctrl->change_setpoint(((0.5 + 0.5 * gamepad::get_axis(2)) - (0.5 + 0.5 * gamepad::get_axis(5))) * vyaw);
+        usleep(10000);
+    }
+    gamepad::stop();
+}
 
 int main(){
-    setvbuf(stdout, NULL,_IONBF,0);
+    signal(SIGINT, handle);  
+    std::atexit(bruh);
 
-    drone::init();
-    gamepad::init();
+    std::thread ctrl = std::thread(ctrl_thrd);
+    // logger::set_level(logger::DEBUG);
+    drone::load_configuration();
+    drone::init_messsage_thread();
+    drone::init_sensors();
+    while(1);
 
-    bool update = false;
-
-    double old = 0.0;
-
-    while(true){
-        if(gamepad::get_button(2)){
-            drone::force_terminate();
-            exit(0);
-        }
-        
-        throttle += 0.1 * (gamepad::get_axis(5) + 1) * dt;
-        throttle -= 0.1 * (gamepad::get_axis(2) + 1) * dt;
-        std::cout << "Throttle : " <<throttle << "\n";
-
-        if(throttle < 0){throttle = 0;}
-        if(throttle > 0.5) {throttle = 0.5;}
-        
-        double diff = throttle - old;
-        if(diff > 0.01 || diff < -0.01){
-            drone::set_all(throttle);
-            old = throttle;
-        }
-
-        usleep(10000);
-    };
-
-    drone::destroy();
 }

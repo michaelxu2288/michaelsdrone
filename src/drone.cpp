@@ -67,6 +67,7 @@ static std::string socket_path;
 static bool zero_flag = false;
 static bool calib_flag = false;
 
+static double trim;
 static pid /* x_controller, y_controller, */ z_controller;
 static pid roll_controller, pitch_controller, vyaw_controller;
 
@@ -174,6 +175,8 @@ void load_pid_config(){
     vyaw_controller.kP = config::get_config_dbl("pid.vyaw.kP", 0.01);
     vyaw_controller.kI = config::get_config_dbl("pid.vyaw.kI", 0.00);
     vyaw_controller.kD = config::get_config_dbl("pid.vyaw.kD", 0.00);
+    
+    trim = config::get_config_dbl("pid.trim", 0.0);
 
     config::write_to_file();
 
@@ -192,6 +195,8 @@ void load_pid_config(){
     logger::lconfig("pid.vy.kP: {}", vyaw_controller.kP);
     logger::lconfig("pid.vy.kI: {}", vyaw_controller.kI);
     logger::lconfig("pid.vy.kD: {}", vyaw_controller.kD);
+
+    logger::lconfig("pid.trim: {}", trim);
 }
 
 void drone::load_configuration(){
@@ -522,10 +527,10 @@ void sensor_thread_funct(){
 
             // logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
 
-            drone::set_motor(MOTOR_FL, z + r + p + vy);
-            drone::set_motor(MOTOR_FR, z - r + p - vy);
-            drone::set_motor(MOTOR_BL, z + r - p - vy);
-            drone::set_motor(MOTOR_BR, z - r - p + vy);
+            drone::set_motor(MOTOR_FL, z + r + p + vy + trim);
+            drone::set_motor(MOTOR_FR, z - r + p - vy + trim);
+            drone::set_motor(MOTOR_BL, z + r - p - vy + trim);
+            drone::set_motor(MOTOR_BR, z - r - p + vy + trim);
         }
 
         if(zero_flag){
@@ -693,6 +698,9 @@ void message_thread_funct(){
                             p_controller.kD = val;
                             pitch_controller.reset_integral_term()
                             break;
+                        case 12: // trim
+                            trim = val;
+                            pitch_controller.reset_integral_term();
                         default:
                             logger::warn("Unknown variable \"{}\"", var);
                         }

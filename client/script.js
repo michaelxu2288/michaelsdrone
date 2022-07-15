@@ -518,7 +518,7 @@ function connect(){
             "Z P", "Z I", "Z D",
             "VYaw P", "VYaw I", "VYaw D",
             "Roll P", "Roll I", "Roll D",
-            "Pitch P", "Pitch I", "Pitch D",
+            "Pitch P", "Pitch I", "Pitch D", "Trim"
         ].forEach((name, i) => {
             const ihatethis = $(`<input id="tuner-${i}"/>`);
             ihatethis.on("change", (e) => {
@@ -529,6 +529,7 @@ function connect(){
             const ele = $(`<div class="key-val"/>`).append($(`<span class="center">${name}</span>`)).append(ihatethis)
             pidTunerEle.append(ele);
         }); 
+
         // console.log(bruheles);
         socket.on("json", (config) => {
             const pid = config.pid;
@@ -546,6 +547,13 @@ function connect(){
                     });
                 })
             })
+
+            const j = changeTunerVals.length;
+            changeTunerVals.push((val) => {
+                pid["trim"] = val;
+                socket.emit("chg-pid", j, val);
+                socket.emit("update-json", config);
+            });
         })
 
         socket.emit("req-json");
