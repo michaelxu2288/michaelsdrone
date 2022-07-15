@@ -647,7 +647,7 @@ void message_thread_funct(){
                 case 3:
                     int l = substr_chr(buf, recv, ' ', 0, -1);
                     if(l != -1){
-                        int var = atoi(l);
+                        int var = atoi(buf);
                         double val = atof(recv+l+1);
                         switch(var){
                         case 0: // z_p
