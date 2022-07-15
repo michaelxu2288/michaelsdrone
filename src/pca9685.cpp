@@ -85,29 +85,29 @@ void pca9685::set_frequency(int frq){
     per = 1000000 / frq;
     int reg_val = round(25000000.0 / (4096 * freq)) - 1;
 
-    printf("\n\npca9685::set_frequency\nSetting frequency to %d\nSetting PRESCALE to %d\n", frq, reg_val & 0xFF);
-    write(PRESCALE, reg_val & 0xFF);
-    usleep(5000);
-    printf("Reg 0x%#d val: %d\n", PRESCALE, read(PRESCALE));
+    // printf("\n\npca9685::set_frequency\nSetting frequency to %d\nSetting PRESCALE to %d\n", frq, reg_val & 0xFF);
+    // write(PRESCALE, reg_val & 0xFF);
+    // usleep(5000);
+    // printf("Reg 0x%#d val: %d\n", PRESCALE, read(PRESCALE));
 }
 void pca9685::set_pwm_ms(int pwm, int micro_s){
     int cycle = 4096 * micro_s / per;
-    printf("\n\npca9685::set_pwm_ms\nSetting OFF of pin %d to %d (%d %d)\nSetting ON of pin %d to %d (%d %d)\n", pwm, cycle, (cycle & 0xF00) >> 8, cycle & 0xFF, pwm, 0, 0, 0);
-    write(pwm_regs[pwm][0], 0);
-    write(pwm_regs[pwm][1], 0);
-    write(pwm_regs[pwm][2], cycle & 0xFF);
-    write(pwm_regs[pwm][3], (cycle >> 8) & 0xF);
-    printf("Reg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\n", pwm_regs[pwm][0], read(pwm_regs[pwm][0]), pwm_regs[pwm][1], read(pwm_regs[pwm][1]), pwm_regs[pwm][2], read(pwm_regs[pwm][2]), pwm_regs[pwm][3], read(pwm_regs[pwm][3]));
+    // printf("\n\npca9685::set_pwm_ms\nSetting OFF of pin %d to %d (%d %d)\nSetting ON of pin %d to %d (%d %d)\n", pwm, cycle, (cycle & 0xF00) >> 8, cycle & 0xFF, pwm, 0, 0, 0);
+    // write(pwm_regs[pwm][0], 0);
+    // write(pwm_regs[pwm][1], 0);
+    // write(pwm_regs[pwm][2], cycle & 0xFF);
+    // write(pwm_regs[pwm][3], (cycle >> 8) & 0xF);
+    // printf("Reg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\n", pwm_regs[pwm][0], read(pwm_regs[pwm][0]), pwm_regs[pwm][1], read(pwm_regs[pwm][1]), pwm_regs[pwm][2], read(pwm_regs[pwm][2]), pwm_regs[pwm][3], read(pwm_regs[pwm][3]));
 }
 void pca9685::set_pwm_percent(int pwm, double percent){
     int cycle = (int) (4096 * percent);
-    printf("\n\npca9685::set_pwm_ms\nSetting OFF of pin %d to %d (%d %d)\nSetting ON of pin %d to %d (%d %d)\n", pwm, cycle, (cycle & 0xF00) >> 8, cycle & 0xFF, pwm, 0, 0, 0);
-    printf("Estimated OFF ms: %d\nEstimated ON ms: %d\n", percent * per, 0);
-    write(pwm_regs[pwm][0], 0);
-    write(pwm_regs[pwm][1], 0);
-    write(pwm_regs[pwm][2], cycle & 0xFF);
-    write(pwm_regs[pwm][3], (cycle >> 8) & 0xF);
-    printf("Reg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\n", pwm_regs[pwm][0], read(pwm_regs[pwm][0]), pwm_regs[pwm][1], read(pwm_regs[pwm][1]), pwm_regs[pwm][2], read(pwm_regs[pwm][2]), pwm_regs[pwm][3], read(pwm_regs[pwm][3]));
+    // printf("\n\npca9685::set_pwm_ms\nSetting OFF of pin %d to %d (%d %d)\nSetting ON of pin %d to %d (%d %d)\n", pwm, cycle, (cycle & 0xF00) >> 8, cycle & 0xFF, pwm, 0, 0, 0);
+    // printf("Estimated OFF ms: %d\nEstimated ON ms: %d\n", percent * per, 0);
+    // write(pwm_regs[pwm][0], 0);
+    // write(pwm_regs[pwm][1], 0);
+    // write(pwm_regs[pwm][2], cycle & 0xFF);
+    // write(pwm_regs[pwm][3], (cycle >> 8) & 0xF);
+    // printf("Reg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\nReg 0x%#d val: %d\n", pwm_regs[pwm][0], read(pwm_regs[pwm][0]), pwm_regs[pwm][1], read(pwm_regs[pwm][1]), pwm_regs[pwm][2], read(pwm_regs[pwm][2]), pwm_regs[pwm][3], read(pwm_regs[pwm][3]));
 }
 void pca9685::set_pwm_on(int pwm, int on){
     write(pwm_regs[pwm][0], on & 0xFF);
@@ -119,18 +119,18 @@ void pca9685::set_pwm_off(int pwm, int off){
 
 void pca9685::wake_up(){
     int old = read(MODE_1);
-    printf("\n\npca9685::wake_up\nSetting MODE_1 to %d\n", old & ~(0b00010000));
-    write(MODE_1, old & ~(0b00010000));
-    usleep(5000);
-    printf("Reg 0x%#d val: %d\n", MODE_1, read(MODE_1));
+    // printf("\n\npca9685::wake_up\nSetting MODE_1 to %d\n", old & ~(0b00010000));
+    // write(MODE_1, old & ~(0b00010000));
+    // usleep(5000);
+    // printf("Reg 0x%#d val: %d\n", MODE_1, read(MODE_1));
 }
 
 void pca9685::sleep(){
     int old = read(MODE_1) & 0xFF;
-    printf("\n\npca9685::sleep\nSetting MODE_1 to %d\n", old | 0b00010000);
-    write(MODE_1, old | 0b00010000);
-    usleep(5000);
-    printf("Reg 0x%#d val: %d\n", MODE_1, read(MODE_1));
+    // printf("\n\npca9685::sleep\nSetting MODE_1 to %d\n", old | 0b00010000);
+    // write(MODE_1, old | 0b00010000);
+    // usleep(5000);
+    // printf("Reg 0x%#d val: %d\n", MODE_1, read(MODE_1));
 }
 
 void pca9685::restart(){
