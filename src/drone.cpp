@@ -124,6 +124,7 @@ void terminate_handle(int signum){
 
 
 void drone::init(){
+    logger::info("Initializing drone.");
     // Setup pca9685
     pca9685::set_frequency(50);
     pca9685::init();
