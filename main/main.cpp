@@ -10,6 +10,7 @@ void bruh(){
     logger::info("Closing.");
     drone::destroy_sensors();
     drone::destroy_message_thread();
+    drone::destroy();
     exit(0);
 }
 
@@ -50,6 +51,8 @@ void ctrl_thrd(){
 int main(){
     signal(SIGINT, handle);  
     std::atexit(bruh);
+
+    drone::init();
 
     std::thread ctrl = std::thread(ctrl_thrd);
     // logger::set_level(logger::DEBUG);
