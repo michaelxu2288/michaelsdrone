@@ -675,27 +675,27 @@ void message_thread_funct(){
                             vyaw_controller.reset_integral_term();
                             break;
                         case 6: // r_p
-                            r_controller.kP = val;
+                            roll_controller.kP = val;
                             roll_controller.reset_integral_term();
                             break;
                         case 7: // r_i
-                            r_controller.kI = val;
+                            roll_controller.kI = val;
                             roll_controller.reset_integral_term();
                             break;
                         case 8: // r_d
-                            r_controller.kD = val;
+                            roll_controller.kD = val;
                             roll_controller.reset_integral_term();
                             break;
                         case 9: // p_p
-                            p_controller.kP = val;
+                            pitch_controller.kP = val;
                             pitch_controller.reset_integral_term();
                             break;
                         case 10: // p_i
-                            p_controller.kI = val;
+                            pitch_controller.kI = val;
                             pitch_controller.reset_integral_term();
                             break;
                         case 11: // p_d
-                            p_controller.kD = val;
+                            pitch_controller.kD = val;
                             pitch_controller.reset_integral_term();
                             break;
                         case 12: // trim
