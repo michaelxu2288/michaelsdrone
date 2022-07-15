@@ -581,7 +581,7 @@ void reconnect_node_server(sock::socket& client, sock::un_connection& unix_conne
 }
 
 
-int substr_chr(char * out, const char * bruh, char c, int a, int b){
+static int substr_chr(char * out, const char * bruh, char c, int a, int b){
     int k = 0;
     for(int i = a; i != b && bruh[i] != '\0'; i ++){
         if(bruh[i] == c){
