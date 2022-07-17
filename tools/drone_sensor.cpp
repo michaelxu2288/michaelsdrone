@@ -46,14 +46,14 @@ void ctrl_thrd(){
 
     // pid * z_ctrl = drone::get_z_controller();
     while(1){
-        roll_ctrl->change_setpoint(gamepad::get_axis(3) * roll);
-        pitch_ctrl->change_setpoint(gamepad::get_axis(4) * pitch);
+        roll_ctrl->change_setpoint(-gamepad::get_axis(3) * roll);
+        pitch_ctrl->change_setpoint(-gamepad::get_axis(4) * pitch);
         // z_ctrl->change_setpoint(z_ctrl->setpoint + gamepad::get_axis(1) * vz);
-        vyaw_ctrl->change_setpoint(((0.5 + 0.5 * gamepad::get_axis(2)) - (0.5 + 0.5 * gamepad::get_axis(5))) * vyaw);
+        vyaw_ctrl->change_setpoint(-((0.5 + 0.5 * gamepad::get_axis(2)) - (0.5 + 0.5 * gamepad::get_axis(5))) * vyaw);
         
-        (*thrust) = gamepad::get_axis(1) * maxthrust;
-        (*trim) += trimsens * gamepad::get_axis(7) * 0.01;
-        logger::info("{} {}", *thrust, *trim);
+        (*thrust) = -gamepad::get_axis(1) * maxthrust;
+        (*trim) -= trimsens * gamepad::get_axis(7) * 0.01;
+        // logger::info("{} {}", *thrust, *trim);
 
         usleep(10000);
     }

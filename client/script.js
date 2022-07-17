@@ -685,6 +685,8 @@ function parseOutput(output) {
     ])
     // alt_graph.render();
 
+    Gauges.trim.gauge.changeValue(output[61]);
+
     function b(k, i){
         k.addDataList([
             output[20 + i],
