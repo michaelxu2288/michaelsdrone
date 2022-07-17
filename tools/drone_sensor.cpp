@@ -54,7 +54,7 @@ void ctrl_thrd(){
         
         (*thrust) = -gamepad::get_axis(1) * maxthrust;
         (*trim) -= trimsens * gamepad::get_axis(7) * 0.01;
-        (*yawthrust) = -((0.5 + 0.5 * gamepad::get_axis(2)) - (0.5 + 0.5 * gamepad::get_axis(5))) * vyaw
+        (*yawthrust) = -((0.5 + 0.5 * gamepad::get_axis(2)) - (0.5 + 0.5 * gamepad::get_axis(5))) * vyaw;
         // logger::info("{} {}", *thrust, *trim);
 
         usleep(10000);
