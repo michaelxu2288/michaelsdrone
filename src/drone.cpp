@@ -690,6 +690,8 @@ void message_thread_funct(){
     char send[1024];
     char recv[1024];
     char buf[100];
+
+    char cock[] = {"zp", "zi", "zd", "vyp", "vyi", "vyd", "rp", "ri", "rd", "pp", "pi", "pd", "trim"};
     while(alive){
         // std::lock_guard<std::mutex> message_lock_guard(message_thread_mutex);
         
@@ -732,6 +734,7 @@ void message_thread_funct(){
                         if(l != -1){
                             int var = atoi(buf);
                             double val = atof(recv+l+1);
+                            logger::info("Changing {} to {}.", cock[var], val);
                             switch(var){
                             case 0: // z_p
                                 z_controller.kP = val;
