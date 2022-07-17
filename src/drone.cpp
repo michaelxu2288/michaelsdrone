@@ -13,6 +13,7 @@
 #include <config.h>
 #include <socket.h>
 #include <bmp390.h>
+#include <reporter.h>
 
 // #include <cmath>
 #include <limits>
@@ -71,6 +72,8 @@ static double trim;
 static pid /* x_controller, y_controller, */ z_controller;
 static pid roll_controller, pitch_controller, vyaw_controller;
 
+
+static double cpu_usg=-1, battery=-1;
 static bool cntrller_connected = false;
 
 static double debug_vals[6] = {0, 0, 0, 0, 0, 0};
@@ -217,6 +220,8 @@ void drone::load_configuration(){
     upper_pressure_freq_cutoff = config::get_config_dbl("sensor.pressure.upper_freq_cutoff", 5);
     sensor_z_tau = config::get_config_dbl("sensor.z_tau", 0.02);
 
+
+
     config::write_to_file();
 
     load_pid_config();
@@ -237,6 +242,10 @@ void drone::load_configuration(){
     logger::lconfig("Upper Vz Frequency Cutoff: {}", upper_vz_freq_cutoff);
 
     setup_filters();
+}
+
+void drone::enable(bool fl, bool fr, bool bl, bool br){
+
 }
 
 void drone::set_all(double per){
@@ -598,8 +607,77 @@ static int substr_chr(char * out, const char * bruh, char c, int a, int b){
 
 
 void message_thread_funct(){
-    logger::info("Message thread alive!");
+    logger::info("Message thread alive!");  
 
+    {
+        reporter::bind_dbl("ax", filtered_mpu6050_data);
+        reporter::bind_dbl("ay", filtered_mpu6050_data + 1);
+        reporter::bind_dbl("az", filtered_mpu6050_data + 2);
+        reporter::bind_dbl("vroll", filtered_mpu6050_data + 3);
+        reporter::bind_dbl("vpitch", filtered_mpu6050_data + 4);
+        reporter::bind_dbl("vyaw", filtered_mpu6050_data + 5);
+        reporter::bind_dbl("vx", &velocity.x);
+        reporter::bind_dbl("vy", &velocity.y);
+        reporter::bind_dbl("vz", &velocity.z);
+        reporter::bind_dbl("x", &position.x);
+        reporter::bind_dbl("y", &position.y);
+        reporter::bind_dbl("z", &position.z);
+        reporter::bind_dbl("roll", &orientation_euler.x);
+        reporter::bind_dbl("pitch", &orientation_euler.y);
+        reporter::bind_dbl("yaw", &orientation_euler.z);
+        reporter::bind_dbl("temp", bmp390_data);
+        reporter::bind_dbl("pressure", bmp390_data+1);
+        reporter::bind_dbl("altitude", bmp390_data+2);
+        reporter::bind_dbl("ialt", &initial_altitude);
+        reporter::bind_dbl("valt", &valt);
+        
+        reporter::bind_dbl("zset", &z_controller.setpoint);
+        reporter::bind_dbl("vyawset", &vyaw_controller.setpoint);
+        reporter::bind_dbl("rollset", &roll_controller.setpoint);
+        reporter::bind_dbl("pitchset", &pitch_controller.setpoint);
+        reporter::bind_dbl("zerr", &z_controller.err);
+        reporter::bind_dbl("vyawerr", &vyaw_controller.err);
+        reporter::bind_dbl("rollerr", &roll_controller.err);
+        reporter::bind_dbl("pitcherr", &pitch_controller.err);
+
+        reporter::bind_dbl("flpwr", &motor_fl_spd);
+        reporter::bind_dbl("frpwr", &motor_fr_spd);
+        reporter::bind_dbl("blpwr", &motor_bl_spd);
+        reporter::bind_dbl("brpwr", &motor_br_spd);
+
+        reporter::bind_int("state", (int *) (&curr_state));
+        reporter::bind_dbl("cpuusg", &cpu_usg);
+        reporter::bind_dbl("battery", &battery);
+        reporter::bind_dbl("dt", &dt);
+        reporter::bind_bool("controller", &cntrller_connected);
+
+        reporter::bind_dbl("zicurr", &z_controller.i_curr);
+        reporter::bind_dbl("vyawicurr", &vyaw_controller.i_curr);
+        reporter::bind_dbl("rollicurr", &roll_controller.i_curr);
+        reporter::bind_dbl("pitchicurr", &pitch_controller.i_curr);
+        reporter::bind_dbl("zderr", &z_controller.derr);
+        reporter::bind_dbl("vyawderr", &vyaw_controller.derr);
+        reporter::bind_dbl("rollderr", &roll_controller.derr);
+        reporter::bind_dbl("pitchderr", &pitch_controller.derr);
+        reporter::bind_dbl("zp", &z_controller.p);
+        reporter::bind_dbl("vyawp", &vyaw_controller.p);
+        reporter::bind_dbl("rollp", &roll_controller.p);
+        reporter::bind_dbl("pitchp", &pitch_controller.p);
+        reporter::bind_dbl("zi", &z_controller.i);
+        reporter::bind_dbl("vyawi", &vyaw_controller.i);
+        reporter::bind_dbl("rolli", &roll_controller.i);
+        reporter::bind_dbl("pitchi", &pitch_controller.i);
+        reporter::bind_dbl("zd", &z_controller.d);
+        reporter::bind_dbl("vyawd", &vyaw_controller.d);
+        reporter::bind_dbl("rolld", &roll_controller.d);
+        reporter::bind_dbl("pitchd", &pitch_controller.d);
+        reporter::bind_dbl("zout", &z_controller.output);
+        reporter::bind_dbl("vyawout", &vyaw_controller.output);
+        reporter::bind_dbl("rollout", &roll_controller.output);
+        reporter::bind_dbl("pitchout", &pitch_controller.output);
+
+        reporter::bind_dbl("trim", &trim);
+    }
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect(socket_path.c_str());
 
@@ -709,6 +787,11 @@ void message_thread_funct(){
                         }
                     }
                     break;
+                // case 4:
+                //     {
+
+                //     }
+                //     break;
                 default:
                     logger::warn("Unknown cmd \"{}\"", cmd);
                 }
@@ -717,6 +800,8 @@ void message_thread_funct(){
             }
             // logger::info("Message: \"{}\"", recv);
         }
+
+
         // |                MPU6050                  |                 Dead Reckoned                 |             BMP390                |      BMP390 Related
         // | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude | Initial Altitude | Valt |
         // | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |         18       |  19  |
@@ -725,27 +810,27 @@ void message_thread_funct(){
         // | z | vyaw | roll | pitch | z | vyaw | roll | pitch | fl | fr | bl | br | State | CPU Usg % | Battery | dt | controller |
         // |20 |  21  |  22  |  23   |24 |  25  |  26  |  27   | 28 | 29 | 30 | 31 |  32   |    33     |   34    | 35 |     36     |
         
-        // |                                                                                            PID Controller Info                                                                                                                                    |
-        // |                    i_term                           |                   derr                      |               p                 |                 i               |                 d               |                output                   |
-        // | z_i_term | vyaw_i_term | roll_i_term | pitch_i_term | z_derr | vyaw_derr | roll_derr | pitch_derr | z_p | vyaw_p | roll_p | pitch_p | z_i | vyaw_i | roll_i | pitch_i | z_d | vyaw_d | roll_d | pitch_d | z_out | vyaw_out | roll_out | pitch_out |
-        // |    37    |      38     |      39     |      40      |   41   |    42     |     43    |      44    | 45  |  46    |   47   |    48   | 49  |   50   |   51   |   52    | 53  |   54   |   55   |   56    |  57   |    58    |    59    |     60    |
+        // |                                                                                            PID Controller Info                                                                                                                                    | trim |
+        // |                    i_term                           |                   derr                      |               p                 |                 i               |                 d               |                output                   | trim |
+        // | z_i_term | vyaw_i_term | roll_i_term | pitch_i_term | z_derr | vyaw_derr | roll_derr | pitch_derr | z_p | vyaw_p | roll_p | pitch_p | z_i | vyaw_i | roll_i | pitch_i | z_d | vyaw_d | roll_d | pitch_d | z_out | vyaw_out | roll_out | pitch_out | trim |
+        // |    37    |      38     |      39     |      40      |   41   |    42     |     43    |      44    | 45  |  46    |   47   |    48   | 49  |   50   |   51   |   52    | 53  |   54   |   55   |   56    |  57   |    58    |    59    |     60    |  61  |
 
                 //     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61
-        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %f %f %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+        sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
             filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
             velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
             bmp390_data[0], bmp390_data[1], bmp390_data[2], initial_altitude, valt,
             z_controller.setpoint, vyaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
             z_controller.err, vyaw_controller.err, roll_controller.err, pitch_controller.err,
             motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
-            curr_state, -1.0, -1.0, dt, (cntrller_connected ? 1 : 0),
+            curr_state, -1.0, -1.0, dt, (cntrller_connected ? 1.0 : 0.0),
             z_controller.i_curr, vyaw_controller.i_curr, roll_controller.i_curr, pitch_controller.i_curr,
             z_controller.derr, vyaw_controller.derr, roll_controller.derr, pitch_controller.derr,
             z_controller.p, vyaw_controller.p, roll_controller.p, pitch_controller.p,
             z_controller.i, vyaw_controller.i, roll_controller.i, pitch_controller.i,
             z_controller.d, vyaw_controller.d, roll_controller.d, pitch_controller.d,
-            z_controller.output, vyaw_controller.output, roll_controller.output, pitch_controller.output
-
+            z_controller.output, vyaw_controller.output, roll_controller.output, pitch_controller.output,
+            trim
             // debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
         );
         // logger::info("state: {}",curr_state);

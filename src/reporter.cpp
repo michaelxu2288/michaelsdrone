@@ -65,6 +65,32 @@ std::string reporter::get_report(){
     return out;
 }
 
+std::string reporter::get_json_report(){
+    std::string out = "{";
+    for(int i = 0; i < names.size(); i ++){
+        out+=names[i]+":";
+        switch(types[i]){
+            case 0:
+                out += std::to_string(*((bool *) (bindings[i])));
+                break;
+            case 1:
+                out += std::to_string(*((int *) (bindings[i])));
+                break;
+            case 2:
+                out += std::to_string(*((double *) (bindings[i])));
+                break;
+            case 3:
+                out += *((std::string *) bindings[i]);
+                break;
+            default:
+                out += "null";
+                break;
+        }
+        out += ",";
+    }
+    return out+"}";
+}
+
 std::string reporter::get_keys() {
     std::string out = "";
     for(int i = 0; i < names.size(); i ++){

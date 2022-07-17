@@ -13,6 +13,7 @@ namespace reporter {
 
     std::string get_report();
     std::string get_keys();
+    std::string get_json_report();
 };
 
 

@@ -13,10 +13,12 @@ int main(){
     reporter::bind_str("str", &str);
     logger::info("keys: {}", reporter::get_keys());
     logger::info("vals: {}", reporter::get_report());
+    logger::info("json: {}", reporter::get_json_report());
     a = true;
     b = 1321312;
     c = 3.141592;
     str = "Goodbye!";
 
     logger::info("vals: {}", reporter::get_report());
+    logger::info("json: {}", reporter::get_json_report());
 }
