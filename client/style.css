@@ -59,7 +59,7 @@ body {
     left: 0;
 }
 
-#accel-gauges, #roll-gauges, #pitch-gauges, #yaw-gauges, #x-gauges, #y-gauges, #z-gauges, #bmp-gauges, #motor-gauges, #z-gauges {
+#accel-gauges, #roll-gauges, #pitch-gauges, #yaw-gauges, #x-gauges, #y-gauges, #z-gauges, #bmp-gauges, #motor-gauges, #z-gauges, #pid-gauges {
     display: flex;
     flex-direction: row;
     margin: 5px 0;

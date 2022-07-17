@@ -56,7 +56,7 @@ function processSmallNumbers(n){
 
 
 /**
- * @type {Map<string, {value:number}}}
+ * @type {Object<string, {value:number}}}
  */
 const Gauges = {
     ax: {
@@ -437,6 +437,50 @@ const Gauges = {
         type: 3,
         container: "#motor-gauges",
     },
+    pidroll: {
+        value: 0,
+        title: "PID roll",
+        width: 180,
+        height: 90,
+        textFromValue: (temp) => {
+            return `${Math.round(temp*100)}`;
+        },
+        type: 3,
+        container: "#pid-gauges",
+    },
+    pidpitch: {
+        value: 0,
+        title: "PID pitch",
+        width: 180,
+        height: 90,
+        textFromValue: (temp) => {
+            return `${Math.round(temp*100)}`;
+        },
+        type: 3,
+        container: "#pid-gauges",
+    },
+    pidz: {
+        value: 0,
+        title: "PID z",
+        width: 180,
+        height: 90,
+        textFromValue: (temp) => {
+            return `${Math.round(temp*100)}`;
+        },
+        type: 3,
+        container: "#pid-gauges",
+    },
+    pidvyaw: {
+        value: 0,
+        title: "PID vyaw",
+        width: 180,
+        height: 90,
+        textFromValue: (temp) => {
+            return `${Math.round(temp*100)}`;
+        },
+        type: 3,
+        container: "#pid-gauges",
+    },
 }
 
 function processAltitude(alt){
@@ -561,7 +605,7 @@ function connect(){
                     bruheles[i*3+j].val(pid[name][wtf]);
                     changeTunerVals.push((val) => {
                         pid[name][wtf] = val;
-                        socket.emit("chg-pid", i*4+j, val);
+                        socket.emit("chg-pid", i*3+j, val);
                         socket.emit("update-json", config);
                     });
                 })
@@ -686,6 +730,11 @@ function parseOutput(output) {
     // alt_graph.render();
 
     Gauges.trim.gauge.changeValue(output[61]);
+
+    Gauges.pidz.gauge.changeValue(output[57]);
+    Gauges.pidvyaw.gauge.changeValue(output[58]);
+    Gauges.pidroll.gauge.changeValue(output[59]);
+    Gauges.pidpitch.gauge.changeValue(output[60]);
 
     function b(k, i){
         k.addDataList([
