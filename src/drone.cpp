@@ -703,9 +703,10 @@ void message_thread_funct(){
             int len = unix_connection.read(recv, 50);
             logger::info("{}", recv);
             recv[len] = '\0';
+            std::string bruv(recv);
             if(len > 0){
-                int l = substr_chr(buf, recv, ' ', 0, -1);
-                int cmd = atoi(buf);
+                int l = bruv.find(' ');
+                int cmd = std::stoi(bruv.substr(0, l));
                 // logger::info("");
 
                 state old;
@@ -731,10 +732,12 @@ void message_thread_funct(){
                     break;
                 case 3:
                     {
-                        l = substr_chr(buf, recv, ' ', l, -1);
+                        // l = substr_chr(buf, recv, ' ', l, -1);
+                        int k = l+1;
+                        l = bruv.find(' ', k);
                         if(l != -1){
-                            int var = atoi(buf);
-                            double val = atof(recv+l+1);
+                            int var = std::stoi(bruv.substr(k,l));
+                            double val = std::stof(bruv.substr(l+1));
                             logger::info("Changing {} to {}.", cock[var], val);
                             switch(var){
                             case 0: // z_p
