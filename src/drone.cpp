@@ -704,7 +704,8 @@ void message_thread_funct(){
             logger::info("{}", recv);
             recv[len] = '\0';
             if(len > 0){
-                int cmd = atoi(recv);
+                int l = substr_chr(buf, recv, ' ', 0, -1);
+                int cmd = atoi(buf);
                 // logger::info("");
 
                 state old;
@@ -730,7 +731,7 @@ void message_thread_funct(){
                     break;
                 case 3:
                     {
-                        int l = substr_chr(buf, recv, ' ', 0, -1);
+                        l = substr_chr(buf, recv, ' ', l, -1);
                         if(l != -1){
                             int var = atoi(buf);
                             double val = atof(recv+l+1);
