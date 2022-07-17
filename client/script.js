@@ -20,6 +20,8 @@ function initBuffers(){
     buffers.push(Mesh.cube(gl, 1));
 }
 
+/** @type {Object<string, number>} */
+var bindings = {};
 
 var socket;
 
@@ -424,7 +426,17 @@ const Gauges = {
         type: 3,
         container: "#bmp-gauges",
     },
-
+    trim: {
+        value: 0,
+        title: "Trim",
+        width: 180,
+        height: 90,
+        textFromValue: (temp) => {
+            return `${Math.round(temp*100)} %`;
+        },
+        type: 3,
+        container: "#motor-gauges",
+    },
 }
 
 function processAltitude(alt){
@@ -488,6 +500,13 @@ function connect(){
         $("#con-btn").text("Connecting ...")
         socket = io("http://pi@drone/");
         droneStatusDot.connecting();
+
+        socket.on("bindings", (_bindings) => {
+            bindings = {};
+            _bindings.forEach((key, i) => {
+                bindings[key] = i;
+            })
+        })
 
         socket.on("connect", () => {
             $("#zero-btn").click(() => {socket.emit("cmd", 0)});

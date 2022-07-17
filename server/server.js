@@ -79,10 +79,13 @@ server.listen(port, () => {
 
     // var running_process = null;
     var lastconn = null;
+    var bindings = null;
 
     socket_server = net.createServer((connection) =>{
+        console.log("Recieved connection");
         lastconn = connection;
         connection.on("data", (data) => {
+            if(bindings === null) {bindings = data.toString().split(" ");return;}
             message = data.toString().split(" ");
             io.emit("sensor", message);
             // console.log(message);
@@ -91,6 +94,7 @@ server.listen(port, () => {
         connection.on("end", () => {
             console.log("Connection lost");
             lastconn = null;
+            bindings = null;
         })
     });
 
@@ -100,6 +104,7 @@ server.listen(port, () => {
     var connecting_bluetooth = false;
 
     io.on("connection", (socket) => {
+        socket.emit("bindings", bindings)
         sockets.add(socket);
         socket.on("cmd", (cmd) => {
             cmd = `${cmd}\0`;
