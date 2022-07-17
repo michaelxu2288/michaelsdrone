@@ -68,7 +68,8 @@ std::string reporter::get_report(){
 std::string reporter::get_json_report(){
     std::string out = "{";
     for(int i = 0; i < names.size(); i ++){
-        out+=names[i]+":";
+        std::string name(names[i]);
+        out+=name+":";
         switch(types[i]){
             case 0:
                 out += std::to_string(*((bool *) (bindings[i])));
