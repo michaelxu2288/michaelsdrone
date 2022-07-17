@@ -1,14 +1,14 @@
 #include <reporter.h>
 #include <vector>
 
-static vector<const char *> names;
-static vector<void *> bindings;
+static std::vector<const char *> names;
+static std::vector<void *> bindings;
 
 // 0 - bool
 // 1 - int
 // 2 - dbl
 // 3 - str
-static vector<uint8_t> types;
+static std::vector<uint8_t> types;
 
 
 
@@ -18,3 +18,4 @@ void reporter::bind_bool(const char * name, bool * value){
     bindings.push_back((void*) value);
     types.push_back(0);
 }
+
