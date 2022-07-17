@@ -54,7 +54,7 @@ std::string reporter::get_report(){
                 out += std::to_string(*((double *) (bindings[i])));
                 break;
             case 3:
-                out += *((std::string *) bindings[i]);
+                out +=*((std::string *) bindings[i]);
                 break;
             default:
                 out += "null";
@@ -81,7 +81,7 @@ std::string reporter::get_json_report(){
                 out += std::to_string(*((double *) (bindings[i])));
                 break;
             case 3:
-                out += *((std::string *) bindings[i]);
+                out += '"'+*((std::string *) bindings[i])+'"';
                 break;
             default:
                 out += "null";
