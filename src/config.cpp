@@ -151,6 +151,31 @@ std::string config::get_config_str(const char * name, std::string dft){
     return dft;
 }
 
+
+
+bool config::get_config_bool(const char * name, bool dft){
+    std::lock_guard<std::mutex> config_lock(config_mutex);
+    
+    nlohmann::json *curr = &configuration;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        curr = &((*curr)[buf]);
+        i = substr_chr(buf, name, '.', i+1, -1);
+    }
+    substr(buf, name, l+1, -1);
+
+    if(curr->contains(buf)){
+        return (*curr)[buf].get<bool>();
+    }
+
+    (*curr)[buf]=dft;
+    return dft;
+}
+
 // void config::set_config(const char * name, int value){
 //     std::lock_guard<std::mutex> config_lock(config_mutex);
 //     configuration[name]=value;

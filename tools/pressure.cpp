@@ -4,41 +4,6 @@
 
 #include <logger.h>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 int main(){
 
     //I2C::start();
