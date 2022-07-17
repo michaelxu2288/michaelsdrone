@@ -2,9 +2,9 @@
 
 
 enum test {
-    cock,
-    balls,
-    dick,
+    cock = 3,
+    balls = 2,
+    dick = 1,
 };
 
 int main(){
