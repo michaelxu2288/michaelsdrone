@@ -923,3 +923,6 @@ double drone::get_trim(){
 double* drone::get_trim_ptr(){
     return &trim;
 }
+double* drone::get_thrust_ptr(){
+    return &thrust;
+}
