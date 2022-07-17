@@ -68,6 +68,11 @@ namespace drone {
     pid * get_z_controller();
     pid * get_vyaw_controller();
 
+    double get_trim();
+    void set_trim(double val);
+    double * get_trim_ptr();
+
+    double * get_thrust_ptr();
 };
 
 

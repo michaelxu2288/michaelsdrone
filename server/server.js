@@ -85,7 +85,7 @@ server.listen(port, () => {
         console.log("Recieved connection");
         lastconn = connection;
         connection.on("data", (data) => {
-            if(bindings === null) {bindings = data.toString().split(" ");return;}
+            // if(bindings === null) {bindings = data.toString().split(" ");return;}
             message = data.toString().split(" ");
             io.emit("sensor", message);
             // console.log(message);

@@ -71,7 +71,7 @@ static bool calib_flag = false;
 static double trim;
 static pid /* x_controller, y_controller, */ z_controller;
 static pid roll_controller, pitch_controller, vyaw_controller;
-
+static double thrust = 0;
 
 static double cpu_usg=-1, battery=-1;
 static bool cntrller_connected = false;
@@ -530,17 +530,18 @@ void sensor_thread_funct(){
 
         {// PID updates
             // z_controller.setpoint = 
-            double z = z_controller.update(position.z, dt);
+            // double z = z_controller.update(position.z, dt);
+            double z = 0;
             double r = roll_controller.update(orientation_euler.x, dt);
             double p = pitch_controller.update(orientation_euler.y, dt);
             double vy = vyaw_controller.update(filtered_mpu6050_data[5], dt);
 
             // logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
 
-            drone::set_motor(MOTOR_FL, z + r + p + vy + trim);
-            drone::set_motor(MOTOR_FR, z - r + p - vy + trim);
-            drone::set_motor(MOTOR_BL, z + r - p - vy + trim);
-            drone::set_motor(MOTOR_BR, z - r - p + vy + trim);
+            drone::set_motor(MOTOR_FL, z + r + p + vy + trim + thrust);
+            drone::set_motor(MOTOR_FR, z - r + p - vy + trim + thrust);
+            drone::set_motor(MOTOR_BL, z + r - p - vy + trim + thrust);
+            drone::set_motor(MOTOR_BR, z - r - p + vy + trim + thrust);
         }
 
         if(zero_flag){
@@ -908,4 +909,17 @@ void drone::destroy_sensors(){
         sensor_thread.join();
         logger::info("Joined sensor thread.");
     }
+}
+
+
+void drone::set_trim(double _trim){
+    trim = _trim;
+}
+
+double drone::get_trim(){
+    return trim;
+}
+
+double* drone::get_trim_ptr(){
+    return &trim;
 }

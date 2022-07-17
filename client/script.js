@@ -501,12 +501,12 @@ function connect(){
         socket = io("http://pi@drone/");
         droneStatusDot.connecting();
 
-        socket.on("bindings", (_bindings) => {
-            bindings = {};
-            _bindings.forEach((key, i) => {
-                bindings[key] = i;
-            })
-        })
+        // socket.on("bindings", (_bindings) => {
+        //     bindings = {};
+        //     _bindings.forEach((key, i) => {
+        //         bindings[key] = i;
+        //     })
+        // })
 
         socket.on("connect", () => {
             $("#zero-btn").click(() => {socket.emit("cmd", 0)});
