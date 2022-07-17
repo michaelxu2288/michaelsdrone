@@ -137,7 +137,7 @@ server.listen(port, () => {
         });
 
         socket.on("chg-pid", (type, val) => {
-            const parameter = `${type} ${val}`;
+            const parameter = `3 ${type} ${val}`;
             console.log(`Changing parameter \"${parameter}\"`);
             lastconn.write(parameter);
         })
