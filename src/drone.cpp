@@ -72,6 +72,7 @@ static double trim;
 static pid /* x_controller, y_controller, */ z_controller;
 static pid roll_controller, pitch_controller, vyaw_controller;
 static double thrust = 0;
+static double yawthrust = 0;
 
 static double cpu_usg=-1, battery=-1;
 static bool cntrller_connected = false;
@@ -534,7 +535,8 @@ void sensor_thread_funct(){
             double z = 0;
             double r = roll_controller.update(orientation_euler.x, dt);
             double p = pitch_controller.update(orientation_euler.y, dt);
-            double vy = vyaw_controller.update(filtered_mpu6050_data[5], dt);
+            // double vy = vyaw_controller.update(filtered_mpu6050_data[5], dt);
+            double vy = yawthrust;
 
             // logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
 
@@ -611,73 +613,73 @@ void message_thread_funct(){
     logger::info("Message thread alive!");  
 
     {
-        reporter::bind_dbl("ax", filtered_mpu6050_data);
-        reporter::bind_dbl("ay", filtered_mpu6050_data + 1);
-        reporter::bind_dbl("az", filtered_mpu6050_data + 2);
-        reporter::bind_dbl("vroll", filtered_mpu6050_data + 3);
-        reporter::bind_dbl("vpitch", filtered_mpu6050_data + 4);
-        reporter::bind_dbl("vyaw", filtered_mpu6050_data + 5);
-        reporter::bind_dbl("vx", &velocity.x);
-        reporter::bind_dbl("vy", &velocity.y);
-        reporter::bind_dbl("vz", &velocity.z);
-        reporter::bind_dbl("x", &position.x);
-        reporter::bind_dbl("y", &position.y);
-        reporter::bind_dbl("z", &position.z);
-        reporter::bind_dbl("roll", &orientation_euler.x);
-        reporter::bind_dbl("pitch", &orientation_euler.y);
-        reporter::bind_dbl("yaw", &orientation_euler.z);
-        reporter::bind_dbl("temp", bmp390_data);
-        reporter::bind_dbl("pressure", bmp390_data+1);
-        reporter::bind_dbl("altitude", bmp390_data+2);
-        reporter::bind_dbl("ialt", &initial_altitude);
-        reporter::bind_dbl("valt", &valt);
+        reporter::bind_dbl("ax", filtered_mpu6050_data); // 0
+        reporter::bind_dbl("ay", filtered_mpu6050_data + 1); // 1
+        reporter::bind_dbl("az", filtered_mpu6050_data + 2); // 2
+        reporter::bind_dbl("vroll", filtered_mpu6050_data + 3); // 3
+        reporter::bind_dbl("vpitch", filtered_mpu6050_data + 4); // 4
+        reporter::bind_dbl("vyaw", filtered_mpu6050_data + 5); // 5
+        reporter::bind_dbl("vx", &velocity.x); // 6
+        reporter::bind_dbl("vy", &velocity.y); // 7
+        reporter::bind_dbl("vz", &velocity.z); // 8
+        reporter::bind_dbl("x", &position.x); // 9
+        reporter::bind_dbl("y", &position.y); // 10
+        reporter::bind_dbl("z", &position.z); // 11
+        reporter::bind_dbl("roll", &orientation_euler.x); // 12
+        reporter::bind_dbl("pitch", &orientation_euler.y); // 13
+        reporter::bind_dbl("yaw", &orientation_euler.z); // 14
+        reporter::bind_dbl("temp", bmp390_data); // 15
+        reporter::bind_dbl("pressure", bmp390_data+1); // 16
+        reporter::bind_dbl("altitude", bmp390_data+2); // 17
+        reporter::bind_dbl("ialt", &initial_altitude); // 18
+        reporter::bind_dbl("valt", &valt); // 19
         
-        reporter::bind_dbl("zset", &z_controller.setpoint);
-        reporter::bind_dbl("vyawset", &vyaw_controller.setpoint);
-        reporter::bind_dbl("rollset", &roll_controller.setpoint);
-        reporter::bind_dbl("pitchset", &pitch_controller.setpoint);
-        reporter::bind_dbl("zerr", &z_controller.err);
-        reporter::bind_dbl("vyawerr", &vyaw_controller.err);
-        reporter::bind_dbl("rollerr", &roll_controller.err);
-        reporter::bind_dbl("pitcherr", &pitch_controller.err);
+        reporter::bind_dbl("zset", &z_controller.setpoint); // 20
+        reporter::bind_dbl("vyawset", &vyaw_controller.setpoint); // 21
+        reporter::bind_dbl("rollset", &roll_controller.setpoint); // 22
+        reporter::bind_dbl("pitchset", &pitch_controller.setpoint); // 23
+        reporter::bind_dbl("zerr", &z_controller.err); // 24
+        reporter::bind_dbl("vyawerr", &vyaw_controller.err); // 25
+        reporter::bind_dbl("rollerr", &roll_controller.err); // 26
+        reporter::bind_dbl("pitcherr", &pitch_controller.err); // 27
 
-        reporter::bind_dbl("flpwr", &motor_fl_spd);
-        reporter::bind_dbl("frpwr", &motor_fr_spd);
-        reporter::bind_dbl("blpwr", &motor_bl_spd);
-        reporter::bind_dbl("brpwr", &motor_br_spd);
+        reporter::bind_dbl("flpwr", &motor_fl_spd); // 28
+        reporter::bind_dbl("frpwr", &motor_fr_spd); // 29
+        reporter::bind_dbl("blpwr", &motor_bl_spd); // 30
+        reporter::bind_dbl("brpwr", &motor_br_spd); // 31
 
-        reporter::bind_int("state", (int *) (&curr_state));
-        reporter::bind_dbl("cpuusg", &cpu_usg);
-        reporter::bind_dbl("battery", &battery);
-        reporter::bind_dbl("dt", &dt);
-        reporter::bind_bool("controller", &cntrller_connected);
+        reporter::bind_int("state", (int *) (&curr_state)); // 32
+        reporter::bind_dbl("cpuusg", &cpu_usg); // 33
+        reporter::bind_dbl("battery", &battery); // 34
+        reporter::bind_dbl("dt", &dt); // 35
+        reporter::bind_bool("controller", &cntrller_connected); // 36
 
-        reporter::bind_dbl("zicurr", &z_controller.i_curr);
-        reporter::bind_dbl("vyawicurr", &vyaw_controller.i_curr);
-        reporter::bind_dbl("rollicurr", &roll_controller.i_curr);
-        reporter::bind_dbl("pitchicurr", &pitch_controller.i_curr);
-        reporter::bind_dbl("zderr", &z_controller.derr);
-        reporter::bind_dbl("vyawderr", &vyaw_controller.derr);
-        reporter::bind_dbl("rollderr", &roll_controller.derr);
-        reporter::bind_dbl("pitchderr", &pitch_controller.derr);
-        reporter::bind_dbl("zp", &z_controller.p);
-        reporter::bind_dbl("vyawp", &vyaw_controller.p);
-        reporter::bind_dbl("rollp", &roll_controller.p);
-        reporter::bind_dbl("pitchp", &pitch_controller.p);
-        reporter::bind_dbl("zi", &z_controller.i);
-        reporter::bind_dbl("vyawi", &vyaw_controller.i);
-        reporter::bind_dbl("rolli", &roll_controller.i);
-        reporter::bind_dbl("pitchi", &pitch_controller.i);
-        reporter::bind_dbl("zd", &z_controller.d);
-        reporter::bind_dbl("vyawd", &vyaw_controller.d);
-        reporter::bind_dbl("rolld", &roll_controller.d);
-        reporter::bind_dbl("pitchd", &pitch_controller.d);
-        reporter::bind_dbl("zout", &z_controller.output);
-        reporter::bind_dbl("vyawout", &vyaw_controller.output);
-        reporter::bind_dbl("rollout", &roll_controller.output);
-        reporter::bind_dbl("pitchout", &pitch_controller.output);
+        reporter::bind_dbl("zicurr", &z_controller.i_curr); // 37
+        reporter::bind_dbl("vyawicurr", &vyaw_controller.i_curr); // 38
+        reporter::bind_dbl("rollicurr", &roll_controller.i_curr); // 39
+        reporter::bind_dbl("pitchicurr", &pitch_controller.i_curr); // 40
+        reporter::bind_dbl("zderr", &z_controller.derr); // 41
+        reporter::bind_dbl("vyawderr", &vyaw_controller.derr); // 42
+        reporter::bind_dbl("rollderr", &roll_controller.derr); // 43
+        reporter::bind_dbl("pitchderr", &pitch_controller.derr); // 44
+        reporter::bind_dbl("zp", &z_controller.p); // 45
+        reporter::bind_dbl("vyawp", &vyaw_controller.p); // 46
+        reporter::bind_dbl("rollp", &roll_controller.p); // 47
+        reporter::bind_dbl("pitchp", &pitch_controller.p); // 48
+        reporter::bind_dbl("zi", &z_controller.i); // 49
+        reporter::bind_dbl("vyawi", &vyaw_controller.i); // 50
+        reporter::bind_dbl("rolli", &roll_controller.i); // 51
+        reporter::bind_dbl("pitchi", &pitch_controller.i); // 52
+        reporter::bind_dbl("zd", &z_controller.d); // 53
+        reporter::bind_dbl("vyawd", &vyaw_controller.d); // 54
+        reporter::bind_dbl("rolld", &roll_controller.d); // 55
+        reporter::bind_dbl("pitchd", &pitch_controller.d); // 56
+        reporter::bind_dbl("zout", &z_controller.output); // 57
+        reporter::bind_dbl("vyawout", &vyaw_controller.output); // 58
+        reporter::bind_dbl("rollout", &roll_controller.output); // 59
+        reporter::bind_dbl("pitchout", &pitch_controller.output); // 60
 
-        reporter::bind_dbl("trim", &trim);
+        reporter::bind_dbl("trim", &trim); // 61
     }
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect(socket_path.c_str());
@@ -925,4 +927,7 @@ double* drone::get_trim_ptr(){
 }
 double* drone::get_thrust_ptr(){
     return &thrust;
+}
+double* drone::get_yawthrust_ptr(){
+    return &yawthrust;
 }

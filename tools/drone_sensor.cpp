@@ -40,8 +40,9 @@ void ctrl_thrd(){
     pid * vyaw_ctrl = drone::get_vyaw_controller();
     double * trim = drone::get_trim_ptr();
     double * thrust = drone::get_thrust_ptr();
+    double * yawthrust = drone::get_yawthrust_ptr();
 
-    double trimsens = 0.01;
+    double trimsens = 0.05;
     double maxthrust = 0.1;
 
     // pid * z_ctrl = drone::get_z_controller();
@@ -49,10 +50,11 @@ void ctrl_thrd(){
         roll_ctrl->change_setpoint(-gamepad::get_axis(3) * roll);
         pitch_ctrl->change_setpoint(-gamepad::get_axis(4) * pitch);
         // z_ctrl->change_setpoint(z_ctrl->setpoint + gamepad::get_axis(1) * vz);
-        vyaw_ctrl->change_setpoint(-((0.5 + 0.5 * gamepad::get_axis(2)) - (0.5 + 0.5 * gamepad::get_axis(5))) * vyaw);
+        // vyaw_ctrl->change_setpoint(-((0.5 + 0.5 * gamepad::get_axis(2)) - (0.5 + 0.5 * gamepad::get_axis(5))) * vyaw);
         
         (*thrust) = -gamepad::get_axis(1) * maxthrust;
         (*trim) -= trimsens * gamepad::get_axis(7) * 0.01;
+        (*yawthrust) = -((0.5 + 0.5 * gamepad::get_axis(2)) - (0.5 + 0.5 * gamepad::get_axis(5))) * vyaw
         // logger::info("{} {}", *thrust, *trim);
 
         usleep(10000);

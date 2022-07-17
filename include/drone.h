@@ -73,6 +73,7 @@ namespace drone {
     double * get_trim_ptr();
 
     double * get_thrust_ptr();
+    double * get_yawthrust_ptr();
 };
 
 
