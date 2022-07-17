@@ -19,3 +19,57 @@ void reporter::bind_bool(const char * name, bool * value){
     types.push_back(0);
 }
 
+
+void reporter::bind_int(const char * name, int * value){
+    names.push_back(name);
+    bindings.push_back((void*) value);
+    types.push_back(1);
+}
+
+
+void reporter::bind_dbl(const char * name, double * value){
+    names.push_back(name);
+    bindings.push_back((void*) value);
+    types.push_back(2);
+}
+
+
+void reporter::bind_str(const char * name, std::string * str){
+    names.push_back(name);
+    bindings.push_back((void*) str);
+    types.push_back(3);
+}
+
+std::string reporter::get_report(){
+    std::string out = "";
+    for(int i = 0; i < names.size(); i ++){
+        switch(types[i]){
+            case 0:
+                out += std::to_string(*((bool *) (bindings[i])));
+                break;
+            case 1:
+                out += std::to_string(*((int *) (bindings[i])));
+                break;
+            case 2:
+                out += std::to_string(*((double *) (bindings[i])));
+                break;
+            case 3:
+                out += std::string((char *) (bindings[i]));
+                break;
+            default:
+                out += "null";
+                break;
+        }
+        out += " ";
+    }
+    return out;
+}
+
+std::string reporter::get_keys() {
+    std::string out = "";
+    for(int i = 0; i < names.size(); i ++){
+        out += names[i];
+        out += " ";
+    }
+    return out;
+}
