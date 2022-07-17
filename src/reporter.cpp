@@ -8,7 +8,7 @@ static std::vector<void *> bindings;
 // 1 - int
 // 2 - dbl
 // 3 - str
-static std::vector<uint8_t> types;
+static std::vector<char> types;
 
 
 
