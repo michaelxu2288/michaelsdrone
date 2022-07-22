@@ -82,7 +82,7 @@ void pca9685::write_reg(int reg, int val){
     i2c_smbus_write_byte_data(fd, reg, val);
 }
 
-inline int round(double d){
+inline int pcaround(double d){
     if(d < 0){
         return (((-d) - ((int)-d)) < 0.5 ? ((int) d) : ((int) d - 1));
     }
@@ -93,7 +93,7 @@ void pca9685::set_frequency(int frq){
 // PRESCALE_VAL -> round(25000000 / (4096 * update_rate)) - 1
     freq = frq;
     per = 1000000 / frq;
-    int reg_val = round(25000000.0 / (4096 * freq)) - 1;
+    int reg_val = pcaround(25000000.0 / (4096 * freq)) - 1;
 
     // printf("\n\npca9685::set_frequency\nSetting frequency to %d\nSetting PRESCALE to %d\n", frq, reg_val & 0xFF);
     write(PRESCALE, reg_val & 0xFF);
