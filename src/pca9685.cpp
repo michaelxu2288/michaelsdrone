@@ -11,8 +11,10 @@ extern "C" {
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#include <cstdio>
+// #include <cstdio>
 
+// #include <INIReader.h>
+#include <config.h>
 #include <logger.h>
 
 #define read(r) i2c_smbus_read_byte_data(fd, r)
@@ -49,14 +51,19 @@ static int get_frequency(){
 
 void pca9685::init(){
     logger::info("Initializing pca9685");
+
+    // INIReader reader
+
     fd = open("/dev/i2c-1", O_RDWR); //Open the I2C device file
 	if (fd < 0) { //Catch errors
-		std::cout << "ERR (pca9685.cpp:open()): Failed to open /dev/i2c-1. Please check that I2C is enabled with raspi-config\n"; //Print error message
+        logger::err("Failed to open \"/dev/i2c-1\". Please check that I2C is enabled with raspi-config.");
+		// std::cout << "ERR (pca9685.cpp:open()): Failed to open /dev/i2c-1. Please check that I2C is enabled with raspi-config\n"; //Print error message
 	}
 
 	int status = ioctl(fd, I2C_SLAVE, PCA9685_ADDRESS); //Set the I2C bus to use the correct address
 	if (status < 0) {
-		std::cout << "ERR (pca9685.cpp:open()): Could not get I2C bus with " << PCA9685_ADDRESS << " address. Please confirm that this address is correct\n"; //Print error message
+        logger::err("Could not get i2c bus device with address \"{}\". Please confirm that this address is correct.", PCA9685_ADDRESS);
+		// std::cout << "ERR (pca9685.cpp:open()): Could not get I2C bus with " << PCA9685_ADDRESS << " address. Please confirm that this address is correct\n"; //Print error message
 	}
 
     freq = get_frequency();

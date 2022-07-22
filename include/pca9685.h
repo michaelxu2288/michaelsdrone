@@ -96,6 +96,7 @@ namespace pca9685 {
     void sleep();
 
     void set_frequency(int rate);
+    int get_frequency();
 
     void set_pwm_on(int pwm, int on);
     void set_pwm_off(int pwm, int off);

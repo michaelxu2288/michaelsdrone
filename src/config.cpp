@@ -185,3 +185,193 @@ bool config::get_config_bool(const char * name, bool dft){
 //     std::lock_guard<std::mutex> config_lock(config_mutex);
 //     configuration[name]=value;
 // }
+
+
+config::config::config() {
+    base = nlohmann::json();   
+}
+
+config::config::config(const char * filename) {
+    std::ifstream in(filename);
+    if(in){
+        std::string str;
+        std::getline(in, str, '\0');
+        base = nlohmann::json::parse(str);
+    }
+}
+
+
+
+int config::config::get_config_int(const char * name, int dft){
+    char buf[100];
+    nlohmann::json *curr = &base;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        curr = &((*curr)[buf]);
+        i = substr_chr(buf, name, '.', i+1, -1);
+    }
+    substr(buf, name, l+1, -1);
+
+    if(curr->contains(buf)){
+        return (*curr)[buf].get<int>();
+    }
+
+    (*curr)[buf]=dft;
+    return dft;
+}
+
+double config::config::get_config_dbl(const char * name, double dft){
+    char buf[100];
+    nlohmann::json *curr = &base;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        curr = &((*curr)[buf]);
+        i = substr_chr(buf, name, '.', i+1, -1);
+    }
+    substr(buf, name, l+1, -1);
+
+    if(curr->contains(buf)){
+        return (*curr)[buf].get<double>();
+    }
+
+    (*curr)[buf]=dft;
+    return dft;
+}
+
+std::string config::config::get_config_str(const char * name, std::string dft){
+    char buf[100];
+    nlohmann::json *curr = &base;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        curr = &((*curr)[buf]);
+        i = substr_chr(buf, name, '.', i+1, -1);
+    }
+    substr(buf, name, l+1, -1);
+
+    if(curr->contains(buf)){
+        return (*curr)[buf].get<std::string>();
+    }
+
+    (*curr)[buf]=dft;
+    return dft;
+}
+
+
+
+bool config::config::get_config_bool(const char * name, bool dft){
+    char buf[100];
+    
+    nlohmann::json *curr = &base;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        curr = &((*curr)[buf]);
+        i = substr_chr(buf, name, '.', i+1, -1);
+    }
+    substr(buf, name, l+1, -1);
+
+    if(curr->contains(buf)){
+        return (*curr)[buf].get<bool>();
+    }
+
+    (*curr)[buf]=dft;
+    return dft;
+}
+
+
+void config::config::write_to_file(const char * filename){
+    std::ofstream out(filename);    
+    if(out){
+        logger::info("Saving configuration to \"{}\".", filename);
+        out << configuration;
+        out.close();
+    }else{
+        logger::warn("Couldn't create configuration file\n.");
+    }
+}
+
+void config::config::set(const char * name, bool value){
+    char buf[100];
+    
+    nlohmann::json *curr = &base;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        curr = &((*curr)[buf]);
+        i = substr_chr(buf, name, '.', i+1, -1);
+    }
+    substr(buf, name, l+1, -1);
+    (*curr)[buf]=value;
+}
+
+
+void config::config::set(const char * name, int value){
+    char buf[100];
+    
+    nlohmann::json *curr = &base;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        curr = &((*curr)[buf]);
+        i = substr_chr(buf, name, '.', i+1, -1);
+    }
+    substr(buf, name, l+1, -1);
+    (*curr)[buf]=value;
+}
+
+
+void config::config::set(const char * name, double value){
+    char buf[100];
+    
+    nlohmann::json *curr = &base;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        curr = &((*curr)[buf]);
+        i = substr_chr(buf, name, '.', i+1, -1);
+    }
+    substr(buf, name, l+1, -1);
+    (*curr)[buf]=value;
+}
+
+
+void config::config::set(const char * name, std::string value){
+    char buf[100];
+    
+    nlohmann::json *curr = &base;
+    int i = substr_chr(buf, name, '.', 0, -1);
+    int l = 0;
+    while(i >= 0){
+        // logger::info("{}, {}", curr.dump(), buf);
+        // logger::info("{}", i);
+        l = i;
+        curr = &((*curr)[buf]);
+        i = substr_chr(buf, name, '.', i+1, -1);
+    }
+    substr(buf, name, l+1, -1);
+    (*curr)[buf]=value;
+}

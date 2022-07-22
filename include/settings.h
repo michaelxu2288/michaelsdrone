@@ -30,6 +30,10 @@
 #define THROTTLE_MAX 2000 // throttle maximum pwm 2 ms
 
 #define DEFAULT_CONFIG_FILE "./config/config.json"
+#define DRONE_STATE_CONFIG_FILE "/run/drone.json"
+
+
+// UNCOMMENT THIS TO ENABLE MOTOR
 
 // #define ENABLE_MOTOR
 

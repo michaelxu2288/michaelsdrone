@@ -4,13 +4,25 @@
 // #include <json.h>
 namespace config{
 
-    // struct config {
-    //     json::JSON base;
+    struct config {
+        json::JSON base;
 
-    //     int get_config_int(const char * name, int dft=0);
-    //     double get_config_dbl(const char * name, double dft=0);
-    //     std::string get_config_str(const char * name, std::string dft = "");
-    // };
+        config();
+        config(const char * filename);
+
+        int get_config_int(const char * name, int dft=0);
+        double get_config_dbl(const char * name, double dft=0   );
+        std::string get_config_str(const char * name, std::string dft = "");
+        bool get_config_bool(const char * name, bool dft);
+
+        void set(const char * name, bool val);
+        void set(const char * name, int val);
+        void set(const char * name, double val);
+        void set(const char * name, std::string val);
+
+        void load_file(const char * filename);
+        void write_to_file(const char * filename);
+    };
 
     void load_file();
     void write_to_file();
