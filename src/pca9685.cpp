@@ -45,7 +45,7 @@ int pwm_regs[16][4] = {
 static int freq = 200; // hz
 static int per =  1000000 / freq; // 5 ms
 
-static int get_frequency(){
+static int _get_frequency(){
     return 25000000 / ((read(PRESCALE) + 1) * 4096);
 }
 
@@ -66,7 +66,7 @@ void pca9685::init(){
 		// std::cout << "ERR (pca9685.cpp:open()): Could not get I2C bus with " << PCA9685_ADDRESS << " address. Please confirm that this address is correct\n"; //Print error message
 	}
 
-    freq = get_frequency();
+    freq = _get_frequency();
     per = 1000000 / freq;
 }
 
