@@ -1,11 +1,11 @@
 #ifndef CONFIG_INCLUDE_GUARD
 #define CONFIG_INCLUDE_GUARD
 #include <string>
-// #include <json.h>
+#include <json.hpp>
 namespace config{
 
     struct config {
-        json::JSON base;
+        nlohmann::json base;
 
         config();
         config(const char * filename);
