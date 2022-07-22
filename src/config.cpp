@@ -70,11 +70,11 @@ void config::write_to_file(const char * filename){
 }
 
 void config::load_file(){
-    config::load_file(DEFAULT_CONFIG_FILE);
+    load_file(DEFAULT_CONFIG_FILE);
 }
 
 void config::write_to_file(){
-    config::write_to_file(DEFAULT_CONFIG_FILE);
+    write_to_file(DEFAULT_CONFIG_FILE);
 }
 
 
