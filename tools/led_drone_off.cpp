@@ -4,7 +4,7 @@
 
 int main(){
 
-    // pca9685::init();
+    pca9685::init();
     // pca9685::set_frequency(50);
     // pca9685::wake_up();
     pca9685::set_pwm_ms(LED_RUN_PIN, 0);
