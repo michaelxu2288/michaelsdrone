@@ -691,7 +691,7 @@ void message_thread_funct(){
     char recv[1024];
     char buf[100];
 
-    char * cock[] = {"zp", "zi", "zd", "vyp", "vyi", "vyd", "rp", "ri", "rd", "pp", "pi", "pd", "trim"};
+    const char * cock[] = {"zp", "zi", "zd", "vyp", "vyi", "vyd", "rp", "ri", "rd", "pp", "pi", "pd", "trim"};
     while(alive){
         // std::lock_guard<std::mutex> message_lock_guard(message_thread_mutex);
         
