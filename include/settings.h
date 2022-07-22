@@ -30,7 +30,7 @@
 #define THROTTLE_MAX 2000 // throttle maximum pwm 2 ms
 
 #define DEFAULT_CONFIG_FILE "./config/config.json"
-#define DRONE_STATE_CONFIG_FILE "/run/drone.json"
+#define DRONE_STATE_CONFIG_FILE "./run/drone.json"
 
 
 // UNCOMMENT THIS TO ENABLE MOTOR
@@ -38,3 +38,5 @@
 // #define ENABLE_MOTOR
 
 #endif
+
+@reboot screen -S arm -d "chdir /home/bin/drone; arm; screen -S arm -d \"chdir /home/bin/drone; drone_sensor; exec bash\"; screen -S arm -d \"chdir /home/bin/drone; /usr/local/bin/node server/server.js; exec bash\"; exec bash"
