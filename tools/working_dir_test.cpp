@@ -8,7 +8,7 @@ int main(){
     if(getcwd(cwd, 1000) != NULL){
         logger::info("Current working directory: {}", cwd);
     }else {
-        logger::error("Error with getcwd()");
+        logger::err("Error with getcwd()");
         // perror("Error with getcwd()")
     }
 }
