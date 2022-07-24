@@ -80,6 +80,11 @@ server.listen(port, () => {
     
 
     function createUnixSocketServer(){
+        if(fs.existsSync(SOCKET_LOCATION)){
+            console.log(`Socket already exists. Unlinking ${SOCKET_LOCATION}.`);
+            fs.unlinkSync(SOCKET_LOCATION);
+        }
+
         socket_server = net.createServer((connection) =>{
             console.log("Recieved connection");
             lastconn = connection;
@@ -97,13 +102,6 @@ server.listen(port, () => {
             })
 
             
-        });
-
-        socket_server.on("error", (err) => {
-            console.log(err)
-            if(err.code == "EADDRINUSE") {
-                console.log("addr in use");
-            }
         });
 
         
