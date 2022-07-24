@@ -80,7 +80,7 @@ server.listen(port, () => {
     
 
     function createUnixSocketServer(){
-        let socket_server = net.createServer((connection) =>{
+        socket_server = net.createServer((connection) =>{
             console.log("Recieved connection");
             lastconn = connection;
             connection.on("data", (data) => {
@@ -101,7 +101,9 @@ server.listen(port, () => {
 
         socket_server.on("error", (err) => {
             console.log(err)
-            if(err.code == "EADDRINUSE");
+            if(err.code == "EADDRINUSE") {
+                console.log("addr in use");
+            }
         });
 
         
