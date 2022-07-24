@@ -1,3 +1,13 @@
+/**
+ * @file enum_test.cpp
+ * @author andrew
+ * @brief C++ enum testing
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <logger.h>
 
 

@@ -1,3 +1,14 @@
+/**
+ * @file accel.cpp
+ * @author andrew
+ * @brief This was a test program of the gyroscope of the accelerometer.
+ * @version 0.1
+ * @date 2022-07-22
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <mpu6050.h>
 #include <unistd.h>
 #include <iostream>

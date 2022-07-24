@@ -1,3 +1,13 @@
+/**
+ * @file led_drone_off.cpp
+ * @author andrew
+ * @brief Turns all leds off then turns on the error led.
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <settings.h>
 #include <pca9685.h>
 #include <unistd.h>

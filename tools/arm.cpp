@@ -1,12 +1,18 @@
 /**
- * Arms the ESCs on the drone. Should run everytime drone is powered on.
+ * @file arm.cpp
+ * @author andrew
+ * @brief Arms the escs.
  * 
- * Arming Sequence:
- *  min pwm - 2s
- *  max pwm - 2s
- *  min pwm - 1s
+ * throttle min - 2s
+ * throttle max - 2s
+ * throttle min - 2s
  * 
- * */
+ * @version 0.1
+ * @date 2022-07-22
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <iostream>
 #include <settings.h>
 #include <pca9685.h>

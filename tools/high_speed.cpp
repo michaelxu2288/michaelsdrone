@@ -1,3 +1,13 @@
+/**
+ * @file high_speed.cpp
+ * @author andrew
+ * @brief runs motors at full throttle for 2s
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <iostream>
 #include <unistd.h>
 #include <settings.h>
@@ -22,8 +32,8 @@ int main(){
 
     std::cout << "Check each motor on opposite diagonals are spinning in the same direction\n and each motor on the opposite side are spinning in the other direction\n";
 
-    std::cout << "Waiting 10 seconds\n";
-    for(int i = 1; i <= 10; i ++){
+    std::cout << "Waiting 2 seconds\n";
+    for(int i = 1; i <= 2; i ++){
         usleep(1000000);
         std::cout << i << "\n";
     }

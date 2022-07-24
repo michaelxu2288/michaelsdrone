@@ -1,12 +1,13 @@
 /**
- * Arms the ESCs on the drone. Should run everytime drone is powered on.
+ * @file drone_spd_ctl.cpp
+ * @author andrew
+ * @brief Legacy drone motor speed control
+ * @version 0.1
+ * @date 2022-07-23
  * 
- * Arming Sequence:
- *  min pwm - 2s
- *  max pwm - 2s
- *  min pwm - 1s
+ * @copyright Copyright (c) 2022
  * 
- * */
+ */
 #include <iostream>
 #include <settings.h>
 #include <pca9685.h>

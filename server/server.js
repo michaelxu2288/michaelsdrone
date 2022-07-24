@@ -77,31 +77,50 @@ app.use("/", express.static("./client"));
 server.listen(port, () => {
     console.log("listenen");
 
+    
+
+    function createUnixSocketServer(){
+        let socket_server = net.createServer((connection) =>{
+            console.log("Recieved connection");
+            lastconn = connection;
+            connection.on("data", (data) => {
+                // if(bindings === null) {bindings = data.toString().split(" ");return;}
+                message = data.toString().split(" ");
+                io.emit("sensor", message);
+                // console.log(message);
+                
+            });
+            connection.on("end", () => {
+                console.log("Connection lost");
+                lastconn = null;
+                bindings = null;
+            })
+
+            
+        });
+
+        socket_server.on("error", (err) => {
+            console.log(err)
+            if(err.code == "EADDRINUSE");
+        });
+
+        
+        socket_server.listen(SOCKET_LOCATION, () => {
+            console.log(`Socket Server created at ${SOCKET_LOCATION}.`);
+        });
+
+        return socket_server;
+    }
+
+
     // var running_process = null;
     var lastconn = null;
     var bindings = null;
-
-    socket_server = net.createServer((connection) =>{
-        console.log("Recieved connection");
-        lastconn = connection;
-        connection.on("data", (data) => {
-            // if(bindings === null) {bindings = data.toString().split(" ");return;}
-            message = data.toString().split(" ");
-            io.emit("sensor", message);
-            // console.log(message);
-            
-        });
-        connection.on("end", () => {
-            console.log("Connection lost");
-            lastconn = null;
-            bindings = null;
-        })
-    });
+    var connecting_bluetooth = false;
 
     const sockets = new Set();
 
-
-    var connecting_bluetooth = false;
+    var socket_server = createUnixSocketServer();
 
     io.on("connection", (socket) => {
         socket.emit("bindings", bindings)
@@ -141,9 +160,5 @@ server.listen(port, () => {
             console.log(`Changing parameter \"${parameter}\"`);
             lastconn.write(parameter);
         })
-    });
-
-    socket_server.listen(SOCKET_LOCATION, () => {
-        console.log(`Socket Server created at ${SOCKET_LOCATION}.`);
     });
 });

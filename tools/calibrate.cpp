@@ -1,7 +1,17 @@
+/**
+ * @file calibrate.cpp
+ * @author andrew
+ * @brief Legacy mpu6050 calibration code
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <mpu6050.h>
 #include <unistd.h>
 #include <iostream>
-#include <rapidjson/document.h>
+// #include <rapidjson/document.h>
 #include <fstream>
 #include <logger.h>
 

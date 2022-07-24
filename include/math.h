@@ -33,6 +33,7 @@ namespace math{
         static quarternion conjugate(const quarternion& n);
         static quarternion rotate(double theta, const vector& axis);
         static quarternion fromEulerZYX(const vector& euler);
+        
         static vector toEuler(const quarternion& q);
         static vector toMagAxis(const quarternion& q);
         static vector rotateVector(math::quarternion& q, math::vector& in);

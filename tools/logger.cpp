@@ -1,3 +1,13 @@
+/**
+ * @file logger.cpp
+ * @author andrew
+ * @brief logger.cpp test script
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <logger.h>
 // #include <iostream>
 // #include <cmath>

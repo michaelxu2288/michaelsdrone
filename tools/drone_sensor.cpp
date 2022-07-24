@@ -1,3 +1,13 @@
+/**
+ * @file drone_sensor.cpp
+ * @author andrew
+ * @brief Legacy drone test code
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <drone.h>
 #include <logger.h>
 #include <stdlib.h>

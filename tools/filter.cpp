@@ -1,3 +1,13 @@
+/**
+ * @file filter.cpp
+ * @author andrew
+ * @brief filter.cpp testing
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <filter.h>
 #include <cstdio>
 

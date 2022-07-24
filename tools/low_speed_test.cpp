@@ -1,3 +1,13 @@
+/**
+ * @file low_speed_test.cpp
+ * @author andrew
+ * @brief runs motors at a low speed for 10 seconds
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <pwm.h>
 #include <iostream>
 #include <unistd.h>

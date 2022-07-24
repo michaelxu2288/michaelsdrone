@@ -1,3 +1,22 @@
+/**
+ * @file led.cpp
+ * @author andrew
+ * @brief command line tool to set led
+ * 
+ * led [name] <percent>
+ * 
+ * run - green
+ * error - red
+ * auto - yellow
+ * blue - blue
+ * white - white
+ * 
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <pca9685.h>
 #include <settings.h>
 #include <string.h>

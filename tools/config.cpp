@@ -1,3 +1,13 @@
+/**
+ * @file config.cpp
+ * @author andrew
+ * @brief config.cpp test
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <config.h>
 #include <logger.h>
 #include <json.hpp>

@@ -1,3 +1,13 @@
+/**
+ * @file gamepad_axis.cpp
+ * @author andrew
+ * @brief Read axis from gamepad
+ * @version 0.1
+ * @date 2022-07-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include <gamepad.h>
 #include <iostream>
 #include <unistd.h>
