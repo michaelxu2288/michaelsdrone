@@ -21,7 +21,7 @@ ${OBJDIR}/%.o: ${SRCDIR}/%.cpp
 	mkdir -p build
 	g++ $^ -c -o $@ ${OPTS}
 
-drone:
+drone: ${OBJ_FILES} 
 	mkdir -p bin
 	g++ main/main.cpp $^ -o bin/drone ${OPTS}
 
