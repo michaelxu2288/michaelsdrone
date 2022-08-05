@@ -28,9 +28,9 @@ const port = 8080;
 // }, '/stream.mjpg', true);
 
 const path = require("path");
-const PATH = path.parse("/home/pi/drone");
+const PATH = "/home/pi/drone";
 
-var config = require("../config/config.json");
+var config = require(path.join(PATH, "config/config.json"));
 
 const SOCKET_LOCATION = config.message.socket_path;
 
