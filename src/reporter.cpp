@@ -67,9 +67,10 @@ std::string reporter::get_report(){
 
 std::string reporter::get_json_report(){
     std::string out = "{";
-    for(int i = 0; i < names.size(); i ++){
+    int k = names.size();
+    for(int i = 0; i < k; i ++){
         std::string name(names[i]);
-        out+=name+":";
+        out+="\""+name+"\":";
         switch(types[i]){
             case 0:
                 out += std::to_string(*((bool *) (bindings[i])));
@@ -87,7 +88,9 @@ std::string reporter::get_json_report(){
                 out += "null";
                 break;
         }
-        out += ",";
+        if(i != k-1) {
+            out += ",";
+        }
     }
     return out+"}";
 }
