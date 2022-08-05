@@ -18,17 +18,17 @@ const { parseArgsStringToArgv } = require('string-argv');
 
 const port = 8080;
 
-const videoStream = require('raspberrypi-node-camera-web-streamer/videoStream.js');
+// const videoStream = require('raspberrypi-node-camera-web-streamer/videoStream.js');
+// videoStream.acceptConnections(app, {
+//     width: 2560,
+//     height: 1440,
+//     fps: 15,
+//     encoding: 'JPEG',
+//     quality: 12 //lower is faster
+// }, '/stream.mjpg', true);
 
 const path = require("path");
 const PATH = path.parse("/home/pi/drone");
-videoStream.acceptConnections(app, {
-    width: 2560,
-    height: 1440,
-    fps: 15,
-    encoding: 'JPEG',
-    quality: 12 //lower is faster
-}, '/stream.mjpg', true);
 
 var config = require("../config/config.json");
 
