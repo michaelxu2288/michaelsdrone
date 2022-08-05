@@ -3,9 +3,9 @@
 
 #include <string_view>
 // #include <format>
-#define FMT_HEADER_ONLY
-#include <fmt/format-inl.h>
-#include <fmt/format.h>
+// #define FMT_HEADER_ONLY
+// #include <fmt/format-inl.h>
+// #include <fmt/format.h>
 #include <fmt/core.h>
 // #ifndef __unix__
 #define _LOGGER_USE_MACRO_
