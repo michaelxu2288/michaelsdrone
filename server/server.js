@@ -20,6 +20,16 @@ const port = 8080;
 
 const videoStream = require('raspberrypi-node-camera-web-streamer/videoStream.js');
 
+const path = require("path");
+const PATH = path.parse("/home/pi/drone");
+videoStream.acceptConnections(app, {
+    width: 2560,
+    height: 1440,
+    fps: 15,
+    encoding: 'JPEG',
+    quality: 12 //lower is faster
+}, '/stream.mjpg', true);
+
 var config = require("../config/config.json");
 
 const SOCKET_LOCATION = config.message.socket_path;
@@ -58,20 +68,7 @@ process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
 process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 
 
-
-
-
-
-videoStream.acceptConnections(app, {
-    width: 2560,
-    height: 1440,
-    fps: 15,
-    encoding: 'JPEG',
-    quality: 12 //lower is faster
-}, '/stream.mjpg', true);
-
-
-app.use("/", express.static("./client"));
+app.use("/", express.static(path.join(PATH, "client")));
 
 
 server.listen(port, () => {
@@ -139,7 +136,7 @@ server.listen(port, () => {
 
         socket.on("update-json", (newjson) => {
             config = newjson;
-            fs.writeFileSync("./config/config.json", JSON.stringify(newjson));
+            fs.writeFileSync(path.join(PATH, "config/config.json"), JSON.stringify(newjson));
         });
 
         socket.on("disconnect", ()=>{

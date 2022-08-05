@@ -29,8 +29,8 @@
 #define THROTTLE_MIN 1000 // throttle minimum pwm 1 ms
 #define THROTTLE_MAX 2000 // throttle maximum pwm 2 ms
 
-#define DEFAULT_CONFIG_FILE "./config/config.json"
-#define DRONE_STATE_CONFIG_FILE "./run/drone.json"
+#define DEFAULT_CONFIG_FILE "/home/pi/drone/config/config.json"
+#define DRONE_STATE_CONFIG_FILE "/home/pi/drone/run/drone.json"
 
 
 // UNCOMMENT THIS TO ENABLE MOTOR
