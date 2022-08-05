@@ -940,5 +940,5 @@ double* drone::get_yawthrust_ptr(){
 }
 
 double* drone::get_front_multiplier_ptr(){
-    return &front_multiplier
+    return &front_multiplier;
 }
