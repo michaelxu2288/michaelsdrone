@@ -579,7 +579,7 @@ void reload_config_thread(){
 
 
 void reconnect_node_server(sock::socket& client, sock::un_connection& unix_connection){
-    logger::crit("Lost contact with node server.");
+    logger::crit("Lost contact with node server. \"{}\"", socket_path);
     if(unix_connection.valid){
         unix_connection.close();
     }

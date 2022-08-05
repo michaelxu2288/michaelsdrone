@@ -81,7 +81,7 @@ void logger::_log(level lvl, std::string_view msg, const char* funct_name, const
         char buf100[100];
         localtime(tstruct);
         strftime(buf100, 100, "%Y-%m-%d %X", &tstruct);
-        fmt::print("{} [{}] - {} - \"{}:{}\" function \"{}\" - {} {}\n",colors[lvl], buf100, titles[lvl], file_name, line, funct_name, msg, RESET);
+        fmt::print("{} [DRONE] [{}] - {} - \"{}:{}\" function \"{}\" - {} {}\n",colors[lvl], buf100, titles[lvl], file_name, line, funct_name, msg, RESET);
         // logger_lock.unlock();
     }
 }

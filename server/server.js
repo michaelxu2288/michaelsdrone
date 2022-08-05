@@ -16,6 +16,10 @@ const io = new Server(server, {
 
 const { parseArgsStringToArgv } = require('string-argv');
 
+function log() {
+    
+}
+
 const port = 8080;
 
 // const videoStream = require('raspberrypi-node-camera-web-streamer/videoStream.js');
