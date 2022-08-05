@@ -50,6 +50,12 @@ int main(int argc, char ** argv){
             set(LED_BLUE_PIN, atof(argv[2]));
         }else if(!strcmp("white", led_type)){
             set(LED_WHITE_PIN, atof(argv[2]));
+        }else if(!strcmp("all", led_type)){
+            set(LED_RUN_PIN, atof(argv[2]));
+            set(LED_ERROR_PIN, atof(argv[2]));
+            set(LED_AUTO_PIN, atof(argv[2]));
+            set(LED_BLUE_PIN, atof(argv[2]));
+            set(LED_WHITE_PIN, atof(argv[2]));
         }
     }
 }

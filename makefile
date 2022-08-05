@@ -1,8 +1,6 @@
 SRCS:=${wildcard src/*.cpp}
 SRCDIR:=src
 
-
-
 INCLUDEDIR:=include
 
 OBJDIR:=build
