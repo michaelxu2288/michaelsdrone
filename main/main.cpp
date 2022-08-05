@@ -42,8 +42,8 @@ void ctrl_thrd(){
     double * trim = drone::get_trim_ptr();
     double * thrust = drone::get_thrust_ptr();
     double * yawthrust = drone::get_yawthrust_ptr();
-
-    double trimsens = 0.05;
+    double * front_multiplier = drone::get_front_multiplier_ptr();
+    double trimsens = 0.1;
     double maxthrust = 0.1;
 
     // pid * z_ctrl = drone::get_z_controller();
@@ -55,6 +55,7 @@ void ctrl_thrd(){
         
         (*thrust) = -gamepad::get_axis(1) * maxthrust;
         (*trim) -= trimsens * gamepad::get_axis(7) * 0.01;
+        (*front_multiplier) -= trimsens * gamepad::get_axis(6) * 0.001;
         (*yawthrust) = -((0.5 + 0.5 * gamepad::get_axis(2)) - (0.5 + 0.5 * gamepad::get_axis(5))) * vyaw;
         // logger::info("{} {}", *thrust, *trim);
 

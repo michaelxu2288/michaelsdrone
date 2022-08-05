@@ -68,7 +68,7 @@ static std::string socket_path;
 static bool zero_flag = false;
 static bool calib_flag = false;
 
-static double trim;
+static double trim, front_multiplier;
 static pid /* x_controller, y_controller, */ z_controller;
 static pid roll_controller, pitch_controller, vyaw_controller;
 static double thrust = 0;
@@ -540,8 +540,8 @@ void sensor_thread_funct(){
 
             // logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
 
-            drone::set_motor(MOTOR_FL, z + r + p + vy + trim + thrust);
-            drone::set_motor(MOTOR_FR, z - r + p - vy + trim + thrust);
+            drone::set_motor(MOTOR_FL, z + r + p + vy + trim * front_multiplier + thrust);
+            drone::set_motor(MOTOR_FR, z - r + p - vy + trim * front_multiplier + thrust);
             drone::set_motor(MOTOR_BL, z + r - p - vy + trim + thrust);
             drone::set_motor(MOTOR_BR, z - r - p + vy + trim + thrust);
         }
@@ -937,4 +937,8 @@ double* drone::get_thrust_ptr(){
 }
 double* drone::get_yawthrust_ptr(){
     return &yawthrust;
+}
+
+double* drone::get_front_multiplier_ptr(){
+    return &front_multiplier
 }
