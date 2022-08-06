@@ -68,7 +68,7 @@ static std::string socket_path;
 static bool zero_flag = false;
 static bool calib_flag = false;
 
-static double trim, front_multiplier;
+static double trim, front_multiplier = 1;
 static pid /* x_controller, y_controller, */ z_controller;
 static pid roll_controller, pitch_controller, vyaw_controller;
 static double thrust = 0;
