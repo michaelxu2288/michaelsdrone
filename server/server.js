@@ -1,4 +1,19 @@
 /* jshint esversion: 8 */
+const PATH = "/home/pi/drone";
+const port = 8080;
+
+
+function log(str) {
+    console.log(`[SERVER] ${str}`);
+}
+
+
+const path = require("path");
+var config = require(path.join(PATH, "config/config.json"));
+
+const SOCKET_LOCATION = config.message.socket_path;
+
+
 const http = require("http");
 const express = require("express");
 const fs = require("fs");
@@ -14,14 +29,6 @@ const io = new Server(server, {
     }
 });
 
-const { parseArgsStringToArgv } = require('string-argv');
-
-function log(str) {
-    console.log(`[SERVER] ${str}`);
-}
-
-const port = 8080;
-
 // const videoStream = require('raspberrypi-node-camera-web-streamer/videoStream.js');
 // videoStream.acceptConnections(app, {
 //     width: 2560,
@@ -31,39 +38,31 @@ const port = 8080;
 //     quality: 12 //lower is faster
 // }, '/stream.mjpg', true);
 
-const path = require("path");
-const PATH = "/home/pi/drone";
-
-var config = require(path.join(PATH, "config/config.json"));
-
-const SOCKET_LOCATION = config.message.socket_path;
-
 const process = require("process");
 
-const { exec, execSync, spawn } = require('child_process');
+const { exec } = require('child_process');
 
-var socket_server;
+var socketServer;
 
-function exitHandler(options, exitCode){
-    log(`Exiting with code "${exitCode}"`);
-    socket_server.close();
-    if (options.cleanup) log('clean');
-    if (exitCode || exitCode === 0) log(exitCode);
-    if (options.exit) process.exit();
+{
+    function exitHandler(options, exitCode){
+        log(`Exiting with code "${exitCode}"`);
+        socketServer.close();
+        if (options.cleanup) log('clean');
+        if (exitCode || exitCode === 0) log(exitCode);
+        if (options.exit) process.exit();
+    }
+
+    //do something when app is closing
+    process.on('exit', exitHandler.bind(null,{cleanup:true}));
+    //catches ctrl+c event
+    process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+    // catches "kill pid" (for example: nodemon restart)
+    process.on('SIGUSR1', exitHandler.bind(null, {exit:true}));
+    process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
+    //catches uncaught exceptions
+    process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 }
-
-
-//do something when app is closing
-process.on('exit', exitHandler.bind(null,{cleanup:true}));
-//catches ctrl+c event
-process.on('SIGINT', exitHandler.bind(null, {exit:true}));
-// catches "kill pid" (for example: nodemon restart)
-process.on('SIGUSR1', exitHandler.bind(null, {exit:true}));
-process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
-//catches uncaught exceptions
-process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
-
-
 
 app.use("/", express.static(path.join(PATH, "client")));
 server.listen(port, () => {
@@ -73,11 +72,11 @@ server.listen(port, () => {
             log(`Socket already exists. Unlinking ${SOCKET_LOCATION}.`);
             fs.unlinkSync(SOCKET_LOCATION);
         }
-        socket_server = net.createServer((connection) =>{
+        socketServer = net.createServer((connection) =>{
             log("Recieved connection");
             lastconn = connection;
             connection.on("data", (data) => {
-                message = data.toString().split(" ");
+                message = data.toString();
                 io.emit("sensor", message);       
             });
             connection.on("end", () => {
@@ -90,11 +89,11 @@ server.listen(port, () => {
         });
 
         
-        socket_server.listen(SOCKET_LOCATION, () => {
+        socketServer.listen(SOCKET_LOCATION, () => {
             log(`Socket Server created at ${SOCKET_LOCATION}.`);
         });
 
-        return socket_server;
+        return socketServer;
     }
 
 
@@ -105,7 +104,7 @@ server.listen(port, () => {
 
     const sockets = new Set();
 
-    var socket_server = createUnixSocketServer();
+    var socketServer = createUnixSocketServer();
 
     io.on("connection", (socket) => {
         socket.emit("bindings", bindings)
@@ -141,9 +140,16 @@ server.listen(port, () => {
         });
 
         socket.on("chg-pid", (type, val) => {
-            const parameter = `3 ${type} ${val}`;
+            const parameter = `3 ${type} ${val}\0`;
             log(`Changing parameter \"${parameter}\"`);
             lastconn.write(parameter);
-        })
+        });
+
+        socket.on("chg-value", (name, value) => {
+            const cmd = `4 ${name} ${value}\0`;
+            log(`Changing value \"${cmd}\"`);
+            lastconn.write(cmd);
+
+        });
     });
 });
