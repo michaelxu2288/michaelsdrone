@@ -680,6 +680,7 @@ void message_thread_funct(){
         reporter::bind_dbl("pitchout", &pitch_controller.output); // 60
 
         reporter::bind_dbl("trim", &trim); // 61
+        reporter::bind_dbl("fmult", &front_multiplier);
     }
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect(socket_path.c_str());
