@@ -540,8 +540,8 @@ void sensor_thread_funct(){
 
             // logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
 
-            drone::set_motor(MOTOR_FL, z + r + p + vy + trim * front_multiplier + thrust);
-            drone::set_motor(MOTOR_FR, z - r + p - vy + trim * front_multiplier + thrust);
+            drone::set_motor(MOTOR_FL, (z + r + p + vy + trim + thrust) * front_multiplier);
+            drone::set_motor(MOTOR_FR, (z - r + p - vy + trim + thrust) * front_multiplier);
             drone::set_motor(MOTOR_BL, z + r - p - vy + trim + thrust);
             drone::set_motor(MOTOR_BR, z - r - p + vy + trim + thrust);
         }
