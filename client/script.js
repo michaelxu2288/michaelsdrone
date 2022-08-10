@@ -665,7 +665,15 @@ class StatusDot {
 }
 var graph1ctx, graph2ctx;
 function parseOutput(output) {
-    output = output.map((a) => parseFloat(a));
+    // output = output.map((a) => parseFloat(a));
+    output = JSON.parse(output);
+    console.log(output);
+
+    Object.keys(Gauges).forEach((key) => {
+        Gauges[key].gauge.changeValue(output[key]);
+    })
+
+    return;
     lastUpdate = new Date();
     
     rotation.r = output[12];
@@ -674,36 +682,36 @@ function parseOutput(output) {
     
     const a = Math.sqrt(output[0]*output[0] + output[1]*output[1] + output[2]*output[2]);
 
-    Gauges.ax.gauge.changeValue(output[0]);
-    Gauges.ay.gauge.changeValue(output[1]);
-    Gauges.az.gauge.changeValue(output[2]);
+    // Gauges.ax.gauge.changeValue(output[0]);
+    // Gauges.ay.gauge.changeValue(output[1]);
+    // Gauges.az.gauge.changeValue(output[2]);
 
-    Gauges.vz.gauge.changeValue(output[8]);
+    // Gauges.vz.gauge.changeValue(output[8]);
 
-    Gauges.roll.gauge.changeValue(rotation.r / DEG_TO_RAD);
-    Gauges.pitch.gauge.changeValue(rotation.p / DEG_TO_RAD);
-    Gauges.yaw.gauge.changeValue(rotation.y / DEG_TO_RAD);
+    // Gauges.roll.gauge.changeValue(rotation.r / DEG_TO_RAD);
+    // Gauges.pitch.gauge.changeValue(rotation.p / DEG_TO_RAD);
+    // Gauges.yaw.gauge.changeValue(rotation.y / DEG_TO_RAD);
 
-    Gauges.roll.gauge.changeSetpoint(output[22] / DEG_TO_RAD);
-    Gauges.pitch.gauge.changeSetpoint(output[23] / DEG_TO_RAD);
-    Gauges.vyaw.gauge.changeSetpoint(output[21] / DEG_TO_RAD);
+    // Gauges.roll.gauge.changeSetpoint(output[22] / DEG_TO_RAD);
+    // Gauges.pitch.gauge.changeSetpoint(output[23] / DEG_TO_RAD);
+    // Gauges.vyaw.gauge.changeSetpoint(output[21] / DEG_TO_RAD);
 
-    Gauges.vroll.gauge.changeValue(output[3] / DEG_TO_RAD);
-    Gauges.vpitch.gauge.changeValue(output[4] / DEG_TO_RAD);
-    Gauges.vyaw.gauge.changeValue(output[5] / DEG_TO_RAD);
+    // Gauges.vroll.gauge.changeValue(output[3] / DEG_TO_RAD);
+    // Gauges.vpitch.gauge.changeValue(output[4] / DEG_TO_RAD);
+    // Gauges.vyaw.gauge.changeValue(output[5] / DEG_TO_RAD);
 
-    Gauges.temp.gauge.changeValue(output[15]);
-    Gauges.press.gauge.changeValue(output[16]);
-    Gauges.alt.gauge.changeValue(output[17]);
+    // Gauges.temp.gauge.changeValue(output[15]);
+    // Gauges.press.gauge.changeValue(output[16]);
+    // Gauges.alt.gauge.changeValue(output[17]);
 
-    Gauges.mfl.gauge.changeValue(output[28]);
-    Gauges.mfr.gauge.changeValue(output[29]);
-    Gauges.mbl.gauge.changeValue(output[30]);
-    Gauges.mbr.gauge.changeValue(output[31]);
+    // Gauges.mfl.gauge.changeValue(output[28]);
+    // Gauges.mfr.gauge.changeValue(output[29]);
+    // Gauges.mbl.gauge.changeValue(output[30]);
+    // Gauges.mbr.gauge.changeValue(output[31]);
 
-    Gauges.z.gauge.changeValue(output[11]);
-    Gauges.valt.gauge.changeValue(output[19]);
-    Gauges.initalt.gauge.changeValue(output[18]);
+    // Gauges.z.gauge.changeValue(output[11]);
+    // Gauges.valt.gauge.changeValue(output[19]);
+    // Gauges.initalt.gauge.changeValue(output[18]);
     
     var r_a = Math.atan2(output[1], output[2]) * 57.3
     var p_a = Math.atan2(output[0], Math.sqrt(output[1] * output[1] + output[2] * output[2])) * 57.3;
