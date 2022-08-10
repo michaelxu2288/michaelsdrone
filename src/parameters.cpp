@@ -135,9 +135,8 @@ std::string parameters::get_json_report(){
 //     return out;
 // }
 
-
-char buf[20];
 void parameters::chg(const char * str) {
+    char buf[20];
     int i;
     for(i = 0; str[i] != ' '; i++) {
         if(str[i] == '\0' || i >= 20){
