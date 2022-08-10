@@ -54,7 +54,7 @@ void parameters::bind_dbl(const char * name, double * value, bool readonly){
 }
 
 
-void parameters::bind_str(const char * name, std::string * str, bool readonly){
+void parameters::bind_str(const char * name, std::string * value, bool readonly){
     if(readonly) {
         readonly_names.push_back(name);
         readonly_bindings.push_back((void*) value);
@@ -123,7 +123,7 @@ static std::string json_helper(std::vector<const char *> & names, std::vector<vo
 }
 
 std::string parameters::get_json_report(){
-    return "{writable:"+json_helper(writable_names, writable_bindings, writable_types)+",readable:{"+json_helper(readonly_names, readonly_bindings, readonly_types)+"}"
+    return "{writable:"+json_helper(writable_names, writable_bindings, writable_types)+",readable:{"+json_helper(readonly_names, readonly_bindings, readonly_types)+"}";
 }
 
 // std::string parameters::get_keys() {
@@ -142,7 +142,7 @@ void parameters::chg(const char * str) {
     for(i = 0; str[i] != ' '; i++) {
         if(str[i] == '\0' || i >= 20){
             logger::crit("\"{}\" is not a valid input.", str);
-            return
+            return;
         }
         buf[i] = str[i];
     }
@@ -151,15 +151,18 @@ void parameters::chg(const char * str) {
     int j = std::atoi(buf);
     switch(readonly_types[j]){
     case 0:
-        readonly_bindings[j] = str[i] == '1';
+        (*((bool *) readonly_bindings[j])) = str[i] == '1';
         break;
     case 1:
-        readonly_bindings[j] = std::atoi(str + i);
+        (*((int *) readonly_bindings[j]))  = std::atoi(str + i);
         break;
     case 2:
-        readonly_bindings[j] = std::atof()
+        (*((double *) readonly_bindings[j]))  = std::atof(str+i);
+        break;
     case 3:
-    default;
+        break;
+    default:
+        break;
     }
 
 }
