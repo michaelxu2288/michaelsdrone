@@ -12,6 +12,8 @@ namespace parameters {
 
     void bind_axis(int axis, double * value);
 
+    void post_bind_setup();
+
     void init_gamepad();
     void init_gamepad_thread();
 

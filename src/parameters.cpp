@@ -1,6 +1,7 @@
 #include <parameters.h>
 #include <vector>
 #include <logger.h>
+#include <unordered_map>
 
 static std::vector<const char *> readonly_names;
 static std::vector<void *> readonly_bindings;
@@ -14,6 +15,10 @@ static std::vector<void *> writable_bindings;
 // 3 - str
 static std::vector<char> readonly_types;
 static std::vector<char> writable_types;
+
+// static std::unordered_map<const char *, 
+
+static std::string
 
 void parameters::bind_bool(const char * name, bool * value, bool readonly){
     if(readonly) {
@@ -66,31 +71,18 @@ void parameters::bind_str(const char * name, std::string * value, bool readonly)
     }
 }
 
-// std::string parameters::get_report(){
-//     std::string out = "";
-//     for(int i = 0; i < readonly_names.size(); i ++){
-//         switch(readonly_types[i]){
-//             case 0:
-//                 out += std::to_string(*((bool *) (readonly_bindings[i])));
-//                 break;
-//             case 1:
-//                 out += std::to_string(*((int *) (readonly_bindings[i])));
-//                 break;
-//             case 2:
-//                 out += std::to_string(*((double *) (readonly_bindings[i])));
-//                 break;
-//             case 3:
-//                 out +=*((std::string *) readonly_bindings[i]);
-//                 break;
-//             default:
-//                 out += "null";
-//                 break;
-//         }
-//         out += " ";
-//     }
-//     return out;
-// }
-
+void parameters::post_bind_setup() {
+    std::string out = "{";
+    int k = writable_.size();
+    for(int i = 0; i < k; i ++){
+        std::string name(names[i]);
+        out+="\""+name+"\":"+i;
+        if(i != k-1) {
+            out += ",";
+        }
+    }
+    return out+"}";
+}
 
 static std::string json_helper(std::vector<const char *> & names, std::vector<void *> & bindings, std::vector<char> & types){
     std::string out = "{";
@@ -123,45 +115,52 @@ static std::string json_helper(std::vector<const char *> & names, std::vector<vo
 }
 
 std::string parameters::get_json_report(){
-    return "{writable:"+json_helper(writable_names, writable_bindings, writable_types)+",readable:{"+json_helper(readonly_names, readonly_bindings, readonly_types)+"}";
+    return "{writable:"+json_helper(writable_names, writable_bindings, writable_types)+",readable:{"+json_helper(readonly_names, readonly_bindings, readonly_types)+",writable_i:"++"}";
 }
 
-// std::string parameters::get_keys() {
-//     std::string out = "";
-//     for(int i = 0; i < readonly_names.size(); i ++){
-//         out += readonly_names[i];
-//         out += " ";
-//     }
-//     return out;
-// }
+// for string delimiter
+static std::vector<std::string> split (std::string s, std::string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
+
+    while ((pos_end = s.find (delimiter, pos_start)) != std::string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
+}
+
 
 void parameters::chg(const char * str) {
-    char buf[20];
-    int i;
-    for(i = 0; str[i] != ' '; i++) {
-        if(str[i] == '\0' || i >= 20){
-            logger::crit("\"{}\" is not a valid input.", str);
-            return;
+    std::string bruh(str);
+    std::vector<std::string> splitted = split(bruh, " ");
+    int type = std::atoi(splitted[0]); // 0 - normal, 1 - axis input
+    int id = std::atoi(splitted[1]);
+    // int value;
+
+    if(type == 0) {
+        switch(readonly_types[id]){
+        case 0:
+            (*((bool *) writable_bindings[id])) = splitted[2] == '1';
+            break;
+        case 1:
+            (*((int *) writable_bindings[id]))  = std::atoi(splitted[2]);
+            break;
+        case 2:
+            (*((double *) writable_bindings[id]))  = std::atof(splitted[2]);
+            break;
+        case 3:
+            break;
+        default:
+            break;
         }
-        buf[i] = str[i];
+    }else if(type == 1){
+        
     }
-    buf[i] = '\0';
-    i++;
-    int j = std::atoi(buf);
-    switch(readonly_types[j]){
-    case 0:
-        (*((bool *) readonly_bindings[j])) = str[i] == '1';
-        break;
-    case 1:
-        (*((int *) readonly_bindings[j]))  = std::atoi(str + i);
-        break;
-    case 2:
-        (*((double *) readonly_bindings[j]))  = std::atof(str+i);
-        break;
-    case 3:
-        break;
-    default:
-        break;
-    }
+
 
 }
