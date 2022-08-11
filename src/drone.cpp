@@ -608,6 +608,22 @@ static int substr_chr(char * out, const char * bruh, char c, int a, int b){
 }
 
 
+// for string delimiter
+static std::vector<std::string> split (std::string s, std::string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
+
+    while ((pos_end = s.find (delimiter, pos_start)) != std::string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
+}
+
 
 void message_thread_funct(){
     logger::info("Message thread alive!");  
@@ -705,7 +721,6 @@ void message_thread_funct(){
     char recv[1024];
     char buf[100];
 
-    const char * cock[] = {"zp", "zi", "zd", "vyp", "vyi", "vyd", "rp", "ri", "rd", "pp", "pi", "pd", "trim"};
     while(alive){
         // std::lock_guard<std::mutex> message_lock_guard(message_thread_mutex);
         
@@ -719,10 +734,8 @@ void message_thread_funct(){
             recv[len] = '\0';
             std::string bruv(recv);
             if(len > 0){
-                int l = bruv.find(' ');
-                int cmd = std::stoi(bruv.substr(0, l));
-                // logger::info("");
-
+                std::vector<std::string> args = split(bruv, " ");
+                int cmd = std::stoi(args[0]);
                 state old;
                 switch(cmd){
                 case 0:
@@ -740,12 +753,10 @@ void message_thread_funct(){
                     logger::info("Acquired locks!");
                     drone::load_configuration();
                     logger::info("Releasing locks!");
-                    // rel_config = std::thread(reload_config_thread);
-                    // rel_config.join();
                     curr_state = old;
                     break;
                 case 3:
-                    
+                    parameters::chg(args, 1);
                     break;
                 default:
                     logger::warn("Unknown cmd \"{}\"", cmd);

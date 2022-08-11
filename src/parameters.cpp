@@ -162,20 +162,26 @@ static std::vector<std::string> split (std::string s, std::string delimiter) {
 void parameters::chg(const char * str) {
     std::string bruh(str);
     std::vector<std::string> splitted = split(bruh, " ");
-    int type = std::stoi(splitted[0]); // 0 - normal, 1 - axis input
-    int id = std::stoi(splitted[1]);
+    parameters::chg()
+}
+
+
+void parameters::chg(std::vector<std::string> & args, int i) {
+    int type = std::stoi(args[i]); // 0 - normal, 1 - axis input
+    int id = std::stoi(args[i+1]);
     // int value;
 
     if(type == 0) {
+        logger::info("Changing writable parameter \"{}\" to \"{}\".", readonly_names[id], args[i+2]);
         switch(readonly_types[id]){
         case 0:
-            (*((bool *) writable_bindings[id])) = splitted[2][0] == '1';
+            (*((bool *) writable_bindings[id])) = args[i+2][0] == '1';
             break;
         case 1:
-            (*((int *) writable_bindings[id]))  = std::stoi(splitted[2]);
+            (*((int *) writable_bindings[id]))  = std::stoi(args[i+2]);
             break;
         case 2:
-            (*((double *) writable_bindings[id]))  = std::stof(splitted[2]);
+            (*((double *) writable_bindings[id]))  = std::stof(args[i+2]);
             break;
         case 3:
             break;

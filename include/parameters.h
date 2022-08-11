@@ -2,7 +2,7 @@
 #define PARAMETERS_H_GUARD
 #include <string>
 #include <functional>
-
+#include <vector>
 namespace parameters {
 
     void bind_str(const char * name, std::string * str, bool readonly);
@@ -27,6 +27,7 @@ namespace parameters {
     std::string get_json_report();
 
     void chg(const char * cmd);
+    void chg(std::vector<std::string> & args, int i);
 }
 
 #endif
