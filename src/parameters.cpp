@@ -109,7 +109,7 @@ static std::string json_helper(std::vector<const char *> & names, std::vector<vo
 }
 
 std::string parameters::get_json_report(){
-    return "{writable:"+json_helper(writable_names, writable_bindings, writable_types)+",readable:{"+json_helper(readonly_names, readonly_bindings, readonly_types)+",writable_ids:{"+writable_ids+"}}";
+    return "{\"writable\":"+json_helper(writable_names, writable_bindings, writable_types)+",\"readable\":{"+json_helper(readonly_names, readonly_bindings, readonly_types)+",\"writable_ids\":{"+writable_ids+"}}";
 }
 
 // for string delimiter
