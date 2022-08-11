@@ -745,77 +745,8 @@ void message_thread_funct(){
                     curr_state = old;
                     break;
                 case 3:
-                    {
-                        // l = substr_chr(buf, recv, ' ', l, -1);
-                        int k = l+1;
-                        l = bruv.find(' ', k);
-                        if(l != -1){
-                            int var = std::stoi(bruv.substr(k,l));
-                            double val = std::stof(bruv.substr(l+1));
-                            logger::info("Changing {} to {}.", cock[var], val);
-                            switch(var){
-                            case 0: // z_p
-                                z_controller.kP = val;
-                                z_controller.reset_integral_term();
-                                break;
-                            case 1: // z_i
-                                z_controller.kI = val;
-                                z_controller.reset_integral_term();
-                                break;
-                            case 2: // z_d
-                                z_controller.kD = val;
-                                z_controller.reset_integral_term();
-                                break;
-                            case 3: // vy_p
-                                vyaw_controller.kP = val;
-                                vyaw_controller.reset_integral_term();
-                                break;
-                            case 4: // vy_i
-                                vyaw_controller.kI = val;
-                                vyaw_controller.reset_integral_term();
-                                break;
-                            case 5: // vy_d
-                                vyaw_controller.kD = val;
-                                vyaw_controller.reset_integral_term();
-                                break;
-                            case 6: // r_p
-                                roll_controller.kP = val;
-                                roll_controller.reset_integral_term();
-                                break;
-                            case 7: // r_i
-                                roll_controller.kI = val;
-                                roll_controller.reset_integral_term();
-                                break;
-                            case 8: // r_d
-                                roll_controller.kD = val;
-                                roll_controller.reset_integral_term();
-                                break;
-                            case 9: // p_p
-                                pitch_controller.kP = val;
-                                pitch_controller.reset_integral_term();
-                                break;
-                            case 10: // p_i
-                                pitch_controller.kI = val;
-                                pitch_controller.reset_integral_term();
-                                break;
-                            case 11: // p_d
-                                pitch_controller.kD = val;
-                                pitch_controller.reset_integral_term();
-                                break;
-                            case 12: // trim
-                                trim = val;
-                                pitch_controller.reset_integral_term();
-                            default:
-                                logger::warn("Unknown variable \"{}\"", var);
-                            }
-                        }
-                    }
+                    
                     break;
-                // case 4:
-                //     {
-
-                //     }
-                //     break;
                 default:
                     logger::warn("Unknown cmd \"{}\"", cmd);
                 }

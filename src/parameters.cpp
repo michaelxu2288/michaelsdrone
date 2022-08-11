@@ -31,8 +31,9 @@ void parameters::bind_bool(const char * name, bool * value, bool readonly){
         if(i != 0){
             writable_ids += ",";
         }
+        writable_ids += "\"":
         writable_ids += name;
-        writable_ids += ":";
+        writable_ids += "\":":
         writable_ids += std::to_string(i);
 
         writable_names.push_back(name);
@@ -52,8 +53,9 @@ void parameters::bind_int(const char * name, int * value, bool readonly){
         if(i != 0){
             writable_ids += ",";
         }
+        writable_ids += "\"":
         writable_ids += name;
-        writable_ids += ":";
+        writable_ids += "\":":
         writable_ids += std::to_string(i);
 
         writable_names.push_back(name);
@@ -73,8 +75,9 @@ void parameters::bind_dbl(const char * name, double * value, bool readonly){
         if(i != 0){
             writable_ids += ",";
         }
+        writable_ids += "\"":
         writable_ids += name;
-        writable_ids += ":";
+        writable_ids += "\":":
         writable_ids += std::to_string(i);
 
         writable_names.push_back(name);
@@ -94,8 +97,9 @@ void parameters::bind_str(const char * name, std::string * value, bool readonly)
         if(i != 0){
             writable_ids += ",";
         }
+        writable_ids += "\"":
         writable_ids += name;
-        writable_ids += ":";
+        writable_ids += "\":":
         writable_ids += std::to_string(i);
 
         writable_names.push_back(name);
