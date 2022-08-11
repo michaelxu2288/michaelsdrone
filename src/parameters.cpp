@@ -31,7 +31,7 @@ void parameters::bind_bool(const char * name, bool * value, bool readonly){
         if(i != 0){
             writable_ids += ",";
         }
-        writable_ids += names;
+        writable_ids += name;
 
         writable_names.push_back(name);
         writable_bindings.push_back((void*) value);
