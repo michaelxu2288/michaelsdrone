@@ -21,7 +21,7 @@ int main(){
     parameters::bind_dbl("c_w", &cw, true);
     parameters::bind_str("str_w", &strw, true);
 
-    parameters::post_bind_setup();
+    // parameters::post_bind_setup();
 
     logger::info("json: {}", parameters::get_json_report());
     a = true;
