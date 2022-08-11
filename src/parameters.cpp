@@ -18,7 +18,7 @@ static std::vector<char> writable_types;
 
 // static std::unordered_map<const char *, 
 
-static std::string
+static std::string writable_ids;
 
 void parameters::bind_bool(const char * name, bool * value, bool readonly){
     if(readonly) {
@@ -72,16 +72,18 @@ void parameters::bind_str(const char * name, std::string * value, bool readonly)
 }
 
 void parameters::post_bind_setup() {
-    std::string out = "{";
-    int k = writable_.size();
+    writable_ids = "{";
+    int k = writable_names.size();
     for(int i = 0; i < k; i ++){
-        std::string name(names[i]);
-        out+="\""+name+"\":"+std::to_string(i);
+        std::string name(writable_names[i]);
+        
+
+        writable_ids +="\""+name+"\":"+std::to_string(i);
         if(i != k-1) {
-            out += ",";
+            writable_ids  += ",";
         }
     }
-    return out+"}";
+    writable_ids +"}";
 }
 
 static std::string json_helper(std::vector<const char *> & names, std::vector<void *> & bindings, std::vector<char> & types){
@@ -115,7 +117,7 @@ static std::string json_helper(std::vector<const char *> & names, std::vector<vo
 }
 
 std::string parameters::get_json_report(){
-    return "{writable:"+json_helper(writable_names, writable_bindings, writable_types)+",readable:{"+json_helper(readonly_names, readonly_bindings, readonly_types)+",writable_i:"++"}";
+    return "{writable:"+json_helper(writable_names, writable_bindings, writable_types)+",readable:{"+json_helper(readonly_names, readonly_bindings, readonly_types)+",writable_ids:"+writable_ids+"}";
 }
 
 // for string delimiter
@@ -138,8 +140,8 @@ static std::vector<std::string> split (std::string s, std::string delimiter) {
 void parameters::chg(const char * str) {
     std::string bruh(str);
     std::vector<std::string> splitted = split(bruh, " ");
-    int type = std::atoi(splitted[0]); // 0 - normal, 1 - axis input
-    int id = std::atoi(splitted[1]);
+    int type = std::stoi(splitted[0]); // 0 - normal, 1 - axis input
+    int id = std::stoi(splitted[1]);
     // int value;
 
     if(type == 0) {
