@@ -13,7 +13,7 @@
 #include <config.h>
 #include <socket.h>
 #include <bmp390.h>
-#include <reporter.h>
+#include <parameters.h>
 
 // #include <cmath>
 #include <limits>
@@ -613,74 +613,87 @@ void message_thread_funct(){
     logger::info("Message thread alive!");  
 
     {
-        reporter::bind_dbl("ax", filtered_mpu6050_data); // 0
-        reporter::bind_dbl("ay", filtered_mpu6050_data + 1); // 1
-        reporter::bind_dbl("az", filtered_mpu6050_data + 2); // 2
-        reporter::bind_dbl("vroll", filtered_mpu6050_data + 3); // 3
-        reporter::bind_dbl("vpitch", filtered_mpu6050_data + 4); // 4
-        reporter::bind_dbl("vyaw", filtered_mpu6050_data + 5); // 5
-        reporter::bind_dbl("vx", &velocity.x); // 6
-        reporter::bind_dbl("vy", &velocity.y); // 7
-        reporter::bind_dbl("vz", &velocity.z); // 8
-        reporter::bind_dbl("x", &position.x); // 9
-        reporter::bind_dbl("y", &position.y); // 10
-        reporter::bind_dbl("z", &position.z); // 11
-        reporter::bind_dbl("roll", &orientation_euler.x); // 12
-        reporter::bind_dbl("pitch", &orientation_euler.y); // 13
-        reporter::bind_dbl("yaw", &orientation_euler.z); // 14
-        reporter::bind_dbl("temp", bmp390_data); // 15
-        reporter::bind_dbl("pressure", bmp390_data+1); // 16
-        reporter::bind_dbl("altitude", bmp390_data+2); // 17
-        reporter::bind_dbl("ialt", &initial_altitude); // 18
-        reporter::bind_dbl("valt", &valt); // 19
+        parameters::bind_dbl("ax", filtered_mpu6050_data, true); // 0
+        parameters::bind_dbl("ay", filtered_mpu6050_data + 1, true); // 1
+        parameters::bind_dbl("az", filtered_mpu6050_data + 2, true); // 2
+        parameters::bind_dbl("vroll", filtered_mpu6050_data + 3, true); // 3
+        parameters::bind_dbl("vpitch", filtered_mpu6050_data + 4, true); // 4
+        parameters::bind_dbl("vyaw", filtered_mpu6050_data + 5, true); // 5
+        parameters::bind_dbl("vx", &velocity.x, true); // 6
+        parameters::bind_dbl("vy", &velocity.y, true); // 7
+        parameters::bind_dbl("vz", &velocity.z, true); // 8
+        parameters::bind_dbl("x", &position.x, true); // 9
+        parameters::bind_dbl("y", &position.y, true); // 10
+        parameters::bind_dbl("z", &position.z, true); // 11
+        parameters::bind_dbl("roll", &orientation_euler.x, true); // 12
+        parameters::bind_dbl("pitch", &orientation_euler.y, true); // 13
+        parameters::bind_dbl("yaw", &orientation_euler.z, true); // 14
+        parameters::bind_dbl("temp", bmp390_data, true); // 15
+        parameters::bind_dbl("pressure", bmp390_data+1, true); // 16
+        parameters::bind_dbl("altitude", bmp390_data+2, true); // 17
+        parameters::bind_dbl("ialt", &initial_altitude, true); // 18
+        parameters::bind_dbl("valt", &valt, true); // 19
         
-        reporter::bind_dbl("zset", &z_controller.setpoint); // 20
-        reporter::bind_dbl("vyawset", &vyaw_controller.setpoint); // 21
-        reporter::bind_dbl("rollset", &roll_controller.setpoint); // 22
-        reporter::bind_dbl("pitchset", &pitch_controller.setpoint); // 23
-        reporter::bind_dbl("zerr", &z_controller.err); // 24
-        reporter::bind_dbl("vyawerr", &vyaw_controller.err); // 25
-        reporter::bind_dbl("rollerr", &roll_controller.err); // 26
-        reporter::bind_dbl("pitcherr", &pitch_controller.err); // 27
+        parameters::bind_dbl("zset", &z_controller.setpoint, true); // 20
+        parameters::bind_dbl("vyawset", &vyaw_controller.setpoint, true); // 21
+        parameters::bind_dbl("rollset", &roll_controller.setpoint, true); // 22
+        parameters::bind_dbl("pitchset", &pitch_controller.setpoint, true); // 23
+        parameters::bind_dbl("zerr", &z_controller.err, true); // 24
+        parameters::bind_dbl("vyawerr", &vyaw_controller.err, true); // 25
+        parameters::bind_dbl("rollerr", &roll_controller.err, true); // 26
+        parameters::bind_dbl("pitcherr", &pitch_controller.err, true); // 27
 
-        reporter::bind_dbl("flpwr", &motor_fl_spd); // 28
-        reporter::bind_dbl("frpwr", &motor_fr_spd); // 29
-        reporter::bind_dbl("blpwr", &motor_bl_spd); // 30
-        reporter::bind_dbl("brpwr", &motor_br_spd); // 31
+        parameters::bind_dbl("flpwr", &motor_fl_spd, true); // 28
+        parameters::bind_dbl("frpwr", &motor_fr_spd, true); // 29
+        parameters::bind_dbl("blpwr", &motor_bl_spd, true); // 30
+        parameters::bind_dbl("brpwr", &motor_br_spd, true); // 31
 
-        reporter::bind_int("state", (int *) (&curr_state)); // 32
-        reporter::bind_dbl("cpuusg", &cpu_usg); // 33
-        reporter::bind_dbl("battery", &battery); // 34
-        reporter::bind_dbl("dt", &dt); // 35
-        reporter::bind_bool("controller", &cntrller_connected); // 36
+        parameters::bind_int("state", (int *) (&curr_state), true); // 32
+        parameters::bind_dbl("cpuusg", &cpu_usg, true); // 33
+        parameters::bind_dbl("battery", &battery, true); // 34
+        parameters::bind_dbl("dt", &dt, true); // 35
+        parameters::bind_bool("controller", &cntrller_connected, true); // 36
 
-        reporter::bind_dbl("zicurr", &z_controller.i_curr); // 37
-        reporter::bind_dbl("vyawicurr", &vyaw_controller.i_curr); // 38
-        reporter::bind_dbl("rollicurr", &roll_controller.i_curr); // 39
-        reporter::bind_dbl("pitchicurr", &pitch_controller.i_curr); // 40
-        reporter::bind_dbl("zderr", &z_controller.derr); // 41
-        reporter::bind_dbl("vyawderr", &vyaw_controller.derr); // 42
-        reporter::bind_dbl("rollderr", &roll_controller.derr); // 43
-        reporter::bind_dbl("pitchderr", &pitch_controller.derr); // 44
-        reporter::bind_dbl("zp", &z_controller.p); // 45
-        reporter::bind_dbl("vyawp", &vyaw_controller.p); // 46
-        reporter::bind_dbl("rollp", &roll_controller.p); // 47
-        reporter::bind_dbl("pitchp", &pitch_controller.p); // 48
-        reporter::bind_dbl("zi", &z_controller.i); // 49
-        reporter::bind_dbl("vyawi", &vyaw_controller.i); // 50
-        reporter::bind_dbl("rolli", &roll_controller.i); // 51
-        reporter::bind_dbl("pitchi", &pitch_controller.i); // 52
-        reporter::bind_dbl("zd", &z_controller.d); // 53
-        reporter::bind_dbl("vyawd", &vyaw_controller.d); // 54
-        reporter::bind_dbl("rolld", &roll_controller.d); // 55
-        reporter::bind_dbl("pitchd", &pitch_controller.d); // 56
-        reporter::bind_dbl("zout", &z_controller.output); // 57
-        reporter::bind_dbl("vyawout", &vyaw_controller.output); // 58
-        reporter::bind_dbl("rollout", &roll_controller.output); // 59
-        reporter::bind_dbl("pitchout", &pitch_controller.output); // 60
+        parameters::bind_dbl("zicurr", &z_controller.i_curr, true); // 37
+        parameters::bind_dbl("vyawicurr", &vyaw_controller.i_curr, true); // 38
+        parameters::bind_dbl("rollicurr", &roll_controller.i_curr, true); // 39
+        parameters::bind_dbl("pitchicurr", &pitch_controller.i_curr, true); // 40
+        parameters::bind_dbl("zderr", &z_controller.derr, true); // 41
+        parameters::bind_dbl("vyawderr", &vyaw_controller.derr, true); // 42
+        parameters::bind_dbl("rollderr", &roll_controller.derr, true); // 43
+        parameters::bind_dbl("pitchderr", &pitch_controller.derr, true); // 44
+        parameters::bind_dbl("zp", &z_controller.p, true); // 45
+        parameters::bind_dbl("vyawp", &vyaw_controller.p, true); // 46
+        parameters::bind_dbl("rollp", &roll_controller.p, true); // 47
+        parameters::bind_dbl("pitchp", &pitch_controller.p, true); // 48
+        parameters::bind_dbl("zi", &z_controller.i, true); // 49
+        parameters::bind_dbl("vyawi", &vyaw_controller.i, true); // 50
+        parameters::bind_dbl("rolli", &roll_controller.i, true); // 51
+        parameters::bind_dbl("pitchi", &pitch_controller.i, true); // 52
+        parameters::bind_dbl("zd", &z_controller.d, true); // 53
+        parameters::bind_dbl("vyawd", &vyaw_controller.d, true); // 54
+        parameters::bind_dbl("rolld", &roll_controller.d, true); // 55
+        parameters::bind_dbl("pitchd", &pitch_controller.d, true); // 56
+        parameters::bind_dbl("zout", &z_controller.output, true); // 57
+        parameters::bind_dbl("vyawout", &vyaw_controller.output, true); // 58
+        parameters::bind_dbl("rollout", &roll_controller.output, true); // 59
+        parameters::bind_dbl("pitchout", &pitch_controller.output, true); // 60
 
-        reporter::bind_dbl("trim", &trim); // 61
-        reporter::bind_dbl("fmult", &front_multiplier);
+        parameters::bind_dbl("trim", &trim, false); // 61
+        parameters::bind_dbl("fmult", &front_multiplier, false);
+
+        parameters::bind_dbl("rkP", &roll_controller.kP, false);
+        parameters::bind_dbl("rkI", &roll_controller.kI, false);
+        parameters::bind_dbl("rkD", &roll_controller.kD, false);
+        parameters::bind_dbl("pkP", &pitch_controller.kP, false);
+        parameters::bind_dbl("pkI", &pitch_controller.kI, false);
+        parameters::bind_dbl("pkD", &pitch_controller.kD, false);
+        parameters::bind_dbl("vyawkP", &vyaw_controller.kP, false);
+        parameters::bind_dbl("vyawkI", &vyaw_controller.kI, false);
+        parameters::bind_dbl("vyawkD", &vyaw_controller.kD, false);
+        parameters::bind_dbl("zkP", &z_controller.kP, false);
+        parameters::bind_dbl("zkI", &z_controller.kI, false);
+        parameters::bind_dbl("zkD", &z_controller.kD, false);
     }
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect(socket_path.c_str());
@@ -846,7 +859,7 @@ void message_thread_funct(){
         // );
 
 
-        std::string sendStr = reporter::get_json_report();
+        std::string sendStr = parameters::get_json_report();
         int e = unix_connection.send(sendStr.c_str(), sendStr.length());
         if(e < 0) {
             reconnect_node_server(client, unix_connection);

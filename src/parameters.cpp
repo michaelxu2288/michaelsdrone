@@ -78,21 +78,6 @@ void parameters::bind_str(const char * name, std::string * value, bool readonly)
     }
 }
 
-void parameters::post_bind_setup() {
-    // writable_ids = "{";
-    // int k = writable_names.size();
-    // for(int i = 0; i < k; i ++){
-    //     std::string name(writable_names[i]);
-        
-
-    //     writable_ids +="\""+name+"\":"+std::to_string(i);
-    //     if(i != k-1) {
-    //         writable_ids  += ",";
-    //     }
-    // }
-    // writable_ids +"}";
-}
-
 static std::string json_helper(std::vector<const char *> & names, std::vector<void *> & bindings, std::vector<char> & types){
     std::string out = "{";
     int k = names.size();
@@ -124,7 +109,7 @@ static std::string json_helper(std::vector<const char *> & names, std::vector<vo
 }
 
 std::string parameters::get_json_report(){
-    return "{writable:"+json_helper(writable_names, writable_bindings, writable_types)+",readable:{"+json_helper(readonly_names, readonly_bindings, readonly_types)+",writable_ids:"+writable_ids+"}";
+    return "{writable:"+json_helper(writable_names, writable_bindings, writable_types)+",readable:{"+json_helper(readonly_names, readonly_bindings, readonly_types)+",writable_ids:{"+writable_ids+"}}";
 }
 
 // for string delimiter
@@ -170,6 +155,5 @@ void parameters::chg(const char * str) {
     }else if(type == 1){
 
     }
-
-
 }
+
