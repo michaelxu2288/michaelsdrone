@@ -46,6 +46,12 @@ void parameters::bind_int(const char * name, int * value, bool readonly){
         readonly_bindings.push_back((void*) value);
         readonly_types.push_back(1);
     }else {
+        int i = writable_names.size();
+        if(i != 0){
+            writable_ids += ",";
+        }
+        writable_ids += name;
+
         writable_names.push_back(name);
         writable_bindings.push_back((void*) value);
         writable_types.push_back(1);
@@ -59,6 +65,12 @@ void parameters::bind_dbl(const char * name, double * value, bool readonly){
         readonly_bindings.push_back((void*) value);
         readonly_types.push_back(2);
     }else {
+        int i = writable_names.size();
+        if(i != 0){
+            writable_ids += ",";
+        }
+        writable_ids += name;
+
         writable_names.push_back(name);
         writable_bindings.push_back((void*) value);
         writable_types.push_back(2);
@@ -72,6 +84,12 @@ void parameters::bind_str(const char * name, std::string * value, bool readonly)
         readonly_bindings.push_back((void*) value);
         readonly_types.push_back(3);
     }else {
+        int i = writable_names.size();
+        if(i != 0){
+            writable_ids += ",";
+        }
+        writable_ids += name;
+        
         writable_names.push_back(name);
         writable_bindings.push_back((void*) value);
         writable_types.push_back(3);
