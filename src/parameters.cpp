@@ -18,6 +18,7 @@ static std::vector<char> writable_types;
 
 // static std::unordered_map<const char *, 
 
+
 static std::string writable_ids;
 
 void parameters::bind_bool(const char * name, bool * value, bool readonly){
@@ -26,6 +27,12 @@ void parameters::bind_bool(const char * name, bool * value, bool readonly){
         readonly_bindings.push_back((void*) value);
         readonly_types.push_back(0);
     }else {
+        int i = writable_names.size();
+        if(i != 0){
+            writable_ids += ",";
+        }
+        writable_ids += names;
+
         writable_names.push_back(name);
         writable_bindings.push_back((void*) value);
         writable_types.push_back(0);
@@ -72,18 +79,18 @@ void parameters::bind_str(const char * name, std::string * value, bool readonly)
 }
 
 void parameters::post_bind_setup() {
-    writable_ids = "{";
-    int k = writable_names.size();
-    for(int i = 0; i < k; i ++){
-        std::string name(writable_names[i]);
+    // writable_ids = "{";
+    // int k = writable_names.size();
+    // for(int i = 0; i < k; i ++){
+    //     std::string name(writable_names[i]);
         
 
-        writable_ids +="\""+name+"\":"+std::to_string(i);
-        if(i != k-1) {
-            writable_ids  += ",";
-        }
-    }
-    writable_ids +"}";
+    //     writable_ids +="\""+name+"\":"+std::to_string(i);
+    //     if(i != k-1) {
+    //         writable_ids  += ",";
+    //     }
+    // }
+    // writable_ids +"}";
 }
 
 static std::string json_helper(std::vector<const char *> & names, std::vector<void *> & bindings, std::vector<char> & types){

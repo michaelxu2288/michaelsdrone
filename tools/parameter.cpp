@@ -21,6 +21,8 @@ int main(){
     parameters::bind_dbl("c_w", &cw, true);
     parameters::bind_str("str_w", &strw, true);
 
+    parameters::post_bind_setup();
+
     logger::info("json: {}", parameters::get_json_report());
     a = true;
     b = 1321312;
@@ -35,6 +37,7 @@ int main(){
     logger::info("json: {}", parameters::get_json_report());
     
     parameters::chg("0 1 0");
-    
+    parameters::chg("0 2 -1.14");
+
     logger::info("json: {}", parameters::get_json_report());
 }
