@@ -147,7 +147,7 @@ void parameters::chg(const char * str) {
     if(type == 0) {
         switch(readonly_types[id]){
         case 0:
-            (*((bool *) writable_bindings[id])) = splitted[2] == '1';
+            (*((bool *) writable_bindings[id])) = splitted[2][0] == '1';
             break;
         case 1:
             (*((int *) writable_bindings[id]))  = std::stoi(splitted[2]);

@@ -33,4 +33,8 @@ int main(){
     strw = "bruv";
 
     logger::info("json: {}", parameters::get_json_report());
+    
+    parameters::chg("0 1 0");
+    
+    logger::info("json: {}", parameters::get_json_report());
 }
