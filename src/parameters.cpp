@@ -76,7 +76,7 @@ void parameters::post_bind_setup() {
     int k = writable_.size();
     for(int i = 0; i < k; i ++){
         std::string name(names[i]);
-        out+="\""+name+"\":"+i;
+        out+="\""+name+"\":"+std::to_string(i);
         if(i != k-1) {
             out += ",";
         }
@@ -148,10 +148,10 @@ void parameters::chg(const char * str) {
             (*((bool *) writable_bindings[id])) = splitted[2] == '1';
             break;
         case 1:
-            (*((int *) writable_bindings[id]))  = std::atoi(splitted[2]);
+            (*((int *) writable_bindings[id]))  = std::stoi(splitted[2]);
             break;
         case 2:
-            (*((double *) writable_bindings[id]))  = std::atof(splitted[2]);
+            (*((double *) writable_bindings[id]))  = std::stof(splitted[2]);
             break;
         case 3:
             break;
@@ -159,7 +159,7 @@ void parameters::chg(const char * str) {
             break;
         }
     }else if(type == 1){
-        
+
     }
 
 
