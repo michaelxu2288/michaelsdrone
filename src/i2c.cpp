@@ -5,6 +5,12 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 
+
+extern "C" {
+	#include <linux/i2c-dev.h>
+	#include <i2c/smbus.h>
+}
+
 int i2c::get_device(int addr) {
     int fd = open("/dev/i2c-1", O_RDWR); //Open the I2C device file
 	if (fd < 0) { //Catch errors
