@@ -24,14 +24,14 @@ int i2c::get_device(int addr) {
     return fd;
 }
 
-char i2c::close_device(int fd) {
+int i2c::close_device(int fd) {
     return close(fd);
 }
 
-int i2c::read_byte(int fd, char reg) {
+char i2c::read_byte(int fd, char reg) {
     char buf = reg;
     int n = read(fd, &buf, 1);
-    return buf[0];
+    return buf;
 }
 
 void i2c::read_burst(int fd, char reg, char * buf, int len) {
