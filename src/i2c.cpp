@@ -39,7 +39,7 @@ void i2c::read_burst(int fd, char reg, char * buf, int len) {
     int n = read(fd, buf, 1);
 }
 
-void i2c::write_byte(int fd, char reg, int val) {
+void i2c::write_byte(int fd, char reg, char val) {
     char buf[2];
     buf[0] = reg;
     buf[1] = val;
