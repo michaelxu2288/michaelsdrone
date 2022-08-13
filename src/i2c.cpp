@@ -24,7 +24,7 @@ int i2c::get_device(int addr) {
     return fd;
 }
 
-int i2c::close_device(int fd) {
+char i2c::close_device(int fd) {
     return close(fd);
 }
 
