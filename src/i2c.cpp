@@ -31,12 +31,18 @@ int i2c::close_device(int fd) {
 char i2c::read_byte(int fd, char reg) {
     char buf = reg;
     int n = read(fd, &buf, 1);
+    if(n != 1){
+        perror("BRUH: ");
+    }
     return buf;
 }
 
 void i2c::read_burst(int fd, char reg, char * buf, int len) {
     buf[0] = reg;
-    int n = read(fd, buf, 1);
+    int n = read(fd, buf, len);
+    if(n != len){
+        perror("COCK: ");
+    }
 }
 
 void i2c::write_byte(int fd, char reg, char val) {
@@ -44,6 +50,9 @@ void i2c::write_byte(int fd, char reg, char val) {
     buf[0] = reg;
     buf[1] = val;
     int n = write(fd, buf, 2);
+    if(n != 1){
+        perror("WRITE: ");
+    }
 }
 
 void i2c::write_burst(int fd, char reg, char * buf, int len) {
@@ -54,4 +63,7 @@ void i2c::write_burst(int fd, char reg, char * buf, int len) {
         writebuf[len+1] = buf[len];
     }
     int n = write(fd, buf, len+1);
+    if(n != len+1){
+        perror("WTF: ");
+    }
 }
