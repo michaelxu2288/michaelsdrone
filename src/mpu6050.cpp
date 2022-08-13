@@ -50,12 +50,12 @@ void mpu6050::init(int addr){
 		logger::err("Could not get I2C bus with {} address. Please confirm that this address is correct", addr);
 	}
 	
-	offsets[0] = X_ACCL_SHIFT;
-	offsets[1] = Y_ACCL_SHIFT;
-	offsets[2] = Z_ACCL_SHIFT;
-	offsets[3] = X_GYRO_SHIFT;
-	offsets[4] = Y_GYRO_SHIFT;
-	offsets[5] = Z_GYRO_SHIFT;
+	offsets[0] = 0; // X_ACCL_SHIFT;
+	offsets[1] = 0; // Y_ACCL_SHIFT;
+	offsets[2] = 0; // Z_ACCL_SHIFT;
+	offsets[3] = 0; // X_GYRO_SHIFT;
+	offsets[4] = 0; // Y_GYRO_SHIFT;
+	offsets[5] = 0; // Z_GYRO_SHIFT;
 }
 
 

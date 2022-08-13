@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <sys/un.h>
 
+#include <string>
 
 namespace sock{
     enum sock_domain {
