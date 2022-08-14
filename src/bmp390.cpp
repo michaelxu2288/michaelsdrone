@@ -181,7 +181,7 @@ void bmp390::read_fifo(double * data) {
     uint8_t frames_w_len[514];
     bmp.read_burst(BMP390_FIFO_LENGTH_0, frames_w_len, 514);
     int len = ((uint16_t) frames_w_len[0]) | (((uint16_t) frames_w_len[1]) << 8);
-    logger::info("FIFO Length: {:#04x} {:#04x} {:d}", frames_w_len[1], frames_w_len[0], len);
+    // logger::info("FIFO Length: {:#04x} {:#04x} {:d}", frames_w_len[1], frames_w_len[0], len);
 
     // Sensor Frame:             0b10----00
     // Ctrl Frame: Config Error: 0b01000100

@@ -22,7 +22,7 @@ int main() {
     logger:info("Finished initializing the BMP390.");
 
     // double data
-    int burh = 1000000 / 2;
+    int burh = 1000000 / 24;
     double data[3];
     bmp390::flush_fifo();
     // usleep(1000000);
