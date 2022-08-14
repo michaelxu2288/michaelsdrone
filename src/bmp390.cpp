@@ -2,10 +2,10 @@
 
 #include <i2c.h>
 
-extern "C" {
-	#include <linux/i2c-dev.h>
-	#include <i2c/smbus.h>
-}
+// extern "C" {
+// 	#include <linux/i2c-dev.h>
+// 	#include <i2c/smbus.h>
+// }
 
 #include <iostream>
 #include <sys/stat.h>
@@ -245,17 +245,17 @@ void bmp390::print_compensations(){
 
 
 int bmp390::get_raw_press(){
-    // uint8_t data[3];
-    // bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
+    uint8_t data[3];
+    bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
     
-    // return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
+    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
 
-    int high = (uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_23_16);
-    int low = ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_7_0));
+    // int high = (uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_23_16);
+    // int low = ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_7_0));
     // std::cout << "PRESSURE: " << high << " / " << low << "\n";
     //Two's complement?
 
-    return (high << 16) | low;
+    // return (high << 16) | low;
 }
 
 double bmp390::get_press(){
@@ -426,7 +426,7 @@ double compensate_pressure()
     partial_data4 = partial_data3 + pow_bmp3((double)uncomp_pressure, 3) * par_p11;
     comp_press = partial_out1 + partial_out2 + partial_data4;
 
-    return comp_press;
+    return comp_press - 1024;
 }
 
 double compensate_pressure(double temp)
