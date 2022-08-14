@@ -136,19 +136,19 @@ void bmp390::read_fifo(double * data) {
     len += 2;
     while(i < len) {
         uint8_t frame_type = (frames_w_len[i] & 0b11000000);
+        uint8_t frame_param = (frames_w_len[i] & 0b00111100);
         logger::info("FIFO header: {:#08b}", frames_w_len[i]);
         i++;
 
         if(frame_type == 0b10000000) { // sensor frame
-            uint8_t sensor_frame_type = (frames_w_len[i] & 0b00111100);
-            if(sensor_frame_type == 0b00010100) { 
+            if(frame_param == 0b00010100) { 
                 uint32_t raw_temp = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
                 logger::info("Raw temp: {:#08b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_temp);
                 i+=3;
                 uint32_t raw_press = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
                 logger::info("Raw press: {:#08b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_press);
                 i+=3;
-            }else if(sensor_frame_type == 0b00100000) {
+            }else if(frame_param == 0b00100000) {
                 uint32_t sensor_time = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
                 logger::info("Sensor time: {:#08b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], sensor_time);
                 i+=3;
