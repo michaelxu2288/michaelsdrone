@@ -49,7 +49,7 @@ void bmp390::stop(){
 }
 
 int bmp390::query_register(int reg){
-    return i2c_smbus_read_byte_data(fd, reg);
+    return READ(reg);
 }
 
 void bmp390::soft_reset(){
