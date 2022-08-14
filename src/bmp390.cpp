@@ -243,7 +243,7 @@ int bmp390::get_raw_press(){
     uint8_t data[3];
     bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
     
-    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
+    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]) - 1024;
 
     // int high = (uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_23_16);
     // int low = ((uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_7_0));
