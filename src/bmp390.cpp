@@ -253,7 +253,7 @@ int bmp390::get_raw_press(){
 
 double bmp390::get_press(){
     return compensate_pressure();
-    double raw_press = (float) get_raw_press();
+    double raw_press = (double) get_raw_press();
     double temp = get_temp() * 100 * 16384 / 25;
     // std::cout << "temp: " << temp << "\n";
     // std::cout << "raw pressure: " << raw_press << "\n";
@@ -297,8 +297,8 @@ double height(double temp_c, double pressure_k){
 
     
 
-    // return (-1 + pow((p0/pressure_k),(1/5.255))) * temp_k / 0.0065;
-    return - UNV_GAS_CONST * temp_k * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
+    return (-1 + pow((p0/pressure_k),(1/5.255))) * temp_k / 0.0065;
+    // return - UNV_GAS_CONST * temp_k * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
 }
 
 double bmp390::get_height(double temp, double press){
