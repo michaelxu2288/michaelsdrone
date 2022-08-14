@@ -59,7 +59,7 @@ int main(){
     mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
     mpu6050::wake_up();
 
-    mpu6050::calibrate(2000);
+    mpu6050::calibrate(7);
     // mpu6050::set_offsets(322, -251, -32524, 20, -21, -32);
 
     math::quarternion rotation(1,0,0,0), euler_q;

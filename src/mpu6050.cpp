@@ -10,26 +10,21 @@
 
 #include <iostream>
 #include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
 #include <time.h>
-extern "C" {
-	#include <linux/i2c-dev.h>
-	#include <i2c/smbus.h>
-}
+
 #include <cmath>
 #include <thread>
 #include <cstdio>
 #include <string>
 #include <cstdint>
 
+#include <i2c.h>
 #include <logger.h>
 
-#define Read(r) (uint16_t) i2c_smbus_read_byte_data(fd, r)
-#define Write(r,v) i2c_smbus_write_byte_data(fd, r, v)
+#define Read(r) (uint16_t) mpu.read_byte(r)
+#define Write(r,v) mpu.write_byte(r,v)
 
-static int fd;
+// static int fd;
 
 void mpu6050::init(){init(MPU6050_DEFAULT_ADDR);}
 
@@ -38,17 +33,10 @@ static int offsets[6];
 static int accl_scale = 16384;
 static double gyro_scale = 16.4;
 
-void mpu6050::init(int addr){
-    fd = open("/dev/i2c-1", O_RDWR); //Open the I2C device file
-	if (fd < 0) { //Catch errors
-		logger::err("Failed to open /dev/i2c-1. Please check that I2C is enabled with raspi-config"); //Print error message
-	}
+static i2c::device mpu;
 
-	int status = ioctl(fd, I2C_SLAVE, addr); //Set the I2C bus to use the correct address
-	if (status < 0) {
-		// std::cout << "ERR (mpu6050.cpp:open()): Could not get I2C bus with " << addr << " address. Please confirm that this address is correct\n"; //Print error message
-		logger::err("Could not get I2C bus with {} address. Please confirm that this address is correct", addr);
-	}
+void mpu6050::init(int addr){
+	mpu = i2c::device(addr);
 	
 	offsets[0] = 0; // X_ACCL_SHIFT;
 	offsets[1] = 0; // Y_ACCL_SHIFT;
@@ -153,32 +141,42 @@ int16_t handle_neg(int n){
 	return (int16_t) n;
 }
 
+int16_t combine(uint8_t h, uint8_t l) {
+	return (((uint16_t) h) << 8) | l; 
+}
+
 void mpu6050::read_raw(int * data){
-	data[0] = handle_neg(Read(OUT_XACCL_H) << 8 | Read(OUT_XACCL_L));
-	data[1] = handle_neg(Read(OUT_YACCL_H) << 8 | Read(OUT_YACCL_L));
-	data[2] = handle_neg(Read(OUT_ZACCL_H) << 8 | Read(OUT_ZACCL_L));
-	data[3] = handle_neg(Read(OUT_XGYRO_H) << 8 | Read(OUT_XGYRO_L));
-	data[4] = handle_neg(Read(OUT_YGYRO_H) << 8 | Read(OUT_YGYRO_L));
-	data[5] = handle_neg(Read(OUT_ZGYRO_H) << 8 | Read(OUT_ZGYRO_L));
+	uint8_t buf[14];
+	mpu.read_burst(OUT_XACCL_H, buf, 14);
+	data[0] = combine(buf[0],buf[1]);
+	data[1] = combine(buf[2],buf[3]);
+	data[2] = combine(buf[4],buf[5]);
+	data[3] = combine(buf[8],buf[9]);
+	data[4] = combine(buf[10],buf[11]);
+	data[5] = combine(buf[12],buf[13]);
 }
 
 void mpu6050::read_wo_offsets(double * data){
-	data[0] = ((double) (handle_neg(Read(OUT_XACCL_H) << 8 | Read(OUT_XACCL_L)))) / accl_scale;
-	data[1] = ((double) (handle_neg(Read(OUT_YACCL_H) << 8 | Read(OUT_YACCL_L)))) / accl_scale;
-	data[2] = ((double) (handle_neg(Read(OUT_ZACCL_H) << 8 | Read(OUT_ZACCL_L)))) / accl_scale;
-	data[3] = ((double) (handle_neg(Read(OUT_XGYRO_H) << 8 | Read(OUT_XGYRO_L)))) / gyro_scale;
-	data[4] = ((double) (handle_neg(Read(OUT_YGYRO_H) << 8 | Read(OUT_YGYRO_L)))) / gyro_scale;
-	data[5] = ((double) (handle_neg(Read(OUT_ZGYRO_H) << 8 | Read(OUT_ZGYRO_L)))) / gyro_scale;
+	int rawdata[6];
+	mpu6050::read_raw(rawdata);
+	data[0] = ((double) rawdata[0]) / accl_scale;
+	data[1] = ((double) rawdata[1]) / accl_scale;
+	data[2] = ((double) rawdata[2]) / accl_scale;
+	data[3] = ((double) rawdata[3]) / gyro_scale;
+	data[4] = ((double) rawdata[4]) / gyro_scale;
+	data[5] = ((double) rawdata[5]) / gyro_scale;
 }
 
 
 void mpu6050::read(double * data){
-	data[0] = ((double) (handle_neg(Read(OUT_XACCL_H) << 8 | Read(OUT_XACCL_L))) - offsets[0]) / accl_scale;
-	data[1] = ((double) (handle_neg(Read(OUT_YACCL_H) << 8 | Read(OUT_YACCL_L))) - offsets[1]) / accl_scale;
-	data[2] = ((double) (handle_neg(Read(OUT_ZACCL_H) << 8 | Read(OUT_ZACCL_L))) - offsets[2]) / accl_scale;
-	data[3] = ((double) (handle_neg(Read(OUT_XGYRO_H) << 8 | Read(OUT_XGYRO_L))) - offsets[3]) / gyro_scale;
-	data[4] = ((double) (handle_neg(Read(OUT_YGYRO_H) << 8 | Read(OUT_YGYRO_L))) - offsets[4]) / gyro_scale;
-	data[5] = ((double) (handle_neg(Read(OUT_ZGYRO_H) << 8 | Read(OUT_ZGYRO_L))) - offsets[5]) / gyro_scale;
+	int rawdata[6];
+	mpu6050::read_raw(rawdata);
+	data[0] = ((double) rawdata[0] - offsets[0]) / accl_scale;
+	data[1] = ((double) rawdata[1] - offsets[1]) / accl_scale;
+	data[2] = ((double) rawdata[2] - offsets[2]) / accl_scale;
+	data[3] = ((double) rawdata[3] - offsets[3]) / gyro_scale;
+	data[4] = ((double) rawdata[4] - offsets[4]) / gyro_scale;
+	data[5] = ((double) rawdata[5] - offsets[5]) / gyro_scale;
 }
 
 int mpu6050::query_register(int reg){

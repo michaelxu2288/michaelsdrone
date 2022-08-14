@@ -97,6 +97,7 @@ extern "C" {
 //     }
 // }
 
+i2c::device::device() {}
 
 i2c::device::device(int _addr) {
     addr = _addr;
@@ -160,5 +161,27 @@ void i2c::device::read_burst(uint8_t reg, uint8_t * buf, int len) {
     int n = ioctl(fd, I2C_RDWR, &data);
     if(n < 0) {
         perror("Error reading bytes");
+    }
+}
+
+void i2c::device::write_byte(uint8_t reg, uint8_t val) {
+    i2c_rdwr_ioctl_data data;
+    i2c_msg msg;
+    
+    uint8_t buf[2];
+    buf[0] = reg;
+    buf[1] = val;
+
+    msg.addr = addr;
+    msg.buf = buf;
+    msg.flags = 0;
+    msg.len = 2;
+
+    data.msgs = &msg;
+    data.nmsgs = 2;
+
+    int n = ioctl(fd, I2C_RDWR, &data);
+    if(n < 0) {
+        perror("Error writing byte");
     }
 }

@@ -16,6 +16,7 @@ namespace i2c{
         int fd;
         int addr;
 
+        device();
         device(int addr);
         uint8_t read_byte(uint8_t reg);
         void read_burst(uint8_t reg, uint8_t * buf, int len);
