@@ -403,11 +403,8 @@ void settle(){
             filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
         }
 
-        bmp390_data[0] = bmp390::get_temp();
-        bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
-        bmp390_data[1] = pressure_filter[bmp390_data[1]];
-        bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
-
+        bmp390::read_fifo(bmp390_data);
+        
         old_altitude = bmp390_data[2];
         initial_altitude = bmp390_data[2];
         usleep(sensor_sleep_int);
@@ -443,10 +440,7 @@ void calibrate(){
 
     double sum = 0;
     for(int i = 0; i < n; i ++){
-        bmp390_data[0] = bmp390::get_temp();
-        bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
-        bmp390_data[1] = pressure_filter[bmp390_data[1]];
-        bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
+        bmp390::read_fifo(bmp390_data);
         sum += bmp390_data[2];
         usleep(sensor_sleep_int);
     }
@@ -492,10 +486,11 @@ void sensor_thread_funct(){
 
         { // BMP390 Sensor Read & Filter
             old_altitude = bmp390_data[2];
-            bmp390_data[0] = bmp390::get_temp();
-            bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
-            bmp390_data[1] = pressure_filter[bmp390_data[1]];
-            bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
+            bmp390::read_fifo(bmp390_data);
+            // bmp390_data[0] = bmp390::get_temp();
+            // bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
+            // bmp390_data[1] = pressure_filter[bmp390_data[1]];
+            // bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
             valt = (bmp390_data[2] - old_altitude) / dt;
         }
 
@@ -767,40 +762,6 @@ void message_thread_funct(){
             // logger::info("Message: \"{}\"", recv);
         }
 
-
-        // |                MPU6050                  |                 Dead Reckoned                 |             BMP390                |      BMP390 Related
-        // | Ax | Ay | Az | ARroll | ARpitch | ARyaw | Vx | Vy | Vz | X | Y | Z | Roll | Pitch | Yaw | Temperature | Pressure | Altitude | Initial Altitude | Valt |
-        // | 0  | 1  | 2  |   3    |    4    |   5   | 6  | 7  | 8  | 9 |10 |11 |  12  |  13   | 14  |     15      |    16    |    17    |         18       |  19  |
-
-        // |        Setpoints        |          Error          |     Motor Speed   |                State and Sysinfo              |
-        // | z | vyaw | roll | pitch | z | vyaw | roll | pitch | fl | fr | bl | br | State | CPU Usg % | Battery | dt | controller |
-        // |20 |  21  |  22  |  23   |24 |  25  |  26  |  27   | 28 | 29 | 30 | 31 |  32   |    33     |   34    | 35 |     36     |
-        
-        // |                                                                                            PID Controller Info                                                                                                                                    | trim |
-        // |                    i_term                           |                   derr                      |               p                 |                 i               |                 d               |                output                   | trim |
-        // | z_i_term | vyaw_i_term | roll_i_term | pitch_i_term | z_derr | vyaw_derr | roll_derr | pitch_derr | z_p | vyaw_p | roll_p | pitch_p | z_i | vyaw_i | roll_i | pitch_i | z_d | vyaw_d | roll_d | pitch_d | z_out | vyaw_out | roll_out | pitch_out | trim |
-        // |    37    |      38     |      39     |      40      |   41   |    42     |     43    |      44    | 45  |  46    |   47   |    48   | 49  |   50   |   51   |   52    | 53  |   54   |   55   |   56    |  57   |    58    |    59    |     60    |  61  |
-
-                //     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61
-        // sprintf(send, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
-        //     filtered_mpu6050_data[0]*G, filtered_mpu6050_data[1]*G, (filtered_mpu6050_data[2])*G, filtered_mpu6050_data[3]*DEG_TO_RAD, filtered_mpu6050_data[4]*DEG_TO_RAD, filtered_mpu6050_data[5]*DEG_TO_RAD,
-        //     velocity.x, velocity.y, velocity.z, position.x, position.y, position.z, orientation_euler.x, orientation_euler.y, orientation_euler.z,
-        //     bmp390_data[0], bmp390_data[1], bmp390_data[2], initial_altitude, valt,
-        //     z_controller.setpoint, vyaw_controller.setpoint, roll_controller.setpoint, pitch_controller.setpoint,
-        //     z_controller.err, vyaw_controller.err, roll_controller.err, pitch_controller.err,
-        //     motor_fl_spd, motor_fr_spd, motor_bl_spd, motor_br_spd,
-        //     curr_state, -1.0, -1.0, dt, (cntrller_connected ? 1.0 : 0.0),
-        //     z_controller.i_curr, vyaw_controller.i_curr, roll_controller.i_curr, pitch_controller.i_curr,
-        //     z_controller.derr, vyaw_controller.derr, roll_controller.derr, pitch_controller.derr,
-        //     z_controller.p, vyaw_controller.p, roll_controller.p, pitch_controller.p,
-        //     z_controller.i, vyaw_controller.i, roll_controller.i, pitch_controller.i,
-        //     z_controller.d, vyaw_controller.d, roll_controller.d, pitch_controller.d,
-        //     z_controller.output, vyaw_controller.output, roll_controller.output, pitch_controller.output,
-        //     trim
-        //     // debug_vals[0], debug_vals[1], debug_vals[2], debug_vals[3], debug_vals[4], debug_vals[5]);
-        // );
-
-
         std::string sendStr = parameters::get_json_report();
         int e = unix_connection.send(sendStr.c_str(), sendStr.length());
         if(e < 0) {
@@ -837,6 +798,10 @@ void drone::init_sensors(bool thread) {
     bmp390::set_iir_filter(bmp390::COEFF_127);
     bmp390::set_output_data_rate(bmp390::hz50);
     bmp390::set_enable(true, true);
+    
+    bmp390::set_enable_fifo(true, true);
+    bmp390::set_fifo_stop_on_full(false);
+
     bmp390::set_pwr_mode(bmp390::NORMAL);
     logger:info("Finished initializing the BMP390.");
 
