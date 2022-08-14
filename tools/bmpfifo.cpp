@@ -1,5 +1,6 @@
 #include <bmp390.h>
 #include <logger.h>
+#include <unistd.h>
 
 
 int main() {
