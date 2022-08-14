@@ -2,6 +2,11 @@
 
 #include <i2c.h>
 
+extern "C" {
+	#include <linux/i2c-dev.h>
+	#include <i2c/smbus.h>
+}
+
 #include <iostream>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -240,50 +245,50 @@ void bmp390::print_compensations(){
 
 
 int bmp390::get_raw_press(){
-    uint8_t data[3];
-    bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
+    // uint8_t data[3];
+    // bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
     
-    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
+    // return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
 
-    // int high = (uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_23_16);
-    // int low = ((uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_7_0));
+    int high = (uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_23_16);
+    int low = ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd.bmp, BMP390_REG_PRESS_7_0));
     // std::cout << "PRESSURE: " << high << " / " << low << "\n";
     //Two's complement?
 
-    // return (high << 16) | low;
+    return (high << 16) | low;
 }
 
 double bmp390::get_press(){
     return compensate_pressure();
-    double raw_press = (double) get_raw_press();
-    double temp = get_temp(); // * 100 * 16384 / 25;
-    // std::cout << "temp: " << temp << "\n";
-    // std::cout << "raw pressure: " << raw_press << "\n";
-    double partial_data1;
-    double partial_data2;
-    double partial_data3;
-    double partial_data4;
-    double partial_out1;
-    double partial_out2;
+    // double raw_press = (double) get_raw_press();
+    // double temp = get_temp(); // * 100 * 16384 / 25;
+    // // std::cout << "temp: " << temp << "\n";
+    // // std::cout << "raw pressure: " << raw_press << "\n";
+    // double partial_data1;
+    // double partial_data2;
+    // double partial_data3;
+    // double partial_data4;
+    // double partial_out1;
+    // double partial_out2;
 
-    partial_data1 = par_p6 * temp;
-    partial_data2 = par_p7 * (temp * temp);
-    partial_data3 = par_p8 * (temp * temp * temp);
-    partial_out1 = par_p5 + partial_data1 + partial_data2 + partial_data3;
-    // std::cout << "part out 1: " << partial_out1 << "\n";
-    partial_data1 = par_p2 * temp;
-    partial_data2 = par_p3 * (temp * temp);
-    partial_data3 = par_p4 * (temp * temp * temp);
-    partial_out2 = raw_press * (par_p1 + partial_data1 + partial_data2 + partial_data3);
-    // std::cout << "part out 2: " << partial_out2 << "\n";
+    // partial_data1 = par_p6 * temp;
+    // partial_data2 = par_p7 * (temp * temp);
+    // partial_data3 = par_p8 * (temp * temp * temp);
+    // partial_out1 = par_p5 + partial_data1 + partial_data2 + partial_data3;
+    // // std::cout << "part out 1: " << partial_out1 << "\n";
+    // partial_data1 = par_p2 * temp;
+    // partial_data2 = par_p3 * (temp * temp);
+    // partial_data3 = par_p4 * (temp * temp * temp);
+    // partial_out2 = raw_press * (par_p1 + partial_data1 + partial_data2 + partial_data3);
+    // // std::cout << "part out 2: " << partial_out2 << "\n";
 
-    partial_data1 = raw_press * raw_press;
-    partial_data2 = par_p9 + par_p10 * temp;
-    partial_data3 = partial_data1 * partial_data2;
-    partial_data4 = partial_data3 + (raw_press * raw_press * raw_press) * par_p11;
-    // std::cout << "part out 3: " << partial_data4 << "\n";
+    // partial_data1 = raw_press * raw_press;
+    // partial_data2 = par_p9 + par_p10 * temp;
+    // partial_data3 = partial_data1 * partial_data2;
+    // partial_data4 = partial_data3 + (raw_press * raw_press * raw_press) * par_p11;
+    // // std::cout << "part out 3: " << partial_data4 << "\n";
 
-    return partial_out1 + partial_out2 + partial_data4;
+    // return partial_out1 + partial_out2 + partial_data4;
 }
 
 
