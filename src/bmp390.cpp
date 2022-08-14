@@ -1,4 +1,5 @@
 #include <bmp390.h>
+#include <bmp390_macros.h>
 
 #include <i2c.h>
 
@@ -102,30 +103,46 @@ void bmp390::set_pwr_ctrl(int val){
 
 
 
+void bmp390::set_enable_fifo(bool enable) {
+    WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00000001)) | (enable));
+}
+void bmp390::set_enable_fifo(bool pressure, bool temperature) {
+    WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00011001)) | (pressure && temperature) | (pressure << 3) | (temperature << 4));
+}
+void bmp390::set_enable_fifo_time(bool enable) {
+    WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00000101)) | (enable) | (enable << 2));
+}
+void bmp390::set_fifo_stop_on_full(bool stop_on_full) {
+    WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00000010)) | (stop_on_full << 1));
+}
+void bmp390::read_fifo(double * data) {
+    uint8_t frames_w_len[514];
+    bmp.read_burst(BMP390_FIFO_LENGTH_0, frames_w_len, 514);
+    int len = ((uint16_t) frames_w_len[0]) | (((uint16_t) frames_w_len[1]) << 8);
+    logger::info("FIFO Length: {:#04x} {:#04x} {:d}", frames_w_len[1], frames_w_len[0], len);
 
+    // Sensor Frame:             0b10----00
+    // Ctrl Frame: Config Error: 0b01000100
+    // Ctrl Frame: Config Chg:   0b01001000
 
+    // fmt binary: {:#08b}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    int i = 2;
+    while(i < 512) {
+        uint8_t frame_type = (frames_w_len[i] & 0b11000000);
+        if(frame_type == 0b10000000) { // sensor frame
+            logger::info("FIFO header: {:#08b}", frames_w_len[i]);
+            
+            // logger::info("FIFO data");   
+        }else { // control frame
+            
+        }
+        i++;
+    }
+}
 
 void bmp390::acquire_calib_vars(){
-
     #define BMP3_CONCAT_BYTES(msb, lsb)             (((uint16_t)msb << 8) | (uint16_t)lsb)
-
-    
     uint16_t reg_par_t1;
     uint16_t reg_par_t2;
     int8_t reg_par_t3;
@@ -142,18 +159,8 @@ void bmp390::acquire_calib_vars(){
     int8_t reg_par_p11;
 
     uint8_t reg_data[20];
-    // for(int i = 0; i < 20; i ++){
-    //     reg_data[i] = READ(NVM_PAR_T1_L+i);
-    // }
-    // for(int i = 0; i < 20; i += 4) {
-    //     logger::info("{:#04x} {:#04x} {:#04x} {:#04x}", reg_data[i], reg_data[i+1], reg_data[i+2], reg_data[i+3]);
-    // }
 
     bmp.read_burst(NVM_PAR_T1_L, reg_data, 20);
-    
-    // for(int i = 0; i < 20; i += 4) {
-    //     logger::info("{:#04x} {:#04x} {:#04x} {:#04x}", reg_data[i], reg_data[i+1], reg_data[i+2], reg_data[i+3]);
-    // }
     
     /* Temporary variable */
     double temp_var;
@@ -206,42 +213,6 @@ void bmp390::acquire_calib_vars(){
 }
 
 
-void bmp390::print_compensations(){
-    printf("COMPUTED\n");
-    printf("t1:  %10.f\n", par_t1);
-    printf("t2:  %10.f\n", par_t2);
-    printf("t3:  %10.f\n\n", par_t3);
-    printf("p1:  %10.f\n", par_p1);
-    printf("p2:  %10.f\n", par_p2);
-    printf("p3:  %10.f\n", par_p3);
-    printf("p4:  %10.f\n", par_p4);
-    printf("p5:  %10.f\n", par_p5);
-    printf("p6:  %10.f\n", par_p6);
-    printf("p7:  %10.f\n", par_p7);
-    printf("p8:  %10.f\n", par_p8);
-    printf("p9:  %10.f\n", par_p9);
-    printf("p10: %10.f\n", par_p10);
-    printf("p11: %10.f\n\n", par_p11);
-    printf("RAW \n");
-    printf("t1:  %10d\n", ((query_register(NVM_PAR_T1_H) << 8) | query_register(NVM_PAR_T1_L)));
-    printf("t2:  %10d\n", ((query_register(NVM_PAR_T2_H) << 8) | query_register(NVM_PAR_T2_L)));
-    printf("t3:  %10d\n\n", query_register(NVM_PAR_T3));
-    printf("p1:  %10d\n", ((query_register(NVM_PAR_P1_H) << 8) | query_register(NVM_PAR_P1_L)));
-    printf("p2:  %10d\n", ((query_register(NVM_PAR_P2_H) << 8) | query_register(NVM_PAR_P2_L)));
-    printf("p3:  %10d\n", query_register(NVM_PAR_P3));
-    printf("p4:  %10d\n", query_register(NVM_PAR_P4));
-    printf("p5:  %10d\n", ((query_register(NVM_PAR_P5_H) << 8) | query_register(NVM_PAR_P5_L)));
-    printf("p6:  %10d\n", ((query_register(NVM_PAR_P6_H) << 8) | query_register(NVM_PAR_P6_L)));
-    printf("p7:  %10d\n", query_register(NVM_PAR_P7));
-    printf("p8:  %10d\n", query_register(NVM_PAR_P8));
-    printf("p9:  %10d\n", ((query_register(NVM_PAR_P9_H) << 8) | query_register(NVM_PAR_P9_L)));
-    printf("p10: %10d\n", query_register(NVM_PAR_P10));
-    printf("p11: %10d\n\n", query_register(NVM_PAR_P11));
-    
-}
-
-
-
 
 
 int bmp390::get_raw_press(){
@@ -260,35 +231,6 @@ int bmp390::get_raw_press(){
 
 double bmp390::get_press(){
     return compensate_pressure();
-    // double raw_press = (double) get_raw_press();
-    // double temp = get_temp(); // * 100 * 16384 / 25;
-    // // std::cout << "temp: " << temp << "\n";
-    // // std::cout << "raw pressure: " << raw_press << "\n";
-    // double partial_data1;
-    // double partial_data2;
-    // double partial_data3;
-    // double partial_data4;
-    // double partial_out1;
-    // double partial_out2;
-
-    // partial_data1 = par_p6 * temp;
-    // partial_data2 = par_p7 * (temp * temp);
-    // partial_data3 = par_p8 * (temp * temp * temp);
-    // partial_out1 = par_p5 + partial_data1 + partial_data2 + partial_data3;
-    // // std::cout << "part out 1: " << partial_out1 << "\n";
-    // partial_data1 = par_p2 * temp;
-    // partial_data2 = par_p3 * (temp * temp);
-    // partial_data3 = par_p4 * (temp * temp * temp);
-    // partial_out2 = raw_press * (par_p1 + partial_data1 + partial_data2 + partial_data3);
-    // // std::cout << "part out 2: " << partial_out2 << "\n";
-
-    // partial_data1 = raw_press * raw_press;
-    // partial_data2 = par_p9 + par_p10 * temp;
-    // partial_data3 = partial_data1 * partial_data2;
-    // partial_data4 = partial_data3 + (raw_press * raw_press * raw_press) * par_p11;
-    // // std::cout << "part out 3: " << partial_data4 << "\n";
-
-    // return partial_out1 + partial_out2 + partial_data4;
 }
 
 
@@ -307,8 +249,6 @@ void bmp390::set_pressure_benchmark(double _p0){
 
 double height(double temp_c, double pressure_k){
     double temp_k = temp_c + 273.15;
-
-    
 
     return (-1 + pow((p0/pressure_k),(1/5.255))) * temp_k / 0.0065;
     // return - UNV_GAS_CONST * temp_k * log(pressure_k / PRESSURE_BENCHMARK) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
@@ -329,14 +269,7 @@ int bmp390::get_raw_temp(){
     bmp.read_burst(BMP390_REG_TEMP_7_0, data, 3);
     
     return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
-    // int high = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_23_16));
-    // int low = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_7_0));
-    // std::cout << "TEMPERATURE: " << high << " / " << low << "\n";
-    // return (high << 16) | low;
 }
-
-
-
 
 void bmp390::get_data(double * data){
     data[0] = bmp390::get_temp();
@@ -347,22 +280,6 @@ void bmp390::get_data(double * data){
 double bmp390::get_temp(){
     return compensate_temp();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 double compensate_temp(){
 
@@ -377,31 +294,24 @@ double compensate_temp(){
      * needed for pressure calculation */
     return partial_data2 + (partial_data1 * partial_data1) *
                                              par_t3;
-
-    /* Returns compensated temperature */
-    // return calib_data->quantized_calib_data.t_lin;
 }
 
-
-double pow_bmp3(double base, uint8_t power)
-{
+double pow_bmp3(double base, uint8_t power) {
     double pow_output = 1;
 
-    while (power != 0)
-    {
+    while (power != 0) {
         pow_output = (double) base * pow_output;
         power--;
     }
 
     return pow_output;
 }
-double compensate_pressure()
-{
+
+double compensate_pressure() {
     return compensate_pressure(compensate_temp());
 }
 
-double compensate_pressure(double temp)
-{
+double compensate_pressure(double temp) {
     
     double t_lin = temp;
     int uncomp_pressure = bmp390::get_raw_press();
