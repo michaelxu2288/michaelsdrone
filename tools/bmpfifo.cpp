@@ -25,6 +25,7 @@ int main() {
     // int burh = 1000000 / 50;
     double data[3];
     bmp390::flush_fifo();
+    usleep(100000);
     bmp390::read_fifo(data);
 
     // // for(int i = 0; i< 10; i ++) {
