@@ -114,8 +114,12 @@ i2c::device::device(int _addr) {
 	}
 }
 
-void i2c::device::close() {
+inline static _close(int fd) {
     close(fd);
+}
+
+void i2c::device::close() {
+    _close(fd);
 }
 
 uint8_t i2c::device::read_byte(uint8_t reg) {
