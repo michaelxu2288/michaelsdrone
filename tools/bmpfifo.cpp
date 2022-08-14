@@ -27,6 +27,7 @@ int main() {
     bmp390::flush_fifo();
     usleep(1000000);
     bmp390::read_fifo(data);
+    logger::info("Temp: {:10.2f} C, Pressure: {:10.0f} P, Elevation: {:10.1f} ft", data[0], data[1], data[2] * 3.28084);
 
     // // for(int i = 0; i< 10; i ++) {
         

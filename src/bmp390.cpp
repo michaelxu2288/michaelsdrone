@@ -134,31 +134,47 @@ void bmp390::read_fifo(double * data) {
 
     int i = 2;
     len += 2;
+
+    data[0] = 0;
+    data[1] = 0;
+    data[2] = 0;
+
+    int n_readings = 0;
+
     while(i < len) {
         uint8_t frame_type = (frames_w_len[i] & 0b11000000);
         uint8_t frame_param = (frames_w_len[i] & 0b00111100);
-        logger::info("FIFO header: {:#010b}", frames_w_len[i]);
+        // logger::info("FIFO header: {:#010b}", frames_w_len[i]);
         i++;
 
         if(frame_type == 0b10000000) { // sensor frame
             if(frame_param == 0b00010100) { 
                 uint32_t raw_temp = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
-                logger::info("Raw temp: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_temp);
+                // logger::info("Raw temp: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_temp);
                 i+=3;
                 uint32_t raw_press = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
-                logger::info("Raw press: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_press);
+                // logger::info("Raw press: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_press);
                 i+=3;
+                
+                data[0] = compensate_temp(raw_temp);
+                data[1] = compensate_pressure(raw_press, data[0]);
+                
+                n_readings ++;
             }else if(frame_param == 0b00100000) {
                 uint32_t sensor_time = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
-                logger::info("Sensor time: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], sensor_time);
+                // logger::info("Sensor time: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], sensor_time);
                 i+=3;
             }
             // logger::info("FIFO data");   
         }else { // control frame
-            
+            i++;
         }
     }
+    data[0] /= n_readings;
+    data[1] /= n_readings;
+    data[2] = bmp390::get_height(data[0], data[1]);
 }
+
 void bmp390::flush_fifo() {
     WRITE(BMP390_REG_CMD, BMP390_FIFO_FLUSH);
 }
@@ -234,21 +250,15 @@ void bmp390::acquire_calib_vars(){
     par_p11 = ((double)reg_par_p11 / temp_var);
 }
 
-
-
-
 int bmp390::get_raw_press(){
     uint8_t data[3];
     bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
-    
-    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
+    return combine(data[2], data[1], data[0]);
 }
 
 double bmp390::get_press(){
     return compensate_pressure();
 }
-
-
 
 double bmp390::get_press(double temp){
     return compensate_pressure(temp);
@@ -256,7 +266,6 @@ double bmp390::get_press(double temp){
 
 // #define p0 101325
 static double p0 = 101325;
-
 
 void bmp390::set_pressure_benchmark(double _p0){
     p0 = _p0;
@@ -282,8 +291,7 @@ double bmp390::get_height(){
 int bmp390::get_raw_temp(){
     uint8_t data[3];
     bmp.read_burst(BMP390_REG_TEMP_7_0, data, 3);
-    
-    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
+    return combine(data[2], data[1], data[0]);
 }
 
 void bmp390::get_data(double * data){
@@ -296,9 +304,8 @@ double bmp390::get_temp(){
     return compensate_temp();
 }
 
-double compensate_temp(){
-
-    uint32_t uncomp_temp = bmp390::get_raw_temp();
+static double compensate_temp(uint32_t uncomp_temp){
+    
     double partial_data1;
     double partial_data2;
 
@@ -307,29 +314,24 @@ double compensate_temp(){
 
     /* Update the compensated temperature in calib structure since this is
      * needed for pressure calculation */
-    return partial_data2 + (partial_data1 * partial_data1) *
-                                             par_t3;
+    return partial_data2 + (partial_data1 * partial_data1) * par_t3;
 }
 
-double pow_bmp3(double base, uint8_t power) {
-    double pow_output = 1;
+static double compensate_temp(){
+    return compensate_temp(bmp390::get_raw_temp());
+}
 
+static double pow_bmp3(double base, uint8_t power) {
+    double pow_output = 1;
     while (power != 0) {
         pow_output = (double) base * pow_output;
         power--;
     }
-
     return pow_output;
 }
 
-double compensate_pressure() {
-    return compensate_pressure(compensate_temp());
-}
-
-double compensate_pressure(double temp) {
-    
+static double compensate_pressure(uint32_t uncomp_pressure, double temp) {
     double t_lin = temp;
-    int uncomp_pressure = bmp390::get_raw_press();
     /* Variable to store the compensated pressure */
     double comp_press;
 
@@ -356,7 +358,16 @@ double compensate_pressure(double temp) {
     partial_data4 = partial_data3 + pow_bmp3((double)uncomp_pressure, 3) * par_p11;
     comp_press = partial_out1 + partial_out2 + partial_data4;
 
+
     return comp_press - 1024;
+}
+
+static double compensate_pressure() {
+    return compensate_pressure(bmp390::get_raw_press(), compensate_temp());
+}
+
+static double compensate_pressure(double temp) {
+    return compensate_pressure(bmp390::get_raw_press(), temp);
 }
 
 
