@@ -1,9 +1,6 @@
 #include <bmp390.h>
 
-extern "C" {
-	#include <linux/i2c-dev.h>
-	#include <i2c/smbus.h>
-}
+#include <i2c.h>
 
 #include <iostream>
 #include <sys/stat.h>
@@ -23,21 +20,14 @@ static int fd = -1;
 #define UNV_GAS_CONST 8.3143 // (N*m) / (mol * K)
 #define GRAVITATIONAL_ACCELERATION 9.807 // m/s^2
 
-#define READ(reg) i2c_smbus_read_byte_data(fd, reg)
-#define WRITE(reg, data) i2c_smbus_write_byte_data(fd, reg, data)
+#define READ(reg) bmp.read_byte(reg) //i2c_smbus_read_byte_data(fd, reg) 
+#define WRITE(reg, data) bmp.write_byte(reg, data) //i2c_smbus_write_byte_data(fd, reg, data) 
+
+static i2c::device bmp; 
+
 
 void bmp390::init(){
-
-	fd = open("/dev/i2c-1", O_RDWR); //Open the I2C device file
-	if (fd < 0) { //Catch errors
-        logger::crit("Failed to open /dev/i2c-1.");
-    }
-
-	int status = ioctl(fd, I2C_SLAVE,BMP390_ADDR); //Set the I2C bus to use the correct address
-	if (status < 0) {
-        logger::crit("Could not get i2c bus device with address {:x}.", BMP390_ADDR);
-	}
-
+    bmp = i2c::device(BMP390_ADDR);
     bmp390::acquire_calib_vars();
 }
 
@@ -64,7 +54,7 @@ int bmp390::query_register(int reg){
 
 void bmp390::soft_reset(){
     // std::cout << "FUCK SHIT CUNT DICK\n";
-    i2c_smbus_write_byte_data(fd, BMP390_REG_CMD, BMP390_SOFT_RESET);
+    WRITE(BMP390_REG_CMD, BMP390_SOFT_RESET);
 }
 
 
@@ -145,9 +135,11 @@ void bmp390::acquire_calib_vars(){
     int8_t reg_par_p11;
 
     uint8_t reg_data[20];
-    for(int i = 0; i < 20; i ++){
-        reg_data[i] = i2c_smbus_read_byte_data(fd, NVM_PAR_T1_L+i);
-    }
+    // for(int i = 0; i < 20; i ++){
+    //     reg_data[i] = READ(NVM_PAR_T1_L+i);
+    // }
+
+    bmp.read_burst(NVM_PAR_T1_L, reg_data, 20);
 
     /* Temporary variable */
     double temp_var;
@@ -239,12 +231,17 @@ void bmp390::print_compensations(){
 
 
 int bmp390::get_raw_press(){
-    int high = (uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_23_16);
-    int low = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_7_0));
+    uint8_t data[3];
+    bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
+    
+    return (((uint32_t) data[0]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
+
+    // int high = (uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_23_16);
+    // int low = ((uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_7_0));
     // std::cout << "PRESSURE: " << high << " / " << low << "\n";
     //Two's complement?
 
-    return (high << 16) | low;
+    // return (high << 16) | low;
 }
 
 double bmp390::get_press(){
@@ -308,10 +305,14 @@ double bmp390::get_height(){
 }
 
 int bmp390::get_raw_temp(){
-    int high = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_23_16));
-    int low = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_7_0));
+    uint8_t data[3];
+    bmp.read_burst(BMP390_REG_TEMP_7_0, data, 3);
+    
+    return (((uint32_t) data[0]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
+    // int high = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_23_16));
+    // int low = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_7_0));
     // std::cout << "TEMPERATURE: " << high << " / " << low << "\n";
-    return (high << 16) | low;
+    // return (high << 16) | low;
 }
 
 
