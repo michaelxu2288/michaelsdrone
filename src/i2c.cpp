@@ -114,8 +114,8 @@ i2c::device::device(int _addr) {
 	}
 }
 
-inline static _close(int fd) {
-    close(fd);
+inline static int _close(int fd) {
+    return close(fd);
 }
 
 void i2c::device::close() {
