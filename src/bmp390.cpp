@@ -107,7 +107,7 @@ void bmp390::set_enable_fifo(bool enable) {
     WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00000001)) | (enable));
 }
 void bmp390::set_enable_fifo(bool pressure, bool temperature) {
-    WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00011001)) | (pressure && temperature) | (pressure << 3) | (temperature << 4));
+    WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00011001)) | (pressure || temperature) | (pressure << 3) | (temperature << 4));
 }
 void bmp390::set_enable_fifo_time(bool enable) {
     WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00000101)) | (enable) | (enable << 2));
