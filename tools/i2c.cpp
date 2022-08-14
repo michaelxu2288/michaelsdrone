@@ -1,7 +1,7 @@
 #include <logger.h>
 #include <i2c.h>
 
-#include <linux/types.h>
+#include <cstdint>
 
 int main() {
     // int mpu = i2c::get_device(0x68);

@@ -1,4 +1,6 @@
-
+#ifndef I2C_H_GUARD
+#define I2C_H_GUARD
+#include <cstdint>
 
 namespace i2c{
 
@@ -22,3 +24,5 @@ namespace i2c{
         void write_burst(uint8_t reg, uint8_t * buf, int len);
     };
 }
+
+#endif
