@@ -293,7 +293,7 @@ double height(double temp_c, double pressure_k){
 
     
 
-    return 44330 * (1 - (pressure_k/p0)^(1/5.255)) ;
+    return 44330 * (1 - pow((pressure_k/p0),(1/5.255))) ;
     // return - UNV_GAS_CONST * STANDARD_TEMP * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
 }
 
