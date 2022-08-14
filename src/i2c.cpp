@@ -183,5 +183,6 @@ void i2c::device::write_byte(uint8_t reg, uint8_t val) {
     int n = ioctl(fd, I2C_RDWR, &data);
     if(n < 0) {
         perror("Error writing byte");
+        logger::crit("Error writing byte: device {:#04x} register {:#04x} value {:#04x}", addr, reg, val);
     }
 }
