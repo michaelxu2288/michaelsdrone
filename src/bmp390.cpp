@@ -83,10 +83,7 @@ void bmp390::set_output_data_rate(bmp390::output_data_rate rate){
 void bmp390::set_pwr_mode(bmp390::pwr mode){
     int k = (READ(BMP390_REG_PWR_CTRL) & (~0b00110000)) | (mode << 4);
     // logger::info("bruh {:x}", k);
-    while(READ(BMP390_REG_PWR_CTRL) != k){
-        WRITE(BMP390_REG_PWR_CTRL, k);
-        usleep(1000);
-    }
+    WRITE(BMP390_REG_PWR_CTRL, k);
 }
 void bmp390::set_enable_pressure(bool enable){
     WRITE(BMP390_REG_PWR_CTRL, (READ(BMP390_REG_PWR_CTRL) & (~0b00000001)) | (enable));
@@ -289,11 +286,15 @@ double bmp390::get_press(double temp){
     return compensate_pressure(temp);
 }
 
+#define p0 101325
 
 double height(double temp_c, double pressure_k){
     double temp_k = temp_c + 273.15;
 
-    return - UNV_GAS_CONST * STANDARD_TEMP * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
+    
+
+    return 44330 * (1 - (pressure_k/p0)^(1/5.255)) ;
+    // return - UNV_GAS_CONST * STANDARD_TEMP * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
 }
 
 double bmp390::get_height(double temp, double press){
