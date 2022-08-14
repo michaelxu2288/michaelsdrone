@@ -251,7 +251,7 @@ int bmp390::get_raw_press(){
     // return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
 
     int high = (uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_23_16);
-    int low = ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd.bmp, BMP390_REG_PRESS_7_0));
+    int low = ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_7_0));
     // std::cout << "PRESSURE: " << high << " / " << low << "\n";
     //Two's complement?
 
