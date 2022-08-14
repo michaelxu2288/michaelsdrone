@@ -16,6 +16,8 @@ static int fd = -1;
 
 #define MOLAR_MASS_AIR 2.896e-2 // kg/mol
 #define AVERAGE_SEA_LVL_PRESSURE 1.01325e5 // Pa
+#define PRESSURE_BENCHMARK AVERAGE_SEA_LVL_PRESSURE // Pa
+#define PRESSURE_BENCHMARK 101533.678563 // Pa
 #define STANDARD_TEMP 288.15 // K
 #define UNV_GAS_CONST 8.3143 // (N*m) / (mol * K)
 #define GRAVITATIONAL_ACCELERATION 9.807 // m/s^2
@@ -297,8 +299,8 @@ double height(double temp_c, double pressure_k){
 
     
 
-    return (-1 + pow((p0/pressure_k),(1/5.255))) * temp_k / 0.0065;
-    // return - UNV_GAS_CONST * temp_k * log(pressure_k / AVERAGE_SEA_LVL_PRESSURE) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
+    // return (-1 + pow((p0/pressure_k),(1/5.255))) * temp_k / 0.0065;
+    return - UNV_GAS_CONST * temp_k * log(pressure_k / PRESSURE_BENCHMARK) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
 }
 
 double bmp390::get_height(double temp, double press){
