@@ -161,6 +161,4 @@ void i2c::device::read_burst(uint8_t reg, uint8_t * buf, int len) {
     if(n < 0) {
         perror("Error reading bytes");
     }
-
-    return buf[0];
 }
