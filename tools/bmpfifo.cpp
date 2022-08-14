@@ -21,7 +21,7 @@ int main() {
         // double height = bmp390::get_height();
         // std::cout << height << "\n";
         bmp390::get_data(data);
-        logger::info("Temp: {:10.2f} C, Pressure: {:10f}P, Elevation: {:10.1f}m", data[0], data[1], data[2]);
+        // logger::info("Temp: {:10.2f} C, Pressure: {:10f}P, Elevation: {:10.1f}m", data[0], data[1], data[2]);
         usleep(burh);
     }
     

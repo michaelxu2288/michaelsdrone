@@ -135,12 +135,19 @@ void bmp390::acquire_calib_vars(){
     int8_t reg_par_p11;
 
     uint8_t reg_data[20];
-    // for(int i = 0; i < 20; i ++){
-    //     reg_data[i] = READ(NVM_PAR_T1_L+i);
-    // }
+    for(int i = 0; i < 20; i ++){
+        reg_data[i] = READ(NVM_PAR_T1_L+i);
+    }
+    for(int i = 0; i < 20; i += 4) {
+        logger::info("{:#04x} {:#04x} {:#04x} {:#04x}", reg_data[i], reg_data[i+1], reg_data[i+2], reg_data[i+3]);
+    }
 
     bmp.read_burst(NVM_PAR_T1_L, reg_data, 20);
-
+    
+    for(int i = 0; i < 20; i += 4) {
+        logger::info("{:#04x} {:#04x} {:#04x} {:#04x}", reg_data[i], reg_data[i+1], reg_data[i+2], reg_data[i+3]);
+    }
+    
     /* Temporary variable */
     double temp_var;
 
