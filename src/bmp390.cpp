@@ -243,7 +243,7 @@ int bmp390::get_raw_press(){
     uint8_t data[3];
     bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
     
-    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]) - 1024;
+    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
 
     // int high = (uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_23_16);
     // int low = ((uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_7_0));
@@ -256,7 +256,7 @@ int bmp390::get_raw_press(){
 double bmp390::get_press(){
     return compensate_pressure();
     double raw_press = (double) get_raw_press();
-    double temp = get_temp() * 100 * 16384 / 25;
+    double temp = get_temp(); // * 100 * 16384 / 25;
     // std::cout << "temp: " << temp << "\n";
     // std::cout << "raw pressure: " << raw_press << "\n";
     double partial_data1;
