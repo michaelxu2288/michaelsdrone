@@ -227,7 +227,7 @@ void drone::load_configuration(){
 
     load_pid_config();
     
-    sensor_sleep_int = 1000000 / sensor_ref_rate;
+    sensor_sleep_int = 1000000 / (sensor_ref_rate * 2);
     message_sleep_int = 1000000 / message_thread_ref_rate;
     sensor_g_tolerance_sqrd = sensor_g_tolerance * sensor_g_tolerance;
 
