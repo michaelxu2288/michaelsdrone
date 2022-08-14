@@ -126,6 +126,8 @@ namespace bmp390 {
     void set_enable(bool pressure, bool temperature);
     void set_pwr_ctrl(int val);
 
+    void set_pressure_benchmark(double p0);
+
     int chk_error();
     int print_error();
 

@@ -292,15 +292,21 @@ double bmp390::get_press(double temp){
     return compensate_pressure(temp);
 }
 
-#define p0 101325
+// #define p0 101325
+static double p0 = 101325;
+
+
+void bmp390::set_pressure_benchmark(double _p0){
+    p0 = _p0
+}
 
 double height(double temp_c, double pressure_k){
     double temp_k = temp_c + 273.15;
 
     
 
-    // return (-1 + pow((p0/pressure_k),(1/5.255))) * temp_k / 0.0065;
-    return - UNV_GAS_CONST * temp_k * log(pressure_k / PRESSURE_BENCHMARK) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
+    return (-1 + pow((p0/pressure_k),(1/5.255))) * temp_k / 0.0065;
+    // return - UNV_GAS_CONST * temp_k * log(pressure_k / PRESSURE_BENCHMARK) / (MOLAR_MASS_AIR * GRAVITATIONAL_ACCELERATION);
 }
 
 double bmp390::get_height(double temp, double press){
