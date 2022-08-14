@@ -144,9 +144,9 @@ void bmp390::acquire_calib_vars(){
 
     bmp.read_burst(NVM_PAR_T1_L, reg_data, 20);
     
-    for(int i = 0; i < 20; i += 4) {
-        logger::info("{:#04x} {:#04x} {:#04x} {:#04x}", reg_data[i], reg_data[i+1], reg_data[i+2], reg_data[i+3]);
-    }
+    // for(int i = 0; i < 20; i += 4) {
+    //     logger::info("{:#04x} {:#04x} {:#04x} {:#04x}", reg_data[i], reg_data[i+1], reg_data[i+2], reg_data[i+3]);
+    // }
     
     /* Temporary variable */
     double temp_var;
@@ -241,7 +241,7 @@ int bmp390::get_raw_press(){
     uint8_t data[3];
     bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
     
-    return (((uint32_t) data[0]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
+    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
 
     // int high = (uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_23_16);
     // int low = ((uint32_t) i2c_smbus_read_byte_data(BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_PRESS_7_0));
@@ -315,7 +315,7 @@ int bmp390::get_raw_temp(){
     uint8_t data[3];
     bmp.read_burst(BMP390_REG_TEMP_7_0, data, 3);
     
-    return (((uint32_t) data[0]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
+    return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
     // int high = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_23_16));
     // int low = ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(fd, BMP390_REG_TEMP_7_0));
     // std::cout << "TEMPERATURE: " << high << " / " << low << "\n";
