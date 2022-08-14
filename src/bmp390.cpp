@@ -115,6 +115,11 @@ void bmp390::set_enable_fifo_time(bool enable) {
 void bmp390::set_fifo_stop_on_full(bool stop_on_full) {
     WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00000010)) | (stop_on_full << 1));
 }
+
+static inline uint32_t combine(uint8_t h, uint8_t l, uint8_t xl) { 
+    return  (((uint32_t) h) << 16) | (((uint32_t) l) << 8) |(((uint32_t) xl));
+}
+
 void bmp390::read_fifo(double * data) {
     uint8_t frames_w_len[514];
     bmp.read_burst(BMP390_FIFO_LENGTH_0, frames_w_len, 514);
@@ -128,16 +133,30 @@ void bmp390::read_fifo(double * data) {
     // fmt binary: {:#08b}
 
     int i = 2;
-    while(i < 512) {
+    len += 2;
+    while(i < len) {
         uint8_t frame_type = (frames_w_len[i] & 0b11000000);
+        i++;
+
         if(frame_type == 0b10000000) { // sensor frame
             logger::info("FIFO header: {:#08b}", frames_w_len[i]);
-            
+            uint8_t sensor_frame_type = (frames_w_len[i] & 0b00111100);
+            if(sensor_frame_type == 0b00010100) { 
+                uint32_t raw_temp = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
+                logger::info("Raw temp: {:#08b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_temp);
+                i+=3;
+                uint32_t raw_press = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
+                logger::info("Raw press: {:#08b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_press);
+                i+=3;
+            }else if(sensor_frame_type == 0b00100000) {
+                uint32_t sensor_time = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
+                logger::info("Sensor time: {:#08b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], sensor_time);
+                i+=3;
+            }
             // logger::info("FIFO data");   
         }else { // control frame
             
         }
-        i++;
     }
 }
 void bmp390::flush_fifo() {
@@ -223,13 +242,6 @@ int bmp390::get_raw_press(){
     bmp.read_burst(BMP390_REG_PRESS_7_0, data, 3);
     
     return (((uint32_t) data[2]) << 16) | (((uint32_t) data[1]) << 8) | ((uint32_t) data[0]);
-
-    // int high = (uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_23_16);
-    // int low = ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_15_8) << 8) | ((uint32_t) i2c_smbus_read_byte_data(bmp.fd, BMP390_REG_PRESS_7_0));
-    // std::cout << "PRESSURE: " << high << " / " << low << "\n";
-    //Two's complement?
-
-    // return (high << 16) | low;
 }
 
 double bmp390::get_press(){
