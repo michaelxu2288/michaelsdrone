@@ -16,7 +16,7 @@ static int fd = -1;
 
 #define MOLAR_MASS_AIR 2.896e-2 // kg/mol
 #define AVERAGE_SEA_LVL_PRESSURE 1.01325e5 // Pa
-#define PRESSURE_BENCHMARK AVERAGE_SEA_LVL_PRESSURE // Pa
+// #define PRESSURE_BENCHMARK AVERAGE_SEA_LVL_PRESSURE // Pa
 #define PRESSURE_BENCHMARK 101533.678563 // Pa
 #define STANDARD_TEMP 288.15 // K
 #define UNV_GAS_CONST 8.3143 // (N*m) / (mol * K)
@@ -297,7 +297,7 @@ static double p0 = 101325;
 
 
 void bmp390::set_pressure_benchmark(double _p0){
-    p0 = _p0
+    p0 = _p0;
 }
 
 double height(double temp_c, double pressure_k){
