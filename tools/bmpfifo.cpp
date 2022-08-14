@@ -22,12 +22,12 @@ int main() {
     logger:info("Finished initializing the BMP390.");
 
     // double data
-    // int burh = 1000000 / 50;
+    int burh = 1000000 / 2;
     double data[3];
     bmp390::flush_fifo();
-    usleep(1000000);
-    bmp390::read_fifo(data);
-    logger::info("Temp: {:10.2f} C, Pressure: {:10.0f} P, Elevation: {:10.1f} ft", data[0], data[1], data[2] * 3.28084);
+    // usleep(1000000);
+    // bmp390::read_fifo(data);
+    // logger::info("Temp: {:10.2f} C, Pressure: {:10.0f} P, Elevation: {:10.1f} ft", data[0], data[1], data[2] * 3.28084);
 
     // // for(int i = 0; i< 10; i ++) {
         
@@ -38,10 +38,10 @@ int main() {
     // // logger::info("Pressure benchmark {:10.0f}", pressure);
     // // bmp390::set_pressure_benchmark(pressure);
 
-    // while(1){
-    //     bmp390::get_data(data);
-    //     logger::info("Temp: {:10.2f} C, Pressure: {:10.0f} P, Elevation: {:10.1f} ft", data[0], data[1], data[2] * 3.28084);
-    //     usleep(burh);
-    // }
+    while(1){
+        bmp390::read_fifo(data);
+        logger::info("Temp: {:10.2f} C, Pressure: {:10.0f} P, Elevation: {:10.1f} ft", data[0], data[1], data[2] * 3.28084);
+        usleep(burh);
+    }
     
 }
