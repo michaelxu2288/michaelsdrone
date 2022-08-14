@@ -5,6 +5,7 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 
+#include <linux/types.h>
 
 extern "C" {
 	#include <linux/i2c-dev.h>
@@ -57,8 +58,8 @@ extern "C" {
 //     return close(fd);
 // }
 
-// char i2c::read_byte(int fd, char reg) {
-//     char buf = reg;
+// __u8 i2c::read_byte(int fd, __u8 reg) {
+//     __u8 buf = reg;
 //     int n = read(fd, &buf, 1);
 //     if(n != 1){
 //         perror("BRUH: ");
@@ -66,7 +67,7 @@ extern "C" {
 //     return buf;
 // }
 
-// void i2c::read_burst(int fd, char reg, char * buf, int len) {
+// void i2c::read_burst(int fd, __u8 reg, __u8 * buf, int len) {
 //     buf[0] = reg;
 //     int n = read(fd, buf, len);
 //     if(n != len){
@@ -74,8 +75,8 @@ extern "C" {
 //     }
 // }
 
-// void i2c::write_byte(int fd, char reg, char val) {
-//     char buf[2];
+// void i2c::write_byte(int fd, __u8 reg, __u8 val) {
+//     __u8 buf[2];
 //     buf[0] = reg;
 //     buf[1] = val;
 //     int n = write(fd, buf, 2);
@@ -84,9 +85,9 @@ extern "C" {
 //     }
 // }
 
-// void i2c::write_burst(int fd, char reg, char * buf, int len) {
+// void i2c::write_burst(int fd, __u8 reg, __u8 * buf, int len) {
 //     if(len > 20) {logger::err("Too many bytes to write: {}", len); return;}
-//     char writebuf[21];
+//     __u8 writebuf[21];
 //     writebuf[0] = reg;
 //     while(len--){
 //         writebuf[len+1] = buf[len];
@@ -113,19 +114,19 @@ i2c::device::device(int _addr) {
 	}
 }
 
-char i2c::device::read_byte(char reg) {
+__u8 i2c::device::read_byte(__u8 reg) {
     i2c_rdwr_ioctl_data data;
     i2c_msg msgs[2];
-    char buf[1];
+    __u8 buf[1];
     buf[0] = reg;
     msgs[0].addr = addr;
     msgs[0].buf = buf;
-    msgs[0].flag = 0;
+    msgs[0].flags = 0;
     msgs[0].len = 1;
     
     msgs[1].addr = addr;
     msgs[1].buf = buf;
-    msgs[1].flag = I2C_M_READ;
+    msgs[1].flags = I2C_M_RD;
     msgs[1].len = 1;
 
     data.msgs = msgs;
