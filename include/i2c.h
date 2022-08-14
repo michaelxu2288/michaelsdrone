@@ -1,24 +1,24 @@
-#include <linux/types.h>
+
 
 namespace i2c{
 
     // int get_device(int addr);
     // int close_device(int fd);
 
-    // __u8 read_byte(int fd, __u8 reg);
-    // void read_burst(int fd, __u8 reg, __u8 * buf, int len);
+    // uint8_t read_byte(int fd, uint8_t reg);
+    // void read_burst(int fd, uint8_t reg, uint8_t * buf, int len);
 
-    // void write_byte(int fd, __u8 reg, __u8 val);
-    // void write_burst(int fd, __u8 reg, __u8 * buf, int len);
+    // void write_byte(int fd, uint8_t reg, uint8_t val);
+    // void write_burst(int fd, uint8_t reg, uint8_t * buf, int len);
     struct device {
         int fd;
         int addr;
 
         device(int addr);
-        __u8 read_byte(__u8 reg);
-        void read_burst(__u8 reg, __u8 * buf, int len);
+        uint8_t read_byte(uint8_t reg);
+        void read_burst(uint8_t reg, uint8_t * buf, int len);
 
-        void write_byte(__u8 reg, __u8 val);
-        void write_burst(__u8 reg, __u8 * buf, int len);
+        void write_byte(uint8_t reg, uint8_t val);
+        void write_burst(uint8_t reg, uint8_t * buf, int len);
     };
 }
