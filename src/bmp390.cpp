@@ -136,10 +136,10 @@ void bmp390::read_fifo(double * data) {
     len += 2;
     while(i < len) {
         uint8_t frame_type = (frames_w_len[i] & 0b11000000);
+        logger::info("FIFO header: {:#08b}", frames_w_len[i]);
         i++;
 
         if(frame_type == 0b10000000) { // sensor frame
-            logger::info("FIFO header: {:#08b}", frames_w_len[i]);
             uint8_t sensor_frame_type = (frames_w_len[i] & 0b00111100);
             if(sensor_frame_type == 0b00010100) { 
                 uint32_t raw_temp = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
