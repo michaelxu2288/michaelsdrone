@@ -17,12 +17,14 @@ int main() {
 
     bmp390::set_pwr_mode(bmp390::NORMAL);
 
+
+
     logger:info("Finished initializing the BMP390.");
 
     // double data
     // int burh = 1000000 / 50;
     double data[3];
-    
+    bmp390::flush_fifo();
     bmp390::read_fifo(data);
 
     // // for(int i = 0; i< 10; i ++) {

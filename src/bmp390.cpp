@@ -140,6 +140,9 @@ void bmp390::read_fifo(double * data) {
         i++;
     }
 }
+void bmp390::flush_fifo() {
+    WRITE(BMP390_REG_CMD, BMP390_FIFO_FLUSH);
+}
 
 void bmp390::acquire_calib_vars(){
     #define BMP3_CONCAT_BYTES(msb, lsb)             (((uint16_t)msb << 8) | (uint16_t)lsb)
