@@ -114,6 +114,10 @@ i2c::device::device(int _addr) {
 	}
 }
 
+void i2c::device::close() {
+    close(fd);
+}
+
 uint8_t i2c::device::read_byte(uint8_t reg) {
     i2c_rdwr_ioctl_data data;
     i2c_msg msgs[2];

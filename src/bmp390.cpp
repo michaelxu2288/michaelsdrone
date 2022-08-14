@@ -18,7 +18,6 @@
 #include <cmath>
 #include <logger.h>
 
-static int fd = -1;
 
 #define MOLAR_MASS_AIR 2.896e-2 // kg/mol
 #define AVERAGE_SEA_LVL_PRESSURE 1.01325e5 // Pa
@@ -32,28 +31,94 @@ static int fd = -1;
 #define WRITE(reg, data) bmp.write_byte(reg, data) //i2c_smbus_write_byte_data(fd, reg, data) 
 
 static i2c::device bmp; 
+static double par_t1, par_t2, par_t3;
+static double par_p1, par_p2, par_p3, par_p4, par_p5, par_p6, par_p7, par_p8, par_p9, par_p10, par_p11;
 
+
+static double compensate_temp(uint32_t uncomp_temp){
+    
+    double partial_data1;
+    double partial_data2;
+
+    partial_data1 = (double)(uncomp_temp - par_t1);
+    partial_data2 = (double)(partial_data1 * par_t2);
+
+    /* Update the compensated temperature in calib structure since this is
+     * needed for pressure calculation */
+    return partial_data2 + (partial_data1 * partial_data1) * par_t3;
+}
+
+static double compensate_temp(){
+    return compensate_temp(bmp390::get_raw_temp());
+}
+
+static double pow_bmp3(double base, uint8_t power) {
+    double pow_output = 1;
+    while (power != 0) {
+        pow_output = (double) base * pow_output;
+        power--;
+    }
+    return pow_output;
+}
+
+static double compensate_pressure(uint32_t uncomp_pressure, double temp) {
+    double t_lin = temp;
+    /* Variable to store the compensated pressure */
+    double comp_press;
+
+    /* Temporary variables used for compensation */
+    double partial_data1;
+    double partial_data2;
+    double partial_data3;
+    double partial_data4;
+    double partial_out1;
+    double partial_out2;
+
+    partial_data1 = par_p6 * t_lin;
+    partial_data2 = par_p7 * pow_bmp3(t_lin, 2);
+    partial_data3 = par_p8 * pow_bmp3(t_lin, 3);
+    partial_out1 = par_p5 + partial_data1 + partial_data2 + partial_data3;
+    partial_data1 = par_p2 * t_lin;
+    partial_data2 = par_p3 * pow_bmp3(t_lin, 2);
+    partial_data3 = par_p4 * pow_bmp3(t_lin, 3);
+    partial_out2 = uncomp_pressure *
+                   (par_p1 + partial_data1 + partial_data2 + partial_data3);
+    partial_data1 = pow_bmp3((double)uncomp_pressure, 2);
+    partial_data2 = par_p9 + par_p10 * t_lin;
+    partial_data3 = partial_data1 * partial_data2;
+    partial_data4 = partial_data3 + pow_bmp3((double)uncomp_pressure, 3) * par_p11;
+    comp_press = partial_out1 + partial_out2 + partial_data4;
+
+
+    return comp_press - 1024;
+}
+
+static double compensate_pressure() {
+    return compensate_pressure(bmp390::get_raw_press(), compensate_temp());
+}
+
+static double compensate_pressure(double temp) {
+    return compensate_pressure(bmp390::get_raw_press(), temp);
+}
+
+static int16_t combine(int byte1, int byte2) {
+  // This code assumes that byte1 is in range, but allows for the possibility
+  // that the values were originally in a signed char and so is now negative.
+  return (int16_t) (((uint16_t) byte1 << 8) | byte2);
+}
+
+static inline uint32_t combine(uint8_t h, uint8_t l, uint8_t xl) { 
+    return  (((uint32_t) h) << 16) | (((uint32_t) l) << 8) |(((uint32_t) xl));
+}
 
 void bmp390::init(){
     bmp = i2c::device(BMP390_ADDR);
     bmp390::acquire_calib_vars();
 }
 
-double compensate_temp();
-double compensate_pressure();
-double compensate_pressure(double temp);
-
-double par_t1, par_t2, par_t3;
-double par_p1, par_p2, par_p3, par_p4, par_p5, par_p6, par_p7, par_p8, par_p9, par_p10, par_p11;
-
-int16_t combine(int byte1, int byte2) {
-  // This code assumes that byte1 is in range, but allows for the possibility
-  // that the values were originally in a signed char and so is now negative.
-  return (int16_t) (((uint16_t) byte1 << 8) | byte2);
-}
 
 void bmp390::stop(){
-    close(fd);
+    bmp.close();
 }
 
 int bmp390::query_register(int reg){
@@ -99,10 +164,6 @@ void bmp390::set_pwr_ctrl(int val){
     WRITE(BMP390_REG_PWR_CTRL, val);
 }
 
-
-
-
-
 void bmp390::set_enable_fifo(bool enable) {
     WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00000001)) | (enable));
 }
@@ -114,10 +175,6 @@ void bmp390::set_enable_fifo_time(bool enable) {
 }
 void bmp390::set_fifo_stop_on_full(bool stop_on_full) {
     WRITE(BMP390_FIFO_CONFIG_1, (READ(BMP390_FIFO_CONFIG_1) & (~0b00000010)) | (stop_on_full << 1));
-}
-
-static inline uint32_t combine(uint8_t h, uint8_t l, uint8_t xl) { 
-    return  (((uint32_t) h) << 16) | (((uint32_t) l) << 8) |(((uint32_t) xl));
 }
 
 void bmp390::read_fifo(double * data) {
@@ -303,75 +360,6 @@ void bmp390::get_data(double * data){
 double bmp390::get_temp(){
     return compensate_temp();
 }
-
-static double compensate_temp(uint32_t uncomp_temp){
-    
-    double partial_data1;
-    double partial_data2;
-
-    partial_data1 = (double)(uncomp_temp - par_t1);
-    partial_data2 = (double)(partial_data1 * par_t2);
-
-    /* Update the compensated temperature in calib structure since this is
-     * needed for pressure calculation */
-    return partial_data2 + (partial_data1 * partial_data1) * par_t3;
-}
-
-static double compensate_temp(){
-    return compensate_temp(bmp390::get_raw_temp());
-}
-
-static double pow_bmp3(double base, uint8_t power) {
-    double pow_output = 1;
-    while (power != 0) {
-        pow_output = (double) base * pow_output;
-        power--;
-    }
-    return pow_output;
-}
-
-static double compensate_pressure(uint32_t uncomp_pressure, double temp) {
-    double t_lin = temp;
-    /* Variable to store the compensated pressure */
-    double comp_press;
-
-    /* Temporary variables used for compensation */
-    double partial_data1;
-    double partial_data2;
-    double partial_data3;
-    double partial_data4;
-    double partial_out1;
-    double partial_out2;
-
-    partial_data1 = par_p6 * t_lin;
-    partial_data2 = par_p7 * pow_bmp3(t_lin, 2);
-    partial_data3 = par_p8 * pow_bmp3(t_lin, 3);
-    partial_out1 = par_p5 + partial_data1 + partial_data2 + partial_data3;
-    partial_data1 = par_p2 * t_lin;
-    partial_data2 = par_p3 * pow_bmp3(t_lin, 2);
-    partial_data3 = par_p4 * pow_bmp3(t_lin, 3);
-    partial_out2 = uncomp_pressure *
-                   (par_p1 + partial_data1 + partial_data2 + partial_data3);
-    partial_data1 = pow_bmp3((double)uncomp_pressure, 2);
-    partial_data2 = par_p9 + par_p10 * t_lin;
-    partial_data3 = partial_data1 * partial_data2;
-    partial_data4 = partial_data3 + pow_bmp3((double)uncomp_pressure, 3) * par_p11;
-    comp_press = partial_out1 + partial_out2 + partial_data4;
-
-
-    return comp_press - 1024;
-}
-
-static double compensate_pressure() {
-    return compensate_pressure(bmp390::get_raw_press(), compensate_temp());
-}
-
-static double compensate_pressure(double temp) {
-    return compensate_pressure(bmp390::get_raw_press(), temp);
-}
-
-
-
 
 
 
