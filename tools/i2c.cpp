@@ -13,5 +13,5 @@ int main() {
     for(int i = 0; i < 14; i += 2) {
         logger::info("0x{:2x} 0x{:2x} | {:d}", data[i], data[i+1], (((int16_t) (data[i] << 8)) | (data[i+1])));
     }
-
+    
 }
