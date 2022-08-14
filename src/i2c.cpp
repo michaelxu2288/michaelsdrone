@@ -178,7 +178,7 @@ void i2c::device::write_byte(uint8_t reg, uint8_t val) {
     msg.len = 2;
 
     data.msgs = &msg;
-    data.nmsgs = 2;
+    data.nmsgs = 1;
 
     int n = ioctl(fd, I2C_RDWR, &data);
     if(n < 0) {
