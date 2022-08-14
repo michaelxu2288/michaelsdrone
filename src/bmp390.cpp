@@ -213,8 +213,8 @@ void bmp390::read_fifo(double * data) {
                 // logger::info("Raw press: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_press);
                 i+=3;
                 
-                data[0] = compensate_temp(raw_temp);
-                data[1] = compensate_pressure(raw_press, data[0]);
+                data[0] += compensate_temp(raw_temp);
+                data[1] += compensate_pressure(raw_press, data[0]);
                 
                 n_readings ++;
             }else if(frame_param == 0b00100000) {
