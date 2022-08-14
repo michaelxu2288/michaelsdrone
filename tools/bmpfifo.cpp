@@ -16,14 +16,14 @@ int main() {
 
     int burh = 1000000 / 50;
     double data[3];
-    for(int i = 0; i< 10; i ++) {
+    // for(int i = 0; i< 10; i ++) {
         
-        bmp390::get_data(data);
-        usleep(burh);
-    }
-    double pressure = bmp390::get_press(bmp390::get_temp());
-    logger::info("Pressure benchmark {:10.0f}", pressure);
-    bmp390::set_pressure_benchmark(pressure);
+    //     bmp390::get_data(data);
+    //     usleep(burh);
+    // }
+    // double pressure = bmp390::get_press(bmp390::get_temp());
+    // logger::info("Pressure benchmark {:10.0f}", pressure);
+    // bmp390::set_pressure_benchmark(pressure);
     while(1){
         // double press = bmp390::get_press();
         // double height = bmp390::get_height();
