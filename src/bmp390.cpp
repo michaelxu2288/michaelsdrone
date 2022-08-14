@@ -130,27 +130,27 @@ void bmp390::read_fifo(double * data) {
     // Ctrl Frame: Config Error: 0b01000100
     // Ctrl Frame: Config Chg:   0b01001000
 
-    // fmt binary: {:#08b}
+    // fmt binary: {:#010b}
 
     int i = 2;
     len += 2;
     while(i < len) {
         uint8_t frame_type = (frames_w_len[i] & 0b11000000);
         uint8_t frame_param = (frames_w_len[i] & 0b00111100);
-        logger::info("FIFO header: {:#08b}", frames_w_len[i]);
+        logger::info("FIFO header: {:#010b}", frames_w_len[i]);
         i++;
 
         if(frame_type == 0b10000000) { // sensor frame
             if(frame_param == 0b00010100) { 
                 uint32_t raw_temp = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
-                logger::info("Raw temp: {:#08b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_temp);
+                logger::info("Raw temp: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_temp);
                 i+=3;
                 uint32_t raw_press = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
-                logger::info("Raw press: {:#08b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_press);
+                logger::info("Raw press: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], raw_press);
                 i+=3;
             }else if(frame_param == 0b00100000) {
                 uint32_t sensor_time = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
-                logger::info("Sensor time: {:#08b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], sensor_time);
+                logger::info("Sensor time: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], sensor_time);
                 i+=3;
             }
             // logger::info("FIFO data");   
