@@ -22,6 +22,9 @@
 #include <pid.h>
 #include <cmath>
 #include <mutex>
+
+#include <timer.h>
+
 // #define nan std::numeric_limits<double>::quiet_NaN()
 #define G 9.81
 
@@ -78,6 +81,8 @@ static double cpu_usg=-1, battery=-1;
 static bool cntrller_connected = false;
 
 static double debug_vals[6] = {0, 0, 0, 0, 0, 0};
+
+static timer sensor_timer;
 
 enum state {
     configuring = 0, ready = 1, calibrating = 2, idle = 3, init = 4, settling = 5, destroying = 6
@@ -453,116 +458,96 @@ void calibrate(){
 }
 
 void sensor_thread_funct(){
-    logger::info("Sensor thread alive!");
-
-    // orientation = math::quarternion(1, 0, 0, 0);
-
-    math::quarternion euler_q;
-    math::vector euler_v;
-    math::vector temp;
-    auto then = std::chrono::steady_clock::now();
-    auto start = then;
-    auto now = std::chrono::steady_clock::now();
-
-    setup_filters();
-    calibrate();
-    settle();
+    std::lock_guard<std::mutex> sensor_lock_guard(sensor_thread_mutex);
+    now = std::chrono::steady_clock::now();
+    dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
+    int t_since = std::chrono::duration_cast<std::chrono::nanoseconds> (now - start).count();
+    then = now;
     
-    curr_state = state::ready;
-    while(alive){
-        std::lock_guard<std::mutex> sensor_lock_guard(sensor_thread_mutex);
-        now = std::chrono::steady_clock::now();
-        dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
-        int t_since = std::chrono::duration_cast<std::chrono::nanoseconds> (now - start).count();
-        then = now;
-        
-        { // MPU6050 Sensor Read & Filter
-            mpu6050::read(mpu6050_data);
-            mpu6050_data[4] *= -1;
-            mpu6050_data[5] *= -1;
-            for(int i = 0; i < 6; i ++){
-                filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
-            }
+    { // MPU6050 Sensor Read & Filter
+        mpu6050::read(mpu6050_data);
+        mpu6050_data[4] *= -1;
+        mpu6050_data[5] *= -1;
+        for(int i = 0; i < 6; i ++){
+            filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
         }
+    }
 
-        { // BMP390 Sensor Read & Filter
-            old_altitude = bmp390_data[2];
-            bmp390::read_fifo_wo_height(bmp390_data);
-            bmp390_data[1] = pressure_filter[bmp390_data[1]];
-            bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
-            // bmp390_data[0] = bmp390::get_temp();
-            // bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
-            // bmp390_data[1] = pressure_filter[bmp390_data[1]];
-            // bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
-            valt = (bmp390_data[2] - old_altitude) / dt;
-        }
+    { // BMP390 Sensor Read & Filter
+        old_altitude = bmp390_data[2];
+        bmp390::read_fifo_wo_height(bmp390_data);
+        bmp390_data[1] = pressure_filter[bmp390_data[1]];
+        bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
+        // bmp390_data[0] = bmp390::get_temp();
+        // bmp390_data[1] = bmp390::get_press(bmp390_data[0]);
+        // bmp390_data[1] = pressure_filter[bmp390_data[1]];
+        // bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
+        valt = (bmp390_data[2] - old_altitude) / dt;
+    }
 
-        {// Dead Reckoning
-            euler_v = math::vector(filtered_mpu6050_data[3]*dt*DEG_TO_RAD, filtered_mpu6050_data[4]*dt*DEG_TO_RAD, filtered_mpu6050_data[5]*dt*DEG_TO_RAD);
-            euler_q = math::quarternion::fromEulerZYX(euler_v);
-            orientation = euler_q*orientation;
+    {// Dead Reckoning
+        euler_v = math::vector(filtered_mpu6050_data[3]*dt*DEG_TO_RAD, filtered_mpu6050_data[4]*dt*DEG_TO_RAD, filtered_mpu6050_data[5]*dt*DEG_TO_RAD);
+        euler_q = math::quarternion::fromEulerZYX(euler_v);
+        orientation = euler_q*orientation;
+        orientation_euler = math::quarternion::toEuler(orientation);
+
+
+        double a_dist_from_one_sqrd = filtered_mpu6050_data[0] * filtered_mpu6050_data[0] + filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2] - 1;
+        if((a_dist_from_one_sqrd < 0 ? a_dist_from_one_sqrd > - sensor_g_tolerance_sqrd : a_dist_from_one_sqrd < sensor_g_tolerance_sqrd)){
+            double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
+            double pitch = atan2((filtered_mpu6050_data[0]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
+
+            orientation_euler.x = orientation_euler.x * (1 - sensor_roll_pitch_tau) + roll * sensor_roll_pitch_tau;
+            orientation_euler.y = orientation_euler.y * (1 - sensor_roll_pitch_tau) + pitch * sensor_roll_pitch_tau;
+            
+            orientation = math::quarternion::fromEulerZYX(orientation_euler);
             orientation_euler = math::quarternion::toEuler(orientation);
-
-
-            double a_dist_from_one_sqrd = filtered_mpu6050_data[0] * filtered_mpu6050_data[0] + filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2] - 1;
-            if((a_dist_from_one_sqrd < 0 ? a_dist_from_one_sqrd > - sensor_g_tolerance_sqrd : a_dist_from_one_sqrd < sensor_g_tolerance_sqrd)){
-                double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
-                double pitch = atan2((filtered_mpu6050_data[0]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
-
-                orientation_euler.x = orientation_euler.x * (1 - sensor_roll_pitch_tau) + roll * sensor_roll_pitch_tau;
-                orientation_euler.y = orientation_euler.y * (1 - sensor_roll_pitch_tau) + pitch * sensor_roll_pitch_tau;
-                
-                orientation = math::quarternion::fromEulerZYX(orientation_euler);
-                orientation_euler = math::quarternion::toEuler(orientation);
-            }
-
-            temp = velocity * dt;
-            position = position + temp;
-            position.z = position.z * sensor_z_tau + (bmp390_data[2] - initial_altitude) * (1 - sensor_z_tau);
-            temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, -filtered_mpu6050_data[2]*dt*G);
-            temp = math::quarternion::rotateVector(orientation, temp);
-            temp.z += G*dt;
-            velocity = velocity + temp;
-            // velocity.z = vzfilter[velocity.z];
-            velocity.z = velocity.z * sensor_z_tau + valt * (1 - sensor_z_tau);
         }
 
-        {// PID updates
-            // z_controller.setpoint = 
-            // double z = z_controller.update(position.z, dt);
-            double z = 0;
-            double r = roll_controller.update(orientation_euler.x, dt);
-            double p = pitch_controller.update(orientation_euler.y, dt);
-            // double vy = vyaw_controller.update(filtered_mpu6050_data[5], dt);
-            double vy = yawthrust;
+        temp = velocity * dt;
+        position = position + temp;
+        position.z = position.z * sensor_z_tau + (bmp390_data[2] - initial_altitude) * (1 - sensor_z_tau);
+        temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, -filtered_mpu6050_data[2]*dt*G);
+        temp = math::quarternion::rotateVector(orientation, temp);
+        temp.z += G*dt;
+        velocity = velocity + temp;
+        // velocity.z = vzfilter[velocity.z];
+        velocity.z = velocity.z * sensor_z_tau + valt * (1 - sensor_z_tau);
+    }
 
-            // logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
+    {// PID updates
+        // z_controller.setpoint = 
+        // double z = z_controller.update(position.z, dt);
+        double z = 0;
+        double r = roll_controller.update(orientation_euler.x, dt);
+        double p = pitch_controller.update(orientation_euler.y, dt);
+        // double vy = vyaw_controller.update(filtered_mpu6050_data[5], dt);
+        double vy = yawthrust;
 
-            drone::set_motor(MOTOR_FL, (z + r + p + vy + trim + thrust) * front_multiplier);
-            drone::set_motor(MOTOR_FR, (z - r + p - vy + trim + thrust) * front_multiplier);
-            drone::set_motor(MOTOR_BL, z + r - p - vy + trim + thrust);
-            drone::set_motor(MOTOR_BR, z - r - p + vy + trim + thrust);
-        }
+        // logger::info("p: {:.4f} o: {:.4f}", roll_controller.p, roll_controller.output);
 
-        if(zero_flag){
-            orientation = math::quarternion(1, 0, 0, 0);
+        drone::set_motor(MOTOR_FL, (z + r + p + vy + trim + thrust) * front_multiplier);
+        drone::set_motor(MOTOR_FR, (z - r + p - vy + trim + thrust) * front_multiplier);
+        drone::set_motor(MOTOR_BL, z + r - p - vy + trim + thrust);
+        drone::set_motor(MOTOR_BR, z - r - p + vy + trim + thrust);
+    }
 
-            velocity = math::vector(0, 0, 0);
-            position = math::vector(0, 0, 0);
-            initial_altitude = old_altitude = bmp390_data[2];
-            valt = 0;
+    if(zero_flag){
+        orientation = math::quarternion(1, 0, 0, 0);
 
-            logger::info("Zeroed");
-            zero_flag = false;
-        }
+        velocity = math::vector(0, 0, 0);
+        position = math::vector(0, 0, 0);
+        initial_altitude = old_altitude = bmp390_data[2];
+        valt = 0;
 
-        if(calib_flag){
-            calibrate();
-            settle();
-            calib_flag = false;
-        }
-        
-        usleep(sensor_sleep_int);
+        logger::info("Zeroed");
+        zero_flag = false;
+    }
+
+    if(calib_flag){
+        calibrate();
+        settle();
+        calib_flag = false;
     }
 }
 
@@ -805,7 +790,23 @@ void drone::init_sensors(bool thread) {
 
     if(thread){
         logger::info("Starting up sensor thread.");
-        sensor_thread = std::thread(sensor_thread_funct);
+
+        // orientation = math::quarternion(1, 0, 0, 0);
+
+        math::quarternion euler_q;
+        math::vector euler_v;
+        math::vector temp;
+        auto then = std::chrono::steady_clock::now();
+        auto start = then;
+        auto now = std::chrono::steady_clock::now();
+
+        setup_filters();
+        calibrate();
+        settle();
+        
+        curr_state = state::ready;
+        sensor_timer = timer(sensor_thread_funct, 1000 / sensor_ref_rate);
+        // sensor_thread = std::thread(sensor_thread_funct);
     }
 }
 
