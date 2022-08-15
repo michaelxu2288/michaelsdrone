@@ -4,7 +4,6 @@
 #include <chrono>
 
 int i = 0;
-static auto dt;
 
 auto then = std::chrono::steady_clock::now();
 auto start = then;
