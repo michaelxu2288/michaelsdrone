@@ -404,7 +404,7 @@ void settle(){
         }
 
         bmp390::read_fifo(bmp390_data);
-        
+
         old_altitude = bmp390_data[2];
         initial_altitude = bmp390_data[2];
         usleep(sensor_sleep_int);
@@ -774,11 +774,6 @@ void message_thread_funct(){
     }
 }
 
-
-
-
-
-
 void drone::init_sensors(bool thread) {
     curr_state = state::init;
     logger::info("Initializing MPU6050.");
@@ -794,8 +789,8 @@ void drone::init_sensors(bool thread) {
     logger::info("Initializing BMP390.");
     bmp390::init();
     bmp390::soft_reset();
-    bmp390::set_oversample(bmp390::oversampling::HIGH, bmp390::ULTRA_LOW_POWER);
-    bmp390::set_iir_filter(bmp390::COEFF_127);
+    bmp390::set_oversample(bmp390::oversampling::STANDARD, bmp390::ULTRA_LOW_POWER);
+    bmp390::set_iir_filter(bmp390::COEFF_3);
     bmp390::set_output_data_rate(bmp390::hz50);
     bmp390::set_enable(true, true);
     
@@ -818,8 +813,6 @@ void drone::init_messsage_thread(bool thread){
         message_thread = std::thread(message_thread_funct);
     }
 }
-
-
 
 void drone::destroy_message_thread(){
     if(message_thread.joinable()){
