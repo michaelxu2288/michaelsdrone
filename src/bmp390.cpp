@@ -219,6 +219,9 @@ void bmp390::read_fifo(double * data) {
                 data[1] += compensate_pressure(raw_press, temp);
                 
                 n_readings ++;
+                #ifdef FAST_FIFO
+                break;
+                #endif
             }else if(frame_param == 0b00100000) {
                 uint32_t sensor_time = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
                 // logger::info("Sensor time: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], sensor_time);
@@ -276,6 +279,9 @@ void bmp390::read_fifo_wo_height(double * data) {
                 data[1] += compensate_pressure(raw_press, temp);
                 
                 n_readings ++;
+                #ifdef FAST_FIFO
+                break;
+                #endif
             }else if(frame_param == 0b00100000) {
                 uint32_t sensor_time = combine(frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i]);
                 // logger::info("Sensor time: {:#010b}{:08b}{:08b} {:d}", frames_w_len[i+2], frames_w_len[i+1], frames_w_len[i], sensor_time);

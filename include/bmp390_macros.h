@@ -64,4 +64,6 @@
 #define BMP390_FIFO_LENGTH_1 0x13
 #define BMP390_FIFO_LENGTH_0 0x12
 
+#define FAST_FIFO
+
 #endif
