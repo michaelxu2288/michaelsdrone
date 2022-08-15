@@ -19,8 +19,8 @@ void loop() {
     // raw = sin(11 * i) / 5 + sin(3 * i);
     
     bmp390::get_data(data);
-    raw = data[1];
-    out = bmp390::get_height(data[0], low_pass[raw]);
+    raw = data[2];
+    out = low_pass[raw];
 }
 
 
