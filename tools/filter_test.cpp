@@ -28,6 +28,7 @@ int main() {
         // reconnect_node_server(client, unix_connection);
         logger::crit("No socket server");
     }
+    double s = 1000000 / 24;
     while(unix_connection.valid){
         logger::info("Data Rate: {:f} hz", 1/t.dt);
 
@@ -37,6 +38,6 @@ int main() {
         //     reconnect_node_server(client, unix_connection);
         // }
 
-        usleep(1000000);
+        usleep(s);
     }
 }
