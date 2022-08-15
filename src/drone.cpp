@@ -801,7 +801,7 @@ void drone::init_sensors(bool thread) {
         settle();
         
         curr_state = state::ready;
-        logger::info("Sleep interval: {} ms" 1000 / sensor_ref_rate);
+        logger::info("Sleep interval: {} ms" 1000 / sensor_ref_rate);fdasfdas
         sensor_timer.start(sensor_thread_funct, 1000 / sensor_ref_rate);
         // sensor_thread = std::thread(sensor_thread_funct);
     }
