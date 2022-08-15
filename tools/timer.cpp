@@ -14,12 +14,12 @@ void test() {
     double dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
     then = now;
     usleep(20000);
-    logger::info("i: {:10d} {:10f} ", i, dt);
+    logger::info("i: {:10d} {:10.1fhz} ", i, 1/dt);
     i++;
 }
 
 int main() {
-    timer t(test, 31);
+    timer t(test, 1000/24);
     while(true) {
         usleep(10000);
     }
