@@ -41,8 +41,8 @@ int main() {
     bmp390::set_output_data_rate(bmp390::hz50);
     bmp390::set_enable(true, true);
     
-    bmp390::set_enable_fifo(true, true);
-    bmp390::set_fifo_stop_on_full(false);
+    // bmp390::set_enable_fifo(true, true);
+    // bmp390::set_fifo_stop_on_full(false);
 
     bmp390::set_pwr_mode(bmp390::NORMAL);
     logger:info("Finished initializing the BMP390.");
