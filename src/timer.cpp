@@ -9,7 +9,7 @@ timer::timer(std::function<void(void)> _command, unsigned int _interval_ms) {
     running = true;
     command = _command;
     interval = _interval_ms;
-    thread = std::thread(*this);
+    thread = std::thread(this);
 }
 
 void timer::operator() (){
