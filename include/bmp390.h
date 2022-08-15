@@ -78,7 +78,8 @@ namespace bmp390 {
     void set_fifo_stop_on_full(bool stop_on_full);
     void flush_fifo();
 
-    void read_fifo(double * data);;
+    void read_fifo(double * data);
+    void read_fifo_wo_height(double * data);
 
     void set_pressure_benchmark(double p0);
 
