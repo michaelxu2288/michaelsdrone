@@ -7,7 +7,7 @@ timer::timer() {
 static void bruh(std::function<void(void)> & command, bool & running, unsigned int & interval, std::mutex & m){
     auto chrono_interval = std::chrono::milliseconds(interval);
     while(running) {
-        std::lock_guard <std::mutex> lock(thread_mutex);
+        std::lock_guard <std::mutex> lock(m);
         auto next = std::chrono::steady_clock::now() + chrono_interval;
         command();
         std::this_thread::sleep_until(next);
