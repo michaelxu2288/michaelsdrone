@@ -10,8 +10,9 @@ auto start = then;
 auto now = std::chrono::steady_clock::now();
 
 void test() {
+    now = std::chrono::steady_clock::now();
     double dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
-    int t_since = std::chrono::duration_cast<std::chrono::nanoseconds> (now - start).count();
+    then = now;
     usleep(20000);
     logger::info("i: {:10d} {:10f} ", i, dt);
     i++;
