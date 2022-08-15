@@ -15,7 +15,7 @@ double i = 0;
 
 void loop() {
     i += t.dt;
-    raw = sin(10 * i) + sin(2 * i) + sin(5 * i);
+    raw = sin(11 * i) / 5 + sin(3 * i);
     out = low_pass[raw];
 }
 
