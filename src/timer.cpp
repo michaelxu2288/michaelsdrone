@@ -4,7 +4,7 @@
 timer::timer() {
     running = false;
 }
-static void bruh(std::function<void(void)> & command, unsigned int & interval, std::mutex & m){
+static void bruh(std::function<void(void)> & command, bool & running, unsigned int & interval, std::mutex & m){
     auto chrono_interval = std::chrono::milliseconds(interval);
     while(running) {
         std::lock_guard <std::mutex> lock(thread_mutex);
@@ -17,7 +17,7 @@ timer::timer(std::function<void(void)> _command, unsigned int _interval_ms) {
     running = true;
     command = _command;
     interval = _interval_ms;
-    thread = std::thread(bruh, command, interval, thread_mutex);
+    thread = std::thread(bruh, command, running, interval, thread_mutex);
 }
 
 void timer::operator() (){
