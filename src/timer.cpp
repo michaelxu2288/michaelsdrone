@@ -37,6 +37,11 @@ void timer::start(std::function<void(void)> _command, unsigned int _interval_ms)
     thread = std::thread(bruh, this);
 }
 
+void timer::stop() {
+    running = false;
+    thread.join();
+}
+
 timer::~timer() {
     running = false;
 }

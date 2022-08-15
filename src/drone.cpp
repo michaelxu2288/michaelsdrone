@@ -553,6 +553,7 @@ void reload_config_thread(){
     logger::info("Acquired locks!");
     drone::load_configuration();
     logger::info("Releasing locks!");
+    timer.interval = 1000 / sensor_ref_rate;
 }
 
 
