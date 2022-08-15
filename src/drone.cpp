@@ -498,7 +498,7 @@ void sensor_thread_funct(){
             orientation_euler = math::quarternion::toEuler(orientation);
         }
 
-        double temp = velocity * dt;
+        math::vector temp = velocity * dt;
         position = position + temp;
         position.z = position.z * sensor_z_tau + (bmp390_data[2] - initial_altitude) * (1 - sensor_z_tau);
         temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, -filtered_mpu6050_data[2]*dt*G);
