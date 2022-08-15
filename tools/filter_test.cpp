@@ -15,7 +15,7 @@ double i = 0;
 
 void loop() {
     i += t.dt;
-    out = sin(i);
+    out = sin(10 * i) + sin(2 * i) + sin(5 * i);
 }
 
 
