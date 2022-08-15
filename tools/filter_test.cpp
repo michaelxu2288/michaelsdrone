@@ -29,9 +29,9 @@ int main() {
 
         std::string sendStr = parameters::get_json_report();
         int e = unix_connection.send(sendStr.c_str(), sendStr.length());
-        if(e < 0) {
-            reconnect_node_server(client, unix_connection);
-        }
+        // if(e < 0) {
+        //     reconnect_node_server(client, unix_connection);
+        // }
 
         usleep(1000000);
     }
