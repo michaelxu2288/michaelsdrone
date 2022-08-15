@@ -8,7 +8,7 @@
 #include <cmath>
 
 timer t;
-filter::filter low_pass = filter::low_pass(24, 5);
+filter::filter low_pass = filter::low_pass(50, 5);
 double out = 0;
 double raw = 0;
 double i = 0;
@@ -26,7 +26,7 @@ void loop() {
 
 
 int main() {
-    t.start(loop, 1000 / 24);
+    t.start(loop, 1000 / 50);
     parameters::bind_dbl("raw", &raw, true);
     parameters::bind_dbl("out", &out, true);
 
@@ -36,7 +36,7 @@ int main() {
     bmp390::soft_reset();
     bmp390::set_oversample(bmp390::oversampling::STANDARD, bmp390::ULTRA_LOW_POWER);
     bmp390::set_iir_filter(bmp390::COEFF_3);
-    bmp390::set_output_data_rate(bmp390::hz25);
+    bmp390::set_output_data_rate(bmp390::hz50);
     bmp390::set_enable(true, true);
     
     bmp390::set_enable_fifo(true, true);
