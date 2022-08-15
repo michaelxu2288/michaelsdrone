@@ -18,7 +18,7 @@ void loop() {
     i += t.dt;
     // raw = sin(11 * i) / 5 + sin(3 * i);
     
-    bmp390::read_fifo_wo_height(data);
+    bmp390::get_data(data);
     raw = data[1];
     out = low_pass[raw];
 }
