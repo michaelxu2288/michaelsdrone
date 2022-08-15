@@ -35,7 +35,7 @@ static double filtered_mpu6050_data[6];
 static filter::filter mpu6050_filters[6];
 static math::quarternion orientation;
 
-static double dt;
+// static double dt;
 
 static math::vector orientation_euler;
 static math::vector position(0, 0, 0), velocity(0, 0, 0);
@@ -434,30 +434,31 @@ void calibrate(){
 
     mpu6050::calibrate(7);
 
-    logger::info("Calibrating BMP390");
-    int n = 500;
-    for(int i = 0; i < n; i ++){
-        bmp390::read_fifo_wo_height(bmp390_data);
-        bmp390_data[1] = pressure_filter[bmp390_data[1]];
-        bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
+    // logger::info("Calibrating BMP390");
+    // int n = 500;
+    // for(int i = 0; i < n; i ++){
+    //     bmp390::read_fifo_wo_height(bmp390_data);
+    //     bmp390_data[1] = pressure_filter[bmp390_data[1]];
+    //     bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
 
-        usleep(sensor_sleep_int);
-    }
+    //     usleep(sensor_sleep_int);
+    // }
 
-    double sum = 0;
-    for(int i = 0; i < n; i ++){
-        bmp390::read_fifo(bmp390_data);
-        sum += bmp390_data[2];
-        usleep(sensor_sleep_int);
-    }
+    // double sum = 0;
+    // for(int i = 0; i < n; i ++){
+    //     bmp390::read_fifo(bmp390_data);
+    //     sum += bmp390_data[2];
+    //     usleep(sensor_sleep_int);
+    // }
 
-    initial_altitude = old_altitude = sum / n;
+    // initial_altitude = old_altitude = sum / n;
 
     logger::info("Calibrated sensors");
     curr_state = old;
 }
 
 void sensor_thread_funct(){
+    double dt = sensor_timer.dt;
     { // MPU6050 Sensor Read & Filter
         mpu6050::read(mpu6050_data);
         mpu6050_data[4] *= -1;
