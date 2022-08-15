@@ -30,7 +30,7 @@ timer::timer(std::function<void(void)> _command, unsigned int _interval_ms) {
     thread = std::thread(bruh, this);
 }
 
-void start(std::function<void(void)> _command, unsigned int _interval_ms) {
+void timer::start(std::function<void(void)> _command, unsigned int _interval_ms) {
     running = true;
     command = _command;
     interval = _interval_ms;
