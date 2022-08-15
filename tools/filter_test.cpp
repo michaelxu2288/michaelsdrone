@@ -5,14 +5,17 @@
 #include <unistd.h>
 #include <parameters.h>
 #include <socket.h>
+#include <cmath>
 
 timer t;
 filter::filter low_pass = filter::low_pass(24, 5);
 double out = 0;
 
+double i = 0;
 
 void loop() {
-    out += t.dt;
+    i += t.dt;
+    out = sin(i);
 }
 
 
