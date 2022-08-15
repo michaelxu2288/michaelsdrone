@@ -459,6 +459,7 @@ void calibrate(){
 
 void sensor_thread_funct(){
     double dt = sensor_timer.dt;
+    logger::info("dt: {:10d} ms",dt * 1000);
     { // MPU6050 Sensor Read & Filter
         mpu6050::read(mpu6050_data);
         mpu6050_data[4] *= -1;
