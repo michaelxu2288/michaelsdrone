@@ -10,18 +10,20 @@
 timer t;
 filter::filter low_pass = filter::low_pass(24, 5);
 double out = 0;
-
+double raw = 0;
 double i = 0;
 
 void loop() {
     i += t.dt;
-    out = sin(10 * i) + sin(2 * i) + sin(5 * i);
+    raw = sin(10 * i) + sin(2 * i) + sin(5 * i);
+    out = low_pass[raw];
 }
 
 
 
 int main() {
     t.start(loop, 1000 / 24);
+    parameters::bind_dbl("raw", &raw, true);
     parameters::bind_dbl("out", &out, true);
 
     sock::socket client(sock::unix, sock::tcp);
