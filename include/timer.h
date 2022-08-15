@@ -9,7 +9,7 @@ struct timer {
     bool running; // Change this to stop the timer
     std::thread thread; // Underlying thread
     unsigned int interval; // Time interval in ms 
-    std::mutex thread_mutex;
+    // std::mutex thread_mutex;
     std::function<void(void)> command;
     timer();
     timer(std::function<void(void)> command, unsigned int interval_ms);
