@@ -19,6 +19,6 @@ void test() {
 int main() {
     timer t(test, 1000);
     while(true) {
-        usleep(10000);
+        usleep(31415);
     }
 }
