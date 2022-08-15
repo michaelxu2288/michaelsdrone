@@ -20,7 +20,7 @@ void loop() {
     
     bmp390::get_data(data);
     raw = data[1];
-    out = low_pass[raw];
+    out = bmp390::get_height(data[0], low_pass[raw]);
 }
 
 
@@ -36,7 +36,7 @@ int main() {
     bmp390::soft_reset();
     bmp390::set_oversample(bmp390::oversampling::STANDARD, bmp390::ULTRA_LOW_POWER);
     bmp390::set_iir_filter(bmp390::COEFF_3);
-    bmp390::set_output_data_rate(bmp390::hz50);
+    bmp390::set_output_data_rate(bmp390::hz25);
     bmp390::set_enable(true, true);
     
     bmp390::set_enable_fifo(true, true);
