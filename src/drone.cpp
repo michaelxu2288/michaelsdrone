@@ -458,12 +458,6 @@ void calibrate(){
 }
 
 void sensor_thread_funct(){
-    std::lock_guard<std::mutex> sensor_lock_guard(sensor_thread_mutex);
-    now = std::chrono::steady_clock::now();
-    dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
-    int t_since = std::chrono::duration_cast<std::chrono::nanoseconds> (now - start).count();
-    then = now;
-    
     { // MPU6050 Sensor Read & Filter
         mpu6050::read(mpu6050_data);
         mpu6050_data[4] *= -1;
@@ -486,8 +480,8 @@ void sensor_thread_funct(){
     }
 
     {// Dead Reckoning
-        euler_v = math::vector(filtered_mpu6050_data[3]*dt*DEG_TO_RAD, filtered_mpu6050_data[4]*dt*DEG_TO_RAD, filtered_mpu6050_data[5]*dt*DEG_TO_RAD);
-        euler_q = math::quarternion::fromEulerZYX(euler_v);
+        math::vector euler_v = math::vector(filtered_mpu6050_data[3]*dt*DEG_TO_RAD, filtered_mpu6050_data[4]*dt*DEG_TO_RAD, filtered_mpu6050_data[5]*dt*DEG_TO_RAD);
+        math::quarternion euler_q = math::quarternion::fromEulerZYX(euler_v);
         orientation = euler_q*orientation;
         orientation_euler = math::quarternion::toEuler(orientation);
 
@@ -504,7 +498,7 @@ void sensor_thread_funct(){
             orientation_euler = math::quarternion::toEuler(orientation);
         }
 
-        temp = velocity * dt;
+        double temp = velocity * dt;
         position = position + temp;
         position.z = position.z * sensor_z_tau + (bmp390_data[2] - initial_altitude) * (1 - sensor_z_tau);
         temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, -filtered_mpu6050_data[2]*dt*G);
@@ -650,7 +644,7 @@ void message_thread_funct(){
         parameters::bind_int("state", (int *) (&curr_state), true); // 32
         parameters::bind_dbl("cpuusg", &cpu_usg, true); // 33
         parameters::bind_dbl("battery", &battery, true); // 34
-        parameters::bind_dbl("dt", &dt, true); // 35
+        parameters::bind_dbl("dt", &sensor_timer.dt, true); // 35
         parameters::bind_bool("controller", &cntrller_connected, true); // 36
 
         parameters::bind_dbl("zicurr", &z_controller.i_curr, true); // 37
@@ -805,7 +799,7 @@ void drone::init_sensors(bool thread) {
         settle();
         
         curr_state = state::ready;
-        sensor_timer = timer(sensor_thread_funct, 1000 / sensor_ref_rate);
+        sensor_timer.start(sensor_thread_funct, 1000 / sensor_ref_rate);
         // sensor_thread = std::thread(sensor_thread_funct);
     }
 }
