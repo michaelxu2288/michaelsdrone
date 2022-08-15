@@ -15,7 +15,7 @@ void test() {
     now = std::chrono::steady_clock::now();
     double dt = std::chrono::duration_cast<std::chrono::nanoseconds> (now - then).count() * 0.000000001;
     then = now;
-    int s = 14000 * sin(i) + 50000;
+    int s = 14000 * sin(i) + 15000;
     usleep(s);
     logger::info("i: {:10d} sleep: {:10f} s freq: {:10.1f} hz ", i, s/1000000000.0, 1/dt);
     i++;
@@ -23,7 +23,9 @@ void test() {
 
 int main() {
     timer t(test, 1000/24);
-    while(true) {
-        usleep(10000);
-    }
+    usleep(10000000);
+    t.interval = 1000/48;
+    usleep(10000000);
+    t.interval = 1000/60;
+    usleep(10000000);
 }
