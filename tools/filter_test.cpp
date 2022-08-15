@@ -28,7 +28,6 @@ void loop() {
 
 
 int main() {
-    t.start(loop, 1000 / 50);
     parameters::bind_dbl("raw", &raw, true);
     parameters::bind_dbl("out", &out, true);
 
@@ -47,6 +46,7 @@ int main() {
     bmp390::set_pwr_mode(bmp390::NORMAL);
     logger:info("Finished initializing the BMP390.");
 
+    t.start(loop, 1000 / 50);
 
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect("/home/pi/drone/run/drone");
