@@ -14,6 +14,8 @@ struct timer {
     timer();
     timer(std::function<void(void)> command, unsigned int interval_ms);
     ~timer();
+
+    void operator() ();
 };
 
 // timer_thread create_timer(std::function<void(void)> command, unsigned int interval_ms);
