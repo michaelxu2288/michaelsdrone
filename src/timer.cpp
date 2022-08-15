@@ -11,9 +11,9 @@ static void bruh(std::function<void(void)> command, bool running, unsigned int i
         // std::lock_guard <std::mutex> lock(m);
         auto next = std::chrono::steady_clock::now() + chrono_interval;
         command();
-        while(next < std::chrono::steady_clock::now()){
-            next += chrono_interval;
-        }
+        // while(next < std::chrono::steady_clock::now()){
+        //     next += chrono_interval;
+        // }
         std::this_thread::sleep_until(next);
     }
 }
