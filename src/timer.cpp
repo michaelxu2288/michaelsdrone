@@ -1,5 +1,6 @@
 #include <timer.h>
 #include <chrono>
+#include <logger.h>
 
 timer::timer() {
     running = false;
