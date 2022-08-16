@@ -24,13 +24,34 @@ static void bruh(timer * t/* std::function<void(void)> command, bool running, un
 }
 
 timer::timer(std::function<void(void)> _command, unsigned int _interval_ms) {
+    if(running){
+        logger::warn("Attempted to start a timer which has already been started");
+        return;
+    }
+
     running = true;
     command = _command;
     interval = _interval_ms;
     thread = std::thread(bruh, this);
 }
 
+void timer::start() {
+    if(running){
+        logger::warn("Attempted to start a timer which has already been started");
+        return;
+    }
+
+    running = true;
+    thread = std::thread(bruh, this);
+}
+
+
 void timer::start(std::function<void(void)> _command, unsigned int _interval_ms) {
+    if(running){
+        logger::warn("Attempted to start a timer which has already been started");
+        return;
+    }
+
     running = true;
     command = _command;
     interval = _interval_ms;
@@ -45,3 +66,15 @@ void timer::stop() {
 timer::~timer() {
     running = false;
 }
+
+void timer::pause() {
+    thread_mutex.lock();
+}
+
+void timer::resume() {
+    thread_mutex.unlock();
+}
+
+// bool timer::isPaused(){
+//     return thread_mutex.try_lock();
+// }

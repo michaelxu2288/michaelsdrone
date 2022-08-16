@@ -232,7 +232,7 @@ void drone::load_configuration(){
 
     load_pid_config();
     
-    sensor_sleep_int = 1000000 / (sensor_ref_rate * 2);
+    sensor_sleep_int = 1000000 / sensor_ref_rate;
     message_sleep_int = 1000000 / message_thread_ref_rate;
     sensor_g_tolerance_sqrd = sensor_g_tolerance * sensor_g_tolerance;
 
@@ -248,6 +248,8 @@ void drone::load_configuration(){
     logger::lconfig("Upper Vz Frequency Cutoff: {}", upper_vz_freq_cutoff);
 
     setup_filters();
+
+    sensor_timer.interval = 1000 / sensor_ref_rate;
 }
 
 void drone::enable(bool fl, bool fr, bool bl, bool br){
@@ -761,29 +763,33 @@ void message_thread_funct(){
 
 void drone::init_sensors(bool thread) {
     curr_state = state::init;
-    logger::info("Initializing MPU6050.");
-    mpu6050::init();
-    mpu6050::set_accl_set(mpu6050::accl_range::g_2);
-    mpu6050::set_gyro_set(mpu6050::gyro_range::deg_250);
-    mpu6050::set_clk(mpu6050::clk::y_gyro);
-    mpu6050::set_fsync(mpu6050::fsync::input_dis);
-    mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
-    mpu6050::wake_up();
-    logger::info("Finished intializing the MPU6050.");
-
-    logger::info("Initializing BMP390.");
-    bmp390::init();
-    bmp390::soft_reset();
-    bmp390::set_oversample(bmp390::oversampling::STANDARD, bmp390::ULTRA_LOW_POWER);
-    bmp390::set_iir_filter(bmp390::COEFF_3);
-    bmp390::set_output_data_rate(bmp390::hz50);
-    bmp390::set_enable(true, true);
     
-    bmp390::set_enable_fifo(true, true);
-    bmp390::set_fifo_stop_on_full(false);
+    {
+        logger::info("Initializing MPU6050.");
+        mpu6050::init();
+        mpu6050::set_accl_set(mpu6050::accl_range::g_2);
+        mpu6050::set_gyro_set(mpu6050::gyro_range::deg_250);
+        mpu6050::set_clk(mpu6050::clk::y_gyro);
+        mpu6050::set_fsync(mpu6050::fsync::input_dis);
+        mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
+        mpu6050::wake_up();
+        logger::info("Finished intializing the MPU6050.");
+    }
+    {
+        logger::info("Initializing BMP390.");
+        bmp390::init();
+        bmp390::soft_reset();
+        bmp390::set_oversample(bmp390::oversampling::STANDARD, bmp390::ULTRA_LOW_POWER);
+        bmp390::set_iir_filter(bmp390::COEFF_3);
+        bmp390::set_output_data_rate(bmp390::hz50);
+        bmp390::set_enable(true, true);
+        
+        bmp390::set_enable_fifo(true, true);
+        bmp390::set_fifo_stop_on_full(false);
 
-    bmp390::set_pwr_mode(bmp390::NORMAL);
-    logger:info("Finished initializing the BMP390.");
+        bmp390::set_pwr_mode(bmp390::NORMAL);
+        logger:info("Finished initializing the BMP390.");
+    }
 
     if(thread){
         logger::info("Starting up sensor thread.");
@@ -803,7 +809,8 @@ void drone::init_sensors(bool thread) {
         
         curr_state = state::ready;
         logger::info("Sleep interval: {} ms", 1000 / sensor_ref_rate);
-        sensor_timer.start(sensor_thread_funct, 1000 / sensor_ref_rate);
+        sensor_timer.command = sensor_thread_funct;
+        // sensor_timer.start(sensor_thread_funct, 1000 / sensor_ref_rate);
         // sensor_thread = std::thread(sensor_thread_funct);
     }
 }
@@ -830,12 +837,13 @@ void drone::destroy_message_thread(){
 
 void drone::destroy_sensors(){
     curr_state = state::destroying;
-    if(sensor_thread.joinable()){
-        logger::info("Joining sensor thread.");
-        alive = false;
-        sensor_thread.join();
-        logger::info("Joined sensor thread.");
-    }
+    logger::info("Joining sensor thread.");
+    alive = false;
+    
+    sensor_timer.stop();
+
+    logger::info("Joined sensor thread.");
+    
 }
 
 
