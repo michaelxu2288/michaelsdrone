@@ -408,7 +408,7 @@ void settle(){
             filtered_mpu6050_data[i] = mpu6050_filters[i][mpu6050_data[i]];
         }
 
-        bmp390::read_fifo_wo_height(bmp390_data);
+        bmp390::read(bmp390_data);
         bmp390_data[1] = pressure_filter[bmp390_data[1]];
         bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
 
@@ -471,7 +471,7 @@ void sensor_thread_funct(){
 
     { // BMP390 Sensor Read & Filter
         old_altitude = bmp390_data[2];
-        bmp390::read_fifo_wo_height(bmp390_data);
+        bmp390::read(bmp390_data);
         bmp390_data[1] = pressure_filter[bmp390_data[1]];
         bmp390_data[2] = bmp390::get_height(bmp390_data[0], bmp390_data[1]);
         // bmp390_data[0] = bmp390::get_temp();
