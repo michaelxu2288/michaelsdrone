@@ -461,7 +461,9 @@ void calibrate(){
 
 void sensor_thread_funct(){
     double dt = sensor_timer.dt;
-    logger::info("dt: {:10f} ms",dt * 1000);
+    
+    // logger::info("dt: {:10f} ms",dt * 1000);
+
     { // MPU6050 Sensor Read & Filter
         mpu6050::read(mpu6050_data);
         mpu6050_data[4] *= -1;
@@ -504,13 +506,13 @@ void sensor_thread_funct(){
 
         math::vector temp = velocity * dt;
         position = position + temp;
-        position.z = position.z * sensor_z_tau + (bmp390_data[2] - initial_altitude) * (1 - sensor_z_tau);
+        position.z = position.z * sensor_z_tau + bmp390_data[2] * (1 - sensor_z_tau);
         temp = math::vector(filtered_mpu6050_data[0]*dt*G, filtered_mpu6050_data[1]*dt*G, -filtered_mpu6050_data[2]*dt*G);
         temp = math::quarternion::rotateVector(orientation, temp);
         temp.z += G*dt;
         velocity = velocity + temp;
         // velocity.z = vzfilter[velocity.z];
-        velocity.z = velocity.z * sensor_z_tau + valt * (1 - sensor_z_tau);
+        velocity.z = velocity.z * (1 - sensor_z_tau) + valt * sensor_z_tau;
     }
 
     {// PID updates
@@ -799,6 +801,7 @@ void drone::init_sensors(bool thread) {
         math::quarternion euler_q;
         math::vector euler_v;
         math::vector temp;
+
         auto then = std::chrono::steady_clock::now();
         auto start = then;
         auto now = std::chrono::steady_clock::now();
