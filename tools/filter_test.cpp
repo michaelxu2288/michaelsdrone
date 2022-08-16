@@ -8,7 +8,7 @@
 #include <cmath>
 
 timer t;
-filter::filter low_pass = filter::low_pass(50, 0.1);
+filter::filter low_pass = filter::low_pass(50, 0.5);
 double out = 0;
 double raw = 0;
 double i = 0;
