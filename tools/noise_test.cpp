@@ -78,7 +78,7 @@ int main() {
         mpu6050_avg[j] /= N;
     }
 
-    for(int j = 3; j < 3; j ++) {
+    for(int j = 0; j < 3; j ++) {
         bmp390_avg[j] /= N;
     }
 
@@ -104,6 +104,6 @@ int main() {
         bmp390_var[j] /= N;
     }
 
-    logger::info("Results: MPU6050 \n\tax={:.2f}±{:.2f}\n\tay={:.2f}±{:.2f}\n\taz={:.2f}±{:.2f}\n\tgx={:.2f}±{:.2f}\n\tgy={:.2f}±{:.2f}\n\tgz={:.2f}±{:.2f}", mpu6050_avg[0], mpu6050_var[0], mpu6050_avg[1], mpu6050_var[1], mpu6050_avg[2], mpu6050_var[2], mpu6050_avg[3], mpu6050_var[3], mpu6050_avg[4], mpu6050_var[4], mpu6050_avg[5], mpu6050_var[5]);
-    logger::info("Results: BMP390 \n\t{:10s}={:.2f}±{:.2f}\n\t{:10s}={:.2f}±{:.2f}\n\t{:10s}={:.2f}±{:.2f}", "temp", bmp390_avg[0], bmp390_var[0], "pressure", bmp390_avg[1], bmp390_var[1], "altitude", bmp390_avg[2], bmp390_var[2]);
+    logger::info("Results: MPU6050 \n\tax={:.7f}±{:.7f}\n\tay={:.7f}±{:.7f}\n\taz={:.7f}±{:.7f}\n\tgx={:.7f}±{:.7f}\n\tgy={:.7f}±{:.7f}\n\tgz={:.7f}±{:.7f}", mpu6050_avg[0], mpu6050_var[0], mpu6050_avg[1], mpu6050_var[1], mpu6050_avg[2], mpu6050_var[2], mpu6050_avg[3], mpu6050_var[3], mpu6050_avg[4], mpu6050_var[4], mpu6050_avg[5], mpu6050_var[5]);
+    logger::info("Results: BMP390 \n\t{:10s}={:.7f}±{:.7f}\n\t{:10s}={:.7f}±{:.7f}\n\t{:10s}={:.7f}±{:.7f}", "temp", bmp390_avg[0], bmp390_var[0], "pressure", bmp390_avg[1], bmp390_var[1], "altitude", bmp390_avg[2], bmp390_var[2]);
 }
