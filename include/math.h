@@ -49,7 +49,7 @@ namespace math{
         unsigned int r, c;
 
         matrix(const unsigned int r,const unsigned int c);
-        matrix(const double * array, const unsigned int r, const unsignednt c);
+        matrix(const double * array, const unsigned int r, const unsigned int c);
         ~matrix();
 
         static void multiply(const matrix& r, const matrix& l, matrix& out);
