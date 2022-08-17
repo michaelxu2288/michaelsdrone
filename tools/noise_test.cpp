@@ -34,7 +34,7 @@ void loop() {
         bmp390_avg[j] += bmp390_data[i][j];
     }
 
-    logger::info("{:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f}", mpu6050_data[i][0], mpu6050_data[i][1], mpu6050_data[i][2], mpu6050_data[i][3], mpu6050_data[i][4], mpu6050_data[i][5], bmp390_data[i][0], bmp390_data[i][1], bmp390_data[i][2]);
+    // logger::info("{:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f}", mpu6050_data[i][0], mpu6050_data[i][1], mpu6050_data[i][2], mpu6050_data[i][3], mpu6050_data[i][4], mpu6050_data[i][5], bmp390_data[i][0], bmp390_data[i][1], bmp390_data[i][2]);
 
     i++;
 }
@@ -94,7 +94,7 @@ int main() {
             a = mpu6050_data[k][j] - mpu6050_avg[j];
             mpu6050_var[j] += a * a;
         }
-        for(int j = 3; j < 3; j ++) {
+        for(int j = 0; j < 3; j ++) {
             a = bmp390_data[k][j] - bmp390_avg[j];
             bmp390_var[j] += a * a;
         }
