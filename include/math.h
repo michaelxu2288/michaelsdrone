@@ -38,7 +38,32 @@ namespace math{
         static vector toMagAxis(const quarternion& q);
         static vector rotateVector(math::quarternion& q, math::vector& in);
     };
+
+
+
     double length(const quarternion& n);
     double length(const vector& n);
+
+    struct matrix {
+        double * array;
+        unsigned int r, c;
+
+        matrix(const unsigned int r,const unsigned int c);
+        matrix(const double * array, const unsigned int r, const unsignednt c);
+        ~matrix();
+
+        static void multiply(const matrix& r, const matrix& l, matrix& out);
+        static void add(const matrix& r, const matrix& l, matrix& out);
+        static void inverse(const matrix& a, matrix& out);
+        static void transpose(const matrix& a, matrix& out);
+
+        double get();
+        void get(double * data, const std::pair<int, int> upper, const std::pair<int,int> lower);
+        void set(double data, const std::pair<int, int> loc);
+        void set(double * data, const std::pair<int, int> upper, const std::pair<int,int> lower);
+
+        matrix operator+ (const matrix& r);
+        matrix operator* (const matrix& r);
+    }
 }
 #endif
