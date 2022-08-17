@@ -34,7 +34,7 @@ void loop() {
         bmp390_avg[j] += bmp390_data[i][j];
     }
 
-    logger::info("{:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f}", mpu6050_data[i][0], mpu6050_data[i][1], mpu6050_data[i][2], mpu6050_data[i][3], mpu6050_data[i][4], mpu6050_data[i][5], bmp390_data[i][0], bmp390_data[i][1], bmp390_data[i][2])
+    logger::info("{:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f}", mpu6050_data[i][0], mpu6050_data[i][1], mpu6050_data[i][2], mpu6050_data[i][3], mpu6050_data[i][4], mpu6050_data[i][5], bmp390_data[i][0], bmp390_data[i][1], bmp390_data[i][2]);
 
     i++;
 }
