@@ -34,7 +34,7 @@ void loop() {
         bmp390_avg[j] += bmp390_data[i][j];
     }
 
-    logger::info("{:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f} {:.7f}", mpu6050_data[i][0], mpu6050_data[i][1], mpu6050_data[i][2], mpu6050_data[i][3], mpu6050_data[i][4], mpu6050_data[i][5], bmp390_data[i][0], bmp390_data[i][1], bmp390_data[i][2]);
+    logger::info("{:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f} {:10.7f}", mpu6050_data[i][0], mpu6050_data[i][1], mpu6050_data[i][2], mpu6050_data[i][3], mpu6050_data[i][4], mpu6050_data[i][5], bmp390_data[i][0], bmp390_data[i][1], bmp390_data[i][2]);
 
     i++;
 }
@@ -106,6 +106,6 @@ int main() {
         bmp390_var[j] /= N;
     }
 
-    logger::info("Results: MPU6050 \n\tax={:.7f}±{:.7f}\n\tay={:.7f}±{:.7f}\n\taz={:.7f}±{:.7f}\n\tgx={:.7f}±{:.7f}\n\tgy={:.7f}±{:.7f}\n\tgz={:.7f}±{:.7f}", mpu6050_avg[0], mpu6050_var[0], mpu6050_avg[1], mpu6050_var[1], mpu6050_avg[2], mpu6050_var[2], mpu6050_avg[3], mpu6050_var[3], mpu6050_avg[4], mpu6050_var[4], mpu6050_avg[5], mpu6050_var[5]);
-    logger::info("Results: BMP390 \n\t{:10s}={:.7f}±{:.7f}\n\t{:10s}={:.7f}±{:.7f}\n\t{:10s}={:.7f}±{:.7f}", "temp", bmp390_avg[0], bmp390_var[0], "pressure", bmp390_avg[1], bmp390_var[1], "altitude", bmp390_avg[2], bmp390_var[2]);
+    logger::info("Results: MPU6050 \n\tax={:10.7f}±{:10.7f}\n\tay={:10.7f}±{:10.7f}\n\taz={:10.7f}±{:10.7f}\n\tgx={:10.7f}±{:10.7f}\n\tgy={:10.7f}±{:10.7f}\n\tgz={:10.7f}±{:10.7f}", mpu6050_avg[0], mpu6050_var[0], mpu6050_avg[1], mpu6050_var[1], mpu6050_avg[2], mpu6050_var[2], mpu6050_avg[3], mpu6050_var[3], mpu6050_avg[4], mpu6050_var[4], mpu6050_avg[5], mpu6050_var[5]);
+    logger::info("Results: BMP390 \n\t{:10s}={:10.7f}±{:10.7f}\n\t{:10s}={:10.7f}±{:10.7f}\n\t{:10s}={:10.7f}±{:10.7f}", "temp", bmp390_avg[0], bmp390_var[0], "pressure", bmp390_avg[1], bmp390_var[1], "altitude", bmp390_avg[2], bmp390_var[2]);
 }
