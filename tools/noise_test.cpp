@@ -6,7 +6,7 @@
 
 timer t;
 
-#define N 3000
+#define N 30000
 int i = 0;
 
 double mpu6050_data[N][6]; 
