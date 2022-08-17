@@ -103,7 +103,7 @@ int main() {
         mpu6050_var[j] /= N;
     }
 
-    for(int j = 3; j < 3; j ++) {
+    for(int j = 0; j < 3; j ++) {
         bmp390_var[j] /= N;
     }
 
