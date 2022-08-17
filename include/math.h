@@ -64,6 +64,6 @@ namespace math{
 
         matrix operator+ (const matrix& r);
         matrix operator* (const matrix& r);
-    }
+    };
 }
 #endif
