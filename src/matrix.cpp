@@ -63,29 +63,29 @@ static void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
     }
 }
 
-static void cholesky_decomp(const math::matrix& a, math::matrix& u, math::matrix& l) {
-    // Decomposing a matrix into Lower Triangular
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j <= i; j++) {
-            int sum = 0;
+// static void cholesky_decomp(const math::matrix& a, math::matrix& u, math::matrix& l) {
+//     // Decomposing a matrix into Lower Triangular
+//     for (int i = 0; i < n; i++) {
+//         for (int j = 0; j <= i; j++) {
+//             int sum = 0;
  
-            if (j == i) // summation for diagonals
-            {
-                for (int k = 0; k < j; k++)
-                    sum += pow(lower[j][k], 2);
-                lower[j][j] = sqrt(matrix[j][j] -
-                                        sum);
-            } else {
+//             if (j == i) // summation for diagonals
+//             {
+//                 for (int k = 0; k < j; k++)
+//                     sum += pow(lower[j][k], 2);
+//                 lower[j][j] = sqrt(matrix[j][j] -
+//                                         sum);
+//             } else {
  
-                // Evaluating L(i, j) using L(j, j)
-                for (int k = 0; k < j; k++)
-                    sum += (lower[i][k] * lower[j][k]);
-                lower[i][j] = (matrix[i][j] - sum) /
-                                      lower[j][j];
-            }
-        }
-    }
-}
+//                 // Evaluating L(i, j) using L(j, j)
+//                 for (int k = 0; k < j; k++)
+//                     sum += (lower[i][k] * lower[j][k]);
+//                 lower[i][j] = (matrix[i][j] - sum) /
+//                                       lower[j][j];
+//             }
+//         }
+//     }
+// }
 
 static void math::matrix::inverse(const matrix& a, matrix& out) {
 
