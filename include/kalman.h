@@ -12,7 +12,7 @@ struct kalman1D {
     math::vector x_pred;
 
     void predict(double dt);
-    void
+    // void
 };
 
 #endif

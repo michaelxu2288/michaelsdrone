@@ -57,10 +57,10 @@ namespace math{
         static void inverse(const matrix& a, matrix& out);
         static void transpose(const matrix& a, matrix& out);
 
-        double get();
-        void get(double * data, const std::pair<int, int> upper, const std::pair<int,int> lower);
-        void set(double data, const std::pair<int, int> loc);
-        void set(double * data, const std::pair<int, int> upper, const std::pair<int,int> lower);
+        // double get();
+        // void get(double * data, const std::pair<int, int> upper, const std::pair<int,int> lower);
+        // void set(double data, const std::pair<int, int> loc);
+        // void set(double * data, const std::pair<int, int> upper, const std::pair<int,int> lower);
 
         matrix operator+ (const matrix& r);
         matrix operator* (const matrix& r);
