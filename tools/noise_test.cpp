@@ -105,5 +105,5 @@ int main() {
     }
 
     logger::info("Results: MPU6050 \n\tax={:.2f}±{:.2f}\n\tay={:.2f}±{:.2f}\n\taz={:.2f}±{:.2f}\n\tgx={:.2f}±{:.2f}\n\tgy={:.2f}±{:.2f}\n\tgz={:.2f}±{:.2f}", mpu6050_avg[0], mpu6050_var[0], mpu6050_avg[1], mpu6050_var[1], mpu6050_avg[2], mpu6050_var[2], mpu6050_avg[3], mpu6050_var[3], mpu6050_avg[4], mpu6050_var[4], mpu6050_avg[5], mpu6050_var[5]);
-    logger::info("Results: BMP390 \n\t{:10s}={:.2f}±{:.2f}\n\t{:10s}={:.2f}±{:.2f}\n\t{:10s}={:.2f}±{:.2f}", "temp", bmp390_avg[0], bmp390_var[0], "pressure", bmp390_avg[1], bmp390_var[1], "altitude" bmp390_avg[2], bmp390_var[2]);
+    logger::info("Results: BMP390 \n\t{:10s}={:.2f}±{:.2f}\n\t{:10s}={:.2f}±{:.2f}\n\t{:10s}={:.2f}±{:.2f}", "temp", bmp390_avg[0], bmp390_var[0], "pressure", bmp390_avg[1], bmp390_var[1], "altitude", bmp390_avg[2], bmp390_var[2]);
 }
