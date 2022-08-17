@@ -27,13 +27,18 @@
 
 math::matrix::matrix(const unsigned int r, const unsigned int c) {
     array = new double[r*c];
+    for(int i = 0; i < r; i ++){
+        for(int j = 0; j < c; j ++) {
+            array[i * c + j] = i == j;
+        }
+    }
 }
 
 math::matrix::matrix(const double* _array, const unsigned int r, const unsigned int c) {
     array = new double[r*c];
     for(int i = 0; i < r; i ++){
         for(int j = 0; j < c; j ++) {
-            array[i][j] = _array[i][j];
+            array[i * c + j] = _array[i * c + j];
         }
     }
 }
@@ -48,9 +53,9 @@ static void math::matrix::multiply(const matrix& r, const matrix& l, matrix& out
         for(int j = 0; j < l.c; j ++) {
             int sum = 0;
             for(int k = 0; k < r.c; k ++){
-                sum += r.array[i][k] * l.array[k][j];
+                sum += r.array[i * r.c + k] * l.array[k * l.c + j];
             }
-            out.array[i][j] = sum;
+            out.array[i * l.c + j] = sum;
         }
     }
 }
@@ -58,7 +63,7 @@ static void math::matrix::multiply(const matrix& r, const matrix& l, matrix& out
 static void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
     for(int i = 0; i < r.r; i++) {
         for(int j = 0; j < r.c; j ++) {
-            out.array[i][j] = r.array[i][j] + l.array[i][j];
+            out.array[i * r.c + j] = r.array[i * r.c + j] + l.array[i * l.c + j];
         }
     }
 }
@@ -87,10 +92,10 @@ static void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
 //     }
 // }
 
-static void math::matrix::inverse(const matrix& a, matrix& out) {
+// static void math::matrix::inverse(const matrix& a, matrix& out) {
 
-}
+// }
 
-static void math::matrix::transpose(const matrix& a, matrix& out) {
+// static void math::matrix::transpose(const matrix& a, matrix& out) {
 
-}
+// }
