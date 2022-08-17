@@ -26,11 +26,11 @@ void loop() {
 
     
     for(int j = 0; j < 6; j ++) {
-        mpu6050_avg += mpu6050_data[i][j];
+        mpu6050_avg[j] += mpu6050_data[i][j];
     }
 
     for(int j = 3; j < 3; j ++) {
-        bmp390_avg += bmp390_data[i][j];
+        bmp390_avg[j] += bmp390_data[i][j];
     }
 
     i++;
@@ -73,11 +73,11 @@ int main() {
 
 
     for(int j = 0; j < 6; j ++) {
-        mpu6050_avg /= N;
+        mpu6050_avg[j] /= N;
     }
 
     for(int j = 3; j < 3; j ++) {
-        bmp390_avg /= N;
+        bmp390_avg[j] /= N;
     }
 
     double mpu6050_var[6] = {0,0,0,0,0,0};
@@ -87,19 +87,19 @@ int main() {
         double a;
         for(int j = 0; j < 6; j ++) {
             a = mpu6050_data[k][j] - mpu6050_avg[j];
-            mpu6050_var += a * a;
+            mpu6050_var[j] += a * a;
         }
         for(int j = 3; j < 3; j ++) {
             a = bmp390_data[k][j] - bmp390_avg[j];
-            bmp390_var += a * a;
+            bmp390_var[j] += a * a;
         }
     }   
     for(int j = 0; j < 6; j ++) {
-        mpu6050_var /= N;
+        mpu6050_var[j] /= N;
     }
 
     for(int j = 3; j < 3; j ++) {
-        bmp390_var /= N;
+        bmp390_var[j] /= N;
     }
 
     logger::info("Results: MPU6050 \n\tax={}±{}\n\tay={}±{}\n\taz={}±{}\n\tgx={}±{}\n\tgy={}±{}\n\tgz={}±{}", mpu6050_avg[0], mpu6050_var[0], mpu6050_avg[1], mpu6050_var[1], mpu6050_avg[2], mpu6050_var[2], mpu6050_avg[3], mpu6050_var[3], mpu6050_avg[4], mpu6050_var[4], mpu6050_avg[5], mpu6050_var[5]);
