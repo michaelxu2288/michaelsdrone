@@ -66,6 +66,7 @@ int main() {
         bmp390::set_fifo_stop_on_full(false);
 
         bmp390::set_pwr_mode(bmp390::NORMAL);
+        usleep(100000);
         bmp390::flush_fifo();
         logger:info("Finished initializing the BMP390.");
     }
