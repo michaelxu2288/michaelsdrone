@@ -48,7 +48,7 @@ math::matrix::~matrix(){
 }
 
 
-static void math::matrix::multiply(const matrix& r, const matrix& l, matrix& out) {
+void math::matrix::multiply(const matrix& r, const matrix& l, matrix& out) {
     for(int i = 0; i < r.r; i++) {
         for(int j = 0; j < l.c; j ++) {
             int sum = 0;
@@ -60,7 +60,7 @@ static void math::matrix::multiply(const matrix& r, const matrix& l, matrix& out
     }
 }
 
-static void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
+void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
     for(int i = 0; i < r.r; i++) {
         for(int j = 0; j < r.c; j ++) {
             out.array[i * r.c + j] = r.array[i * r.c + j] + l.array[i * l.c + j];
