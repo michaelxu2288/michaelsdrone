@@ -25,11 +25,11 @@ void kalman::predict() {
 
 void kalman::update(arma::mat measurements) {
     arma::mat temp = pred_process_covar;
-    kalman_gain = temp * (temp + observation_uncertainty).i();
+    kalman_gain = temp * ((temp + observation_uncertainty).i());
 
     arma::mat y = observation_model_mat * measurements;
     state = pred_state + kalman_gain * (y - pred_state); 
 
     
-    process_covar = (identity1 - kalman_gain) - pred_process_covar;
+    process_covar = (identity1 - kalman_gain) * pred_process_covar;
 }
