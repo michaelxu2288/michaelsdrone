@@ -81,7 +81,7 @@ void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
     }
 }
 
-double inline math::matrix::set(double value, int _r, int _c) {
+void math::matrix::set(double value, int _r, int _c) {
     array[_r * c + _c] = value;
 }
 // static void cholesky_decomp(const math::matrix& a, math::matrix& u, math::matrix& l) {
