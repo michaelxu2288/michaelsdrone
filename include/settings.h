@@ -32,9 +32,19 @@
 #define DEFAULT_CONFIG_FILE "/home/pi/drone/config/config.json"
 #define DRONE_STATE_CONFIG_FILE "/home/pi/drone/run/drone.json"
 
+#define ACCEL_X_VARIANCE 0.00003
+#define ACCEL_Y_VARIANCE 0.00003
+#define ACCEL_Z_VARIANCE 0.00006
+#define GYRO_X_VARIANCE 0.03
+#define GYRO_Y_VARIANCE 0.03
+#define GYRO_Z_VARIANCE 0.06
+
+#define TEMP_VARIANCE 0.0003
+#define PRESS_VARIANCE 25.0
+#define ALTITUDE_VARIANCE 0.2
+
 
 // UNCOMMENT THIS TO ENABLE MOTOR
-
 // #define ENABLE_MOTOR
 
 #endif

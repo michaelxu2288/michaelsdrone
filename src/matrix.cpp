@@ -1,6 +1,6 @@
 #include <math.h>
-
-
+#include <fmt/core.h>
+#include <string>
 
     // struct matrix {
     //     double * array;
@@ -24,6 +24,15 @@
     //     matrix operator+ (const matrix& r);
     //     matrix operator* (const matrix& r);
     // }
+
+// static void identity(double * array, const unsigned int r, const unsigned int c) {
+//     array
+// }
+
+math::matrix::matrix() {
+    r = c = 0;
+    array = nullptr;
+}
 
 math::matrix::matrix(const unsigned int r, const unsigned int c) {
     array = new double[r*c];
@@ -92,10 +101,26 @@ void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
 //     }
 // }
 
-// static void math::matrix::inverse(const matrix& a, matrix& out) {
+void static math::matrix::inverse(const matrix& a, matrix& out) {
 
-// }
+}
 
-// static void math::matrix::transpose(const matrix& a, matrix& out) {
+void static math::matrix::transpose(const matrix& a, matrix& out) {
+    for(int i = 0; i < a.r; i ++) {
+        for(int j = 0; j < a.c; j ++) {
+            out.array[j * a.r + i] = a.array[i * a.c + j];
+        }
+    }
+}
 
-// }
+void static math::matrix::string(const matrix& a) {
+    std::string out = "";
+    for(int i = 0; i < a.r; i ++) {
+        for(int j = 0; j < a.c; j ++) {
+            out += fmt::format("{} ", a.array[i * a.c + j]);
+        }
+        out += "\n";
+    }
+    // logger::info("{}", s);
+    return out;
+}

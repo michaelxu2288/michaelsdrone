@@ -7,9 +7,17 @@
 
 // }
 
-struct kalman1D {
-    math::vector x; // x - pos, y - vel, z - acc
-    math::vector x_pred;
+struct kalman {
+    // math::vector x; // x - pos, y - vel, z - acc
+    // math::vector x_pred;
+
+    math::matrix state, pred_state;
+    math::matrix state_update_mat, state_update_mat_t;
+    math::matrix covar_proc_noise, covar_obsrv_noise;
+
+    math::matrix temp1, temp2, temp3;
+
+    kalman();
 
     void predict(double dt);
     // void

@@ -4,6 +4,7 @@
 #define DEG_TO_RAD 0.017453292519943
 #define RAD_TO_DEG 57.29577951308232
 
+#include <string>
 namespace math{
 
     struct vector{
@@ -48,6 +49,7 @@ namespace math{
         double * array;
         unsigned int r, c;
 
+        matrix();
         matrix(const unsigned int r,const unsigned int c);
         matrix(const double * array, const unsigned int r, const unsigned int c);
         ~matrix();
@@ -56,6 +58,8 @@ namespace math{
         static void add(const matrix& r, const matrix& l, matrix& out);
         static void inverse(const matrix& a, matrix& out);
         static void transpose(const matrix& a, matrix& out);
+
+        static std::string string(const matrix& a);
 
         // double get();
         // void get(double * data, const std::pair<int, int> upper, const std::pair<int,int> lower);
