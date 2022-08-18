@@ -18,7 +18,9 @@ kalman::kalman(int n_measurements, int n_states) {
 
 void kalman::predict() {
     pred_state = state_update_mat * state; // NO NOISE
+    pred_state.print("predicted state");
     pred_process_covar = state_update_mat * process_covar * state_update_mat_t; // NO NOISE
+    pred_process_covar.print("predicted process covariance");
 }
 
 void kalman::update(arma::mat measurements) {
