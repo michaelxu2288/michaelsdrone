@@ -75,7 +75,7 @@ math::matrix::~matrix(){
 }
 
 
-void math::matrix::setup(const unsigned int r,const unsigned int c) {
+void math::matrix::setup(const unsigned int _r,const unsigned int _c) {
     delete_mat(this);
     r = _r;
     c = _c;
@@ -86,7 +86,7 @@ void math::matrix::setup(const unsigned int r,const unsigned int c) {
         }
     }
 }
-void math::matrix::setup(const double * array, const unsigned int r, const unsigned int c) {
+void math::matrix::setup(const double * _array, const unsigned int _r, const unsigned int _c) {
     delete_mat(this);
     r = _r;
     c = _c;
