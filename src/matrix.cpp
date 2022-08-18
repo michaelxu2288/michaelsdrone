@@ -113,7 +113,7 @@ void math::matrix::transpose(const matrix& a, matrix& out) {
     }
 }
 
-void math::matrix::string(const matrix& a) {
+std::string math::matrix::string(const matrix& a) {
     std::string out = "";
     for(int i = 0; i < a.r; i ++) {
         for(int j = 0; j < a.c; j ++) {
