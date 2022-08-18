@@ -1,6 +1,6 @@
 #include <kalman.h>
 #include <logger.h>
-#include <matrix.h>
+#include <armadillo>
 #include <timer.h>
 #include <unistd.h>
 
