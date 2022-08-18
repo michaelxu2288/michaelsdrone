@@ -54,6 +54,9 @@ namespace math{
         matrix(const double * array, const unsigned int r, const unsigned int c);
         ~matrix();
 
+        void setup(const unsigned int r,const unsigned int c);
+        void setup(const double * array, const unsigned int r, const unsigned int c);
+
         static void multiply(const matrix& r, const matrix& l, matrix& out);
         static void add(const matrix& r, const matrix& l, matrix& out);
         static void inverse(const matrix& a, matrix& out);

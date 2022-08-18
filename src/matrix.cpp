@@ -29,12 +29,25 @@
 //     array
 // }
 
+
+static void delete_mat(math::matrix * mat) {
+    if(mat->array != nullptr){
+        delete[] mat->array;
+        logger::info("DELETING MATRIX");
+    }else {
+        logger::info("couldnt delete no matrix");
+    }
+    mat->array = nullptr;
+}
+
 math::matrix::matrix() {
+    delete_mat(this);
     r = c = 0;
     array = nullptr;
 }
 
 math::matrix::matrix(const unsigned int _r, const unsigned int _c) {
+    delete_mat(this);
     r = _r;
     c = _c;
     array = new double[r*c];
@@ -46,6 +59,7 @@ math::matrix::matrix(const unsigned int _r, const unsigned int _c) {
 }
 
 math::matrix::matrix(const double* _array, const unsigned int _r, const unsigned int _c) {
+    delete_mat(this);
     r = _r;
     c = _c;
     array = new double[r*c];
@@ -57,12 +71,32 @@ math::matrix::matrix(const double* _array, const unsigned int _r, const unsigned
 }
 
 math::matrix::~matrix(){
-    if(array != nullptr){
-        delete[] array;
-        logger::info("DELETING MATRIX");
-    }else {
-        logger::info("couldnt delete no matrix");
+    delete_mat(this);
+}
+
+
+void math::matrix::setup(const unsigned int r,const unsigned int c) {
+    delete_mat(this);
+    r = _r;
+    c = _c;
+    array = new double[r*c];
+    for(int i = 0; i < r; i ++){
+        for(int j = 0; j < c; j ++) {
+            array[i * c + j] = i == j;
+        }
     }
+}
+void math::matrix::setup(const double * array, const unsigned int r, const unsigned int c) {
+    delete_mat(this);
+    r = _r;
+    c = _c;
+    array = new double[r*c];
+    for(int i = 0; i < r; i ++){
+        for(int j = 0; j < c; j ++) {
+            array[i * c + j] = _array[i * c + j];
+        }
+    }
+
 }
 
 
