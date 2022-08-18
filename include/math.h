@@ -46,7 +46,7 @@ namespace math{
     double length(const vector& n);
 
     struct matrix {
-        double * array;
+        double * array = nullptr;
         unsigned int r, c;
 
         matrix();
