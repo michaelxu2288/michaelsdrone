@@ -25,5 +25,5 @@ int main() {
     test();
     math::matrix mat4;
     mat4 = math::matrix(10,10);
-    
+    logger::info("Matrix4: \n{}", math::matrix::string(mat4));
 }
