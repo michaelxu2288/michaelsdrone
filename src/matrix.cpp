@@ -118,7 +118,7 @@ void math::matrix::transpose(const matrix& a, matrix& out) {
 }
 // #include <iostream>
 std::string math::matrix::string(const matrix& a) {
-    std::string out = "[";
+    std::string out = "[\n";
     for(int i = 0; i < a.r; i ++) {
         out += "    ";
         for(int j = 0; j < a.c; j ++) {
