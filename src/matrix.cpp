@@ -34,22 +34,26 @@ math::matrix::matrix() {
     array = nullptr;
 }
 
-math::matrix::matrix(const unsigned int r, const unsigned int c) {
+math::matrix::matrix(const unsigned int _r, const unsigned int _c) {
     array = new double[r*c];
     for(int i = 0; i < r; i ++){
         for(int j = 0; j < c; j ++) {
             array[i * c + j] = i == j;
         }
     }
+    r = _r;
+    c = _c;
 }
 
-math::matrix::matrix(const double* _array, const unsigned int r, const unsigned int c) {
+math::matrix::matrix(const double* _array, const unsigned int _r, const unsigned int _c) {
     array = new double[r*c];
     for(int i = 0; i < r; i ++){
         for(int j = 0; j < c; j ++) {
             array[i * c + j] = _array[i * c + j];
         }
     }
+    r = _r;
+    c = _c;
 }
 
 math::matrix::~matrix(){
@@ -117,7 +121,7 @@ std::string math::matrix::string(const matrix& a) {
     std::string out = "";
     for(int i = 0; i < a.r; i ++) {
         for(int j = 0; j < a.c; j ++) {
-            std::cout << a.array[i * a.c + j]  << " ";
+            // std::cout << a.array[i * a.c + j]  << " ";
             out += fmt::format("{} ", a.array[i * a.c + j]);
         }
         out += "\n";
