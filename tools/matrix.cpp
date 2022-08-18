@@ -1,6 +1,13 @@
 #include <math.h>
 #include <logger.h>
 
+double * check;
+void test() {
+    math::matrix mat(2,2);
+    check = mat.array;
+    
+}
+
 int main() {
     math::matrix mat(2,2);
     logger::info("Created Matrix");
@@ -14,4 +21,6 @@ int main() {
 
     logger::info("Matrix2: \n{}", math::matrix::string(mat2));
     logger::info("Matrix3: \n{}", math::matrix::string(mat3));
+    logger::info("Lets do some shenanigans");
+
 }

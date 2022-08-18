@@ -1,7 +1,7 @@
 #include <math.h>
 #include <fmt/core.h>
 #include <string>
-
+#include <logger.h>
     // struct matrix {
     //     double * array;
     //     unsigned int r, c;
@@ -58,6 +58,7 @@ math::matrix::matrix(const double* _array, const unsigned int _r, const unsigned
 
 math::matrix::~matrix(){
     delete[] array;
+    logger::info("DELETING MATRIX");
 }
 
 
