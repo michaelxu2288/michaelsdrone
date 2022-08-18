@@ -25,8 +25,8 @@ void loop() {
 int main() {
 
     f.observation_uncertainty = arma::mat(1,1);
-    logger::info("BURHUFHDAUF");
     f.observation_uncertainty(0,0) = temp_std_dev * temp_std_dev;
+    logger::info("BURHUFHDAUF");
 
     t.start(loop, 1000 / ref_rate);
     while(t.running) {
