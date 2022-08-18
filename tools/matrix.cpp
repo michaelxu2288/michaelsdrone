@@ -3,5 +3,5 @@
 
 int main() {
     math::matrix mat(1,1);
-    logger::info("Matrix: \n{}", mat);
+    logger::info("Matrix: \n{}", math::matrix::string(mat));
 }
