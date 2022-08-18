@@ -112,11 +112,12 @@ void math::matrix::transpose(const matrix& a, matrix& out) {
         }
     }
 }
-
+#include <iostream>
 std::string math::matrix::string(const matrix& a) {
     std::string out = "";
     for(int i = 0; i < a.r; i ++) {
         for(int j = 0; j < a.c; j ++) {
+            std::cout << a.array[i * a.c + j]  << " ";
             out += fmt::format("{} ", a.array[i * a.c + j]);
         }
         out += "\n";
