@@ -82,7 +82,7 @@ void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
 }
 
 double inline math::matrix::set(double value, int _r, int _c) {
-    r.array[_r * c + _c] = value;
+    array[_r * c + _c] = value;
 }
 // static void cholesky_decomp(const math::matrix& a, math::matrix& u, math::matrix& l) {
 //     // Decomposing a matrix into Lower Triangular
