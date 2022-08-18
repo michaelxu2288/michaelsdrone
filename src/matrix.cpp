@@ -47,6 +47,7 @@ math::matrix::matrix() {
 }
 
 math::matrix::matrix(const unsigned int _r, const unsigned int _c) {
+    logger::info("fdjlska;fjdlsjka {} {}", array, nullptr);
     delete_mat(this);
     r = _r;
     c = _c;
