@@ -81,6 +81,9 @@ void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
     }
 }
 
+double inline math::matrix::set(double value, int _r, int _c) {
+    r.array[_r * c + _c] = value;
+}
 // static void cholesky_decomp(const math::matrix& a, math::matrix& u, math::matrix& l) {
 //     // Decomposing a matrix into Lower Triangular
 //     for (int i = 0; i < n; i++) {
@@ -125,8 +128,9 @@ std::string math::matrix::string(const matrix& a) {
             // std::cout << a.array[i * a.c + j]  << " ";
             out += fmt::format("{:10f}, ", a.array[i * a.c + j]);
         }
-        out += "\n]";
+        out += "\n";
     }
+    out += "]";
     // logger::info("{}", s);
     return out;
 }

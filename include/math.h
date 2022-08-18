@@ -61,6 +61,7 @@ namespace math{
 
         static std::string string(const matrix& a);
 
+        double inline set(double value, int _r, int _c);
         // double get();
         // void get(double * data, const std::pair<int, int> upper, const std::pair<int,int> lower);
         // void set(double data, const std::pair<int, int> loc);
