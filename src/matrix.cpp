@@ -41,14 +41,11 @@ static void delete_mat(math::matrix * mat) {
 }
 
 math::matrix::matrix() {
-    delete_mat(this);
     r = c = 0;
     array = nullptr;
 }
 
 math::matrix::matrix(const unsigned int _r, const unsigned int _c) {
-    logger::info("fdjlska;fjdlsjka {} {}", array, nullptr);
-    delete_mat(this);
     r = _r;
     c = _c;
     array = new double[r*c];
@@ -60,7 +57,6 @@ math::matrix::matrix(const unsigned int _r, const unsigned int _c) {
 }
 
 math::matrix::matrix(const double* _array, const unsigned int _r, const unsigned int _c) {
-    delete_mat(this);
     r = _r;
     c = _c;
     array = new double[r*c];
