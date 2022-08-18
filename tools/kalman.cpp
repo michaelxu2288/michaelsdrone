@@ -13,7 +13,7 @@ kalman f(1,1);
 timer t;
 
 void loop() {
-    double sample = dist();
+    double sample = dist(generator);
     // f.predict();
     // f.update(sample);
     logger::info("true: {:10f} | samp: {:10f} | filt: {:10f}", true_temp, sample, f.state(1,1));
@@ -22,7 +22,7 @@ void loop() {
 int main() {
 
     t.start(loop, 1000 / ref_rate);
-    while(t.resume) {
+    while(t.running) {
         usleep(10000);
     }
     t.stop();
