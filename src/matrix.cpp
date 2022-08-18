@@ -116,15 +116,16 @@ void math::matrix::transpose(const matrix& a, matrix& out) {
         }
     }
 }
-#include <iostream>
+// #include <iostream>
 std::string math::matrix::string(const matrix& a) {
-    std::string out = "";
+    std::string out = "[";
     for(int i = 0; i < a.r; i ++) {
+        out += "    ";
         for(int j = 0; j < a.c; j ++) {
             // std::cout << a.array[i * a.c + j]  << " ";
-            out += fmt::format("{} ", a.array[i * a.c + j]);
+            out += fmt::format("{:10f}, ", a.array[i * a.c + j]);
         }
-        out += "\n";
+        out += "\n]";
     }
     // logger::info("{}", s);
     return out;
