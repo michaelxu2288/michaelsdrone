@@ -101,11 +101,11 @@ void math::matrix::add(const matrix& r, const matrix& l, matrix& out) {
 //     }
 // }
 
-void static math::matrix::inverse(const matrix& a, matrix& out) {
+void math::matrix::inverse(const matrix& a, matrix& out) {
 
 }
 
-void static math::matrix::transpose(const matrix& a, matrix& out) {
+void math::matrix::transpose(const matrix& a, matrix& out) {
     for(int i = 0; i < a.r; i ++) {
         for(int j = 0; j < a.c; j ++) {
             out.array[j * a.r + i] = a.array[i * a.c + j];
@@ -113,7 +113,7 @@ void static math::matrix::transpose(const matrix& a, matrix& out) {
     }
 }
 
-void static math::matrix::string(const matrix& a) {
+void math::matrix::string(const matrix& a) {
     std::string out = "";
     for(int i = 0; i < a.r; i ++) {
         for(int j = 0; j < a.c; j ++) {
