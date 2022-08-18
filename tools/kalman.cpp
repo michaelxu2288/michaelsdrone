@@ -16,7 +16,7 @@ arma::mat measure(1,1);
 
 void loop() {
     double sample = dist(generator);
-    measure(1,1) = sample;
+    measure(0,0) = sample;
     f.predict();
     f.update(measure);
     logger::info("true: {:10f} | samp: {:10f} | filt: {:10f}", true_temp, sample, f.state(0,0));
@@ -26,7 +26,7 @@ int main() {
 
     f.observation_uncertainty = arma::mat(1,1);
     f.observation_uncertainty(0,0) = temp_std_dev * temp_std_dev;
-    logger::info("BURHUFHDAUF");
+    // logger::info("BURHUFHDAUF");
 
     t.start(loop, 1000 / ref_rate);
     while(t.running) {
