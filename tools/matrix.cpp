@@ -23,4 +23,7 @@ int main() {
     logger::info("Matrix3: \n{}", math::matrix::string(mat3));
     logger::info("Lets do some shenanigans");
     test();
+    math::matrix mat4;
+    mat4 = math::matrix(10,10);
+    
 }

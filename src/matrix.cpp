@@ -57,8 +57,12 @@ math::matrix::matrix(const double* _array, const unsigned int _r, const unsigned
 }
 
 math::matrix::~matrix(){
-    delete[] array;
-    logger::info("DELETING MATRIX");
+    if(array != nullptr){
+        delete[] array;
+        logger::info("DELETING MATRIX");
+    }else {
+        logger::info("couldnt delete no matrix");
+    }
 }
 
 

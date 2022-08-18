@@ -13,14 +13,19 @@ struct kalman {
 
     math::matrix state, pred_state;
     math::matrix state_update_mat, state_update_mat_t;
+    math::matrix observation_noise, process_noise;
     math::matrix covar_proc_noise, covar_obsrv_noise;
+    math::matrix estimated_covar;
+    math::matrix observation_model_mat, observation_model_mat_t;
+    math::matrix kalman_gain;
 
     math::matrix temp1, temp2, temp3;
 
     kalman();
+    kalman(int n_measurements, int n_states);
 
-    void predict(double dt);
-    // void
+    void predict();
+    void update();
 };
 
 #endif
