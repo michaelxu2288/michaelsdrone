@@ -5,7 +5,8 @@ int main() {
     math::matrix mat(2,2);
     logger::info("Created Matrix");
     logger::info("Matrix: \n{}", math::matrix::string(mat));
-
+    mat2.set(2, 0, 0);
+    mat2.set(1, 1, 0);
     math::matrix mat2(2,1), mat3(2,1);
     mat2.set(2, 0, 0);
     mat2.set(1, 0, 1);
