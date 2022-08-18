@@ -12,14 +12,20 @@ std::normal_distribution<double> dist(true_temp, temp_std_dev);
 kalman f(1,1);
 timer t;
 
+arma::mat measure(1,1);
+
 void loop() {
     double sample = dist(generator);
-    // f.predict();
-    // f.update(sample);
+    measure(1,1) = sample;
+    f.predict();
+    f.update(measure);
     logger::info("true: {:10f} | samp: {:10f} | filt: {:10f}", true_temp, sample, f.state(0,0));
 }
 
 int main() {
+
+    f.observation_uncertainty = arma::mat(1,1);
+    f.observation_uncertainty(0,0) = temp_std_dev * temp_std_dev;
 
     t.start(loop, 1000 / ref_rate);
     while(t.running) {
