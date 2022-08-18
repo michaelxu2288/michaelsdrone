@@ -35,9 +35,9 @@ math::matrix::matrix() {
 }
 
 math::matrix::matrix(const unsigned int _r, const unsigned int _c) {
-    array = new double[r*c];
     r = _r;
     c = _c;
+    array = new double[r*c];
     for(int i = 0; i < r; i ++){
         for(int j = 0; j < c; j ++) {
             array[i * c + j] = i == j;
@@ -46,9 +46,9 @@ math::matrix::matrix(const unsigned int _r, const unsigned int _c) {
 }
 
 math::matrix::matrix(const double* _array, const unsigned int _r, const unsigned int _c) {
-    array = new double[r*c];
     r = _r;
     c = _c;
+    array = new double[r*c];
     for(int i = 0; i < r; i ++){
         for(int j = 0; j < c; j ++) {
             array[i * c + j] = _array[i * c + j];
