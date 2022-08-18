@@ -16,7 +16,7 @@ void loop() {
     double sample = dist(generator);
     // f.predict();
     // f.update(sample);
-    logger::info("true: {:10f} | samp: {:10f} | filt: {:10f}", true_temp, sample, f.state(1,1));
+    logger::info("true: {:10f} | samp: {:10f} | filt: {:10f}", true_temp, sample, f.state(0,0));
 }
 
 int main() {
