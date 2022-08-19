@@ -2,7 +2,7 @@
 #include <armadillo>
 
 kalman::kalman(int n_measurements, int n_states) {
-    state  = arma::mat(n_states, n_states);
+    state  = arma::mat(n_states, 1);
 
     state_update_mat = arma::mat(n_states, n_states, arma::fill::eye);
     state_update_mat_t = arma::mat(n_states, n_states, arma::fill::eye);
