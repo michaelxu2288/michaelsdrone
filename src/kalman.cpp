@@ -14,6 +14,7 @@ kalman::kalman(int n_measurements, int n_states) {
 
     // estimated_covar = arma::mat(n_states, n_states);
     identity1 = arma::mat(n_states, n_states, arma::fill::eye);
+    r = arma::mat(n_states, n_states, arma::fill::zeros);
 }
 
 void kalman::predict() {
@@ -35,7 +36,7 @@ void kalman::update(arma::mat & measurements) {
     state = pred_state + kalman_gain * (y - pred_state); 
 
     
-    process_covar = (identity1 - kalman_gain) * pred_process_covar/*  + kalman_gain * observation_uncertainty */;
+    process_covar = (identity1 - kalman_gain) * pred_process_covar + r/*  + kalman_gain * observation_uncertainty */;
 }
 
 
