@@ -8,27 +8,42 @@
 #include <string>
 
 int ref_rate = 50;
-double true_temp = 30.0;
-double temp_std_dev = 0.1;
+double true_p = 0.0, true_v = 0.0, true_a = 0.0;
+double p_std_dev = 0.1, a_std_dev = 0.1;
+
 std::default_random_engine generator;
-std::normal_distribution<double> dist(true_temp, temp_std_dev);
-kalman f(1,1);
+std::normal_distribution<double> dist_p(0, p_std_dev), dist_a(0, a_std_dev);
+
+kalman f(3,2);
+
 timer t;
 std::string socket_path = "/home/pi/drone/run/drone";
-arma::mat measure(1,1);
+arma::mat measure(2,1);
 
-double out, sample;
+double out, sample_p, sample_a;
+
+double filt_p, filt_v, filt_a;
 
 sock::un_connection unix_connection;
 
 void loop() {
-    sample = dist(generator);
-    measure(0,0) = sample;
-    f.predict();
-    f.update(measure);
-    logger::info("true: {:10f} | samp: {:10f} | filt: {:10f}", true_temp, sample, f.state(0,0));
+    // sample = dist(generator);
+    // measure(0,0) = sample;
+    // f.predict();
+    // f.update(measure);
+
+
+
+    sample_a = dist_a(generator) + true_a;
+    sample_p = dist_p(generator) + true_p;
+
+    filt_p = f.state(0,0);
+    filt_v = f.state(1,0);
+    filt_a = f.state(2,0);
+
+    logger::info("true: {:5.2f}, {:5.2f}, {:5.2f} | samp: {:10f}, N/A, {:5.2f} | filt: {:10f}, {:5.2f}, {:5.2f}", true_p, true_v, true_a, sample_p, sample_a, filt_p, filt_v, filt_a);
     
-    out = f.state(0,0);
+    // out = f.state(0,0);
     
     std::string sendStr = parameters::get_json_report();
     int e = unix_connection.send(sendStr.c_str(), sendStr.length());
@@ -49,9 +64,17 @@ int main() {
     unix_connection = client.un_connect(socket_path.c_str());
 
     {
-        parameters::bind_dbl("out", &out, true);
-        parameters::bind_dbl("samp", &sample, true);
-        parameters::bind_dbl("truth", &true_temp, true);
+        // parameters::bind_dbl("out", &out, true);
+        // parameters::bind_dbl("samp", &sample, true);
+        // parameters::bind_dbl("truth", &true_temp, true);
+        parameters::bind_dbl("true_p", &true_p, true);
+        parameters::bind_dbl("true_v", &true_v, true);
+        parameters::bind_dbl("true_a", &true_a, true);
+        parameters::bind_dbl("sample_p", &sample_p, true);
+        parameters::bind_dbl("sample_a", &sample_a, true);
+        parameters::bind_dbl("filt_p", &filt_p, true);
+        parameters::bind_dbl("filt_v", &filt_v, true);
+        parameters::bind_dbl("filt_a", &filt_a, true);
     }
 
     t.start(loop, 1000 / ref_rate);

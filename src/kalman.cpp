@@ -25,11 +25,19 @@ void kalman::predict() {
 
 void kalman::update(arma::mat measurements) {
     arma::mat temp = pred_process_covar;
-    kalman_gain = temp * ((temp + observation_uncertainty + r).i());
+    kalman_gain = temp * ((temp + observation_uncertainty).i());
 
     arma::mat y = observation_model_mat * measurements;
     state = pred_state + kalman_gain * (y - pred_state); 
 
     
     process_covar = (identity1 - kalman_gain) * pred_process_covar/*  + kalman_gain * observation_uncertainty */;
+}
+
+void kalman::kinematic1D_state_update_pva(kalman &k, double dt) {
+    k.state_update_mat = arma::mat(3,3, arma::fill::eye);
+    k(0,1) = dt;
+    k(0,2) = 0.5 * dt * dt;
+    k(1,2) = dt;
+    k.state_update_mat_t = k.state_update_mat.t();
 }
