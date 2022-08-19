@@ -29,7 +29,7 @@ void loop() {
     measure(0,0) = sample;
     f.predict();
     f.update(measure);
-    logger::info("true: {:10f} | samp: {:10f} | filt: {:10f}", true_temp, sample, f.state(0,0));
+    logger::info("true: {:10f} | samp: {:10f} | filt: {:10f} | gain: {:10f}", true_temp, sample, f.state(0,0), f.kalman_gain(0,0));
     
     out = f.state(0,0);
     
