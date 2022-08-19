@@ -9,7 +9,7 @@
 
 int ref_rate = 50;
 double true_p = 0.0, true_v = 0.0, true_a = 0.0;
-double p_std_dev = 0.1, a_std_dev = 0.1;
+double p_std_dev = 0.5, a_std_dev = 0.1;
 
 std::default_random_engine generator;
 std::normal_distribution<double> dist_p(0, p_std_dev), dist_a(0, a_std_dev);
