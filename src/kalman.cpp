@@ -38,7 +38,7 @@ void kalman::update(arma::mat & measurements) {
 }
 
 
-void kinematic1D_state_update_pva(kalman &k, double dt) {
+void kalman::kinematic1D_state_update_pva(kalman &k, double dt) {
     k.state_update_mat = arma::mat(3,3, arma::fill::eye);
     k.state_update_mat(0,1) = dt;
     k.state_update_mat(0,2) = 0.5 * dt * dt;
@@ -46,13 +46,13 @@ void kinematic1D_state_update_pva(kalman &k, double dt) {
     k.state_update_mat_t = k.state_update_mat.t();
 }
 
-void kinematic1D_state_update_pv(kalman &k, double dt) {
+void kalman::kinematic1D_state_update_pv(kalman &k, double dt) {
     k.state_update_mat = arma::mat(2,2, arma::fill::eye);
     k.state_update_mat(0,1) = dt;
     k.state_update_mat_t = k.state_update_mat.t();
 }
 
-void kinematic1D_control_update_a(kalman &k, double dt) {
+void kalman::kinematic1D_control_update_a(kalman &k, double dt) {
     k.control_update_mat = arma::mat(2, 1, arma::fill::eye);
     k.control_update_mat(0,0) = 0.5 * dt * dt;
     k.control_update_mat(1,0) = dt;
