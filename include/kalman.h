@@ -28,6 +28,8 @@ struct kalman {
 
     void predict();
     void update(arma::mat measurements);
+
+    static void kinematic1D_state_update_pva(kalman &k, double dt);
 };
 
 #endif
