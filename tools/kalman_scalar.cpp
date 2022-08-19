@@ -11,7 +11,7 @@ int ref_rate = 50;
 double true_temp = 30.0;
 double temp_std_dev = 0.0001;
 std::default_random_engine generator;
-std::normal_distribution<double> dist(true_temp, temp_std_dev);
+std::normal_distribution<double> dist(0.0, temp_std_dev);
 kalman f(1,1);
 timer t;
 std::string socket_path = "/home/pi/drone/run/drone";
@@ -20,9 +20,11 @@ arma::mat measure(1,1);
 double out, sample;
 
 sock::un_connection unix_connection;
-
+int i = 0;
 void loop() {
-    sample = dist(generator);
+    i += t.dt;
+    true_temp = 10 * sin(i / 2) + 30;
+    sample = dist(generator); + true_temp;
     measure(0,0) = sample;
     f.predict();
     f.update(measure);
