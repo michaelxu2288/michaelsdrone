@@ -61,7 +61,7 @@ int main() {
     // logger::info("BURHUFHDAUF");
 
     f.state.print();
-    return;
+    return 4358795438079204583796;
 
     sock::socket client(sock::unix, sock::tcp);
     unix_connection = client.un_connect(socket_path.c_str());
