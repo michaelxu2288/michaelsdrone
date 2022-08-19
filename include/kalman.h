@@ -19,6 +19,7 @@ struct kalman {
     arma::mat observation_model_mat, observation_model_mat_t;
     arma::mat kalman_gain;
     arma::mat observation_uncertainty;
+    arma::mat control_update_mat;
     // arma::mat temp1, temp2, temp3;
     arma::mat r;
     arma::mat identity1;
@@ -27,9 +28,13 @@ struct kalman {
     kalman(int n_measurements, int n_states);
 
     void predict();
-    void update(arma::mat measurements);
+    void predict(arma::mat & control_mat);
+    void update(arma::mat & measurements);
 
     static void kinematic1D_state_update_pva(kalman &k, double dt);
+    static void kinematic1D_state_update_pv(kalman &k, double dt);
+
+    static void kinematic1D_control_update_a(kalman &k, double dt);
 };
 
 #endif

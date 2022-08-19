@@ -14,11 +14,12 @@ double p_std_dev = 0.1, a_std_dev = 0.1;
 std::default_random_engine generator;
 std::normal_distribution<double> dist_p(0, p_std_dev), dist_a(0, a_std_dev);
 
-kalman f(2,3);
+kalman f(2,2);
 
 timer t;
 std::string socket_path = "/home/pi/drone/run/drone";
-arma::mat measure(2,1);
+arma::mat measure(1,1);
+arma::mat control_mat(1,1);
 
 double out, sample_p, sample_a;
 
@@ -32,14 +33,23 @@ void loop() {
     // f.predict();
     // f.update(measure);
 
-
-
     sample_a = dist_a(generator) + true_a;
     sample_p = dist_p(generator) + true_p;
 
+    measure(0,0) = sample_p;
+    // measure(1,0) = sample_a;
+
+    control_mat(0,0) = sample_a;
+
+    kalman::kinematic1D_state_update_pv(f, t.dt);
+    kalman::kinematic1D_control_update_a(f, t.dt);
+
+    f.predict(control_mat);
+    f.update(measure);
+
     filt_p = f.state(0,0);
     filt_v = f.state(1,0);
-    filt_a = f.state(2,0);
+    // filt_a = f.state(2,0);
 
     logger::info("dt: {:6.4f} true: {:5.2f}, {:5.2f}, {:5.2f} | samp: {:10f}, N/A, {:5.2f} | filt: {:10f}, {:5.2f}, {:5.2f}", t.dt, true_p, true_v, true_a, sample_p, sample_a, filt_p, filt_v, filt_a);
     
@@ -60,15 +70,15 @@ int main() {
     // f.process_covar(0,0) = 10;
     // logger::info("BURHUFHDAUF");
 
-    f.observation_model_mat = arma::mat(3, 2, arma::fill::zeros);
+    f.observation_model_mat = arma::mat(2, 1, arma::fill::zeros);
     f.observation_model_mat(0,0) = 1;
-    f.observation_model_mat(2,1) = 1;
+    // f.observation_model_mat(2,1) = 1;
 
-    f.observation_uncertainty = arma::mat(3, 3, aram::fill::eye);
+    f.observation_uncertainty = arma::mat(2, 2, arma::fill::zeros);
     f.observation_uncertainty(0,0) = p_std_dev * p_std_dev;
-    f.observation_uncertainty(2,2) = a_std_dev * a_std_dev;
+    // f.observation_uncertainty(2,2) = a_std_dev * a_std_dev;
 
-    f.process_covar = arma::mat(3,3, arma::fill::eye);
+    f.process_covar = arma::mat(2,2, arma::fill::eye);
 
 
     // f.state.print();
