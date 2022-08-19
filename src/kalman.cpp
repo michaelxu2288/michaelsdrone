@@ -31,5 +31,5 @@ void kalman::update(arma::mat measurements) {
     state = pred_state + kalman_gain * (y - pred_state); 
 
     
-    process_covar = (identity1 - kalman_gain) * pred_process_covar;
+    process_covar = (identity1 - kalman_gain) * pred_process_covar + kalman_gain * observation_uncertainty;
 }
