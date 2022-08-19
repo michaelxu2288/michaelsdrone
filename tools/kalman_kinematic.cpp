@@ -60,7 +60,7 @@ int main() {
     // f.process_covar(0,0) = 10;
     // logger::info("BURHUFHDAUF");
 
-    f.state.print()
+    f.state.print();
     return;
 
     sock::socket client(sock::unix, sock::tcp);

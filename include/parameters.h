@@ -5,10 +5,10 @@
 #include <vector>
 namespace parameters {
 
-    void bind_str(const char * name, std::string * str, bool readonly);
-    void bind_bool(const char * name, bool * value, bool readonly);
-    void bind_int(const char * name, int * value, bool readonly);
-    void bind_dbl(const char * name, double * value, bool readonly);
+    void bind_str(const char * name, std::string * str, bool readonly = true);
+    void bind_bool(const char * name, bool * value, bool readonly = true);
+    void bind_int(const char * name, int * value, bool readonly = true);
+    void bind_dbl(const char * name, double * value, bool readonly = true);
 
     void bind_axis(int axis, double * value);
 
