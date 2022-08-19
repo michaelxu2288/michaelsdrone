@@ -10,7 +10,7 @@
 
 int ref_rate = 50;
 double true_temp = 30.0;
-double temp_std_dev = 0.0001;
+double temp_std_dev = 0.00000001;
 std::default_random_engine generator;
 std::normal_distribution<double> dist(0.0, temp_std_dev);
 kalman f(1,1);
@@ -36,14 +36,14 @@ void loop() {
     std::string sendStr = parameters::get_json_report();
     int e = unix_connection.send(sendStr.c_str(), sendStr.length());
     if(e < 0) {
-        // reconnect_node_server(client, unix_connection);
+        // reconnect_node_server(client, unix_connection);  
     }
 }
 
 int main() {
 
     f.observation_uncertainty = arma::mat(1,1);
-    f.observation_uncertainty(0,0) = 0.0003;
+    f.observation_uncertainty(0,0) = temp_std_dev * temp_std_dev;
     f.process_covar = arma::mat(1,1);
     f.process_covar(0,0) = 10;
     // logger::info("BURHUFHDAUF");
