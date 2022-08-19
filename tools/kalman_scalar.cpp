@@ -47,7 +47,7 @@ void loop() {
 int main() {
 
     f.observation_uncertainty = arma::mat(1,1);
-    f.observation_uncertainty(0,0) = 0;// temp_std_dev * temp_std_dev;
+    f.observation_uncertainty(0,0) = 0.000000001;// temp_std_dev * temp_std_dev;
     f.process_covar = arma::mat(1,1);
     f.process_covar(0,0) = 10;
     f.r = arma::mat(1,1);
