@@ -80,7 +80,9 @@ int main() {
 
     f.process_covar = arma::mat(2,2, arma::fill::eye);
 
-    f.r = arma::mat(2,2, arma::fill:value(0.01));
+    f.r = arma::mat(2,2, arma::fill::zeros);
+    f.r(0,0) = 0.01;
+    f.r(1,1) = 0.01;
 
     // f.state.print();
     // return 4358795438079204583796;
