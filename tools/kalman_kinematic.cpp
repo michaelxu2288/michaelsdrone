@@ -9,10 +9,10 @@
 
 int ref_rate = 50;
 double true_p = 0.0, true_v = 0.0, true_a = 0.0;
-double p_std_dev = 2, a_std_dev = 0.1;
+double p_std_dev = 5, a_std_dev = 0.1;
 
 std::default_random_engine generator;
-std::normal_distribution<double> dist_p(0, p_std_dev), dist_a(0, a_std_dev);
+std::normal_distribution<double> dist_p(0,f p_std_dev), dist_a(0, a_std_dev);
 
 kalman f(2,2);
 
@@ -34,9 +34,9 @@ void loop() {
     // f.update(measure);
     i += t.dt;
 
-    true_p = sin(i);
-    true_v = cos(i);
-    true_a = -sin(i);
+    true_p = 10 * sin(i);
+    true_v = 10 * cos(i);
+    true_a = -10 * sin(i);
 
     sample_a = dist_a(generator) + true_a;
     sample_p = dist_p(generator) + true_p;
