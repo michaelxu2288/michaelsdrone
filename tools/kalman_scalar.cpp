@@ -18,7 +18,7 @@ timer t;
 std::string socket_path = "/home/pi/drone/run/drone";
 arma::mat measure(1,1);
 
-double out, sample;
+double out, sample, gain, covar;
 
 sock::un_connection unix_connection;
 double i = 0;
@@ -29,9 +29,13 @@ void loop() {
     measure(0,0) = sample;
     f.predict();
     f.update(measure);
-    logger::info("true: {:10f} | samp: {:10f} | filt: {:10f} | gain: {:10f}", true_temp, sample, f.state(0,0), f.kalman_gain(0,0));
     
     out = f.state(0,0);
+    gain = f.kalman_gain(0,0);
+    covar = f.process_covar(0,0);
+
+    logger::info("true: {:5.2f} | samp: {:5.2f} | filt: {:5.2f} | gain: {:5.4f} | covar: {:5f}", true_temp, sample, out, gain, covar);
+    
     
     std::string sendStr = parameters::get_json_report();
     int e = unix_connection.send(sendStr.c_str(), sendStr.length());
@@ -57,6 +61,9 @@ int main() {
         parameters::bind_dbl("out", &out, true);
         parameters::bind_dbl("samp", &sample, true);
         parameters::bind_dbl("truth", &true_temp, true);
+        parameters::bind_dbl("gain", &gain, true);
+        parameters::bind_dbl("covar", &covar, true);
+        // parameters::bind_dbl("", &, true);
     }
 
     t.start(loop, 1000 / ref_rate);
