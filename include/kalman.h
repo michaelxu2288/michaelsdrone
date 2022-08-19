@@ -20,6 +20,7 @@ struct kalman {
     arma::mat kalman_gain;
     arma::mat observation_uncertainty;
     // arma::mat temp1, temp2, temp3;
+    arma::mat r;
     arma::mat identity1;
 
     kalman();
