@@ -14,7 +14,7 @@ double p_std_dev = 0.1, a_std_dev = 0.1;
 std::default_random_engine generator;
 std::normal_distribution<double> dist_p(0, p_std_dev), dist_a(0, a_std_dev);
 
-kalman f(3,2);
+kalman f(2,3);
 
 timer t;
 std::string socket_path = "/home/pi/drone/run/drone";
