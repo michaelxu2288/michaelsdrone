@@ -24,7 +24,7 @@ int i = 0;
 void loop() {
     i += t.dt;
     true_temp = 10 * sin(i / 2) + 30;
-    sample = dist(generator); + true_temp;
+    sample = dist(generator) + true_temp;
     measure(0,0) = sample;
     f.predict();
     f.update(measure);
