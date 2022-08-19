@@ -6,6 +6,7 @@
 #include <parameters.h>
 #include <socket.h>
 #include <string>
+#include <cmath>
 
 int ref_rate = 50;
 double true_temp = 30.0;
@@ -20,7 +21,7 @@ arma::mat measure(1,1);
 double out, sample;
 
 sock::un_connection unix_connection;
-int i = 0;
+double i = 0;
 void loop() {
     i += t.dt;
     true_temp = 10 * sin(i / 2) + 30;
