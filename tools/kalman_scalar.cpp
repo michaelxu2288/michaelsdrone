@@ -10,7 +10,7 @@
 
 int ref_rate = 50;
 double true_temp = 30.0;
-double temp_std_dev = 0.00000001;
+double temp_std_dev = 0.001;
 std::default_random_engine generator;
 std::normal_distribution<double> dist(0.0, temp_std_dev);
 kalman f(1,1);
