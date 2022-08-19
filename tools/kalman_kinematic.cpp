@@ -26,12 +26,17 @@ double out, sample_p, sample_a;
 double filt_p, filt_v, filt_a;
 
 sock::un_connection unix_connection;
-
+double i = 0;
 void loop() {
     // sample = dist(generator);
     // measure(0,0) = sample;
     // f.predict();
     // f.update(measure);
+    i += t.dt;
+
+    true_p = sin(i);
+    true_v = cos(i);
+    true_a = -sin(i);
 
     sample_a = dist_a(generator) + true_a;
     sample_p = dist_p(generator) + true_p;
@@ -101,7 +106,7 @@ int main() {
         parameters::bind_dbl("sample_a", &sample_a, true);
         parameters::bind_dbl("filt_p", &filt_p, true);
         parameters::bind_dbl("filt_v", &filt_v, true);
-        parameters::bind_dbl("filt_a", &filt_a, true);
+        // parameters::bind_dbl("filt_a", &filt_a, true);
     }
 
     t.start(loop, 1000 / ref_rate);
