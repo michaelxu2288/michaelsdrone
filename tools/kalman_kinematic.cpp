@@ -37,9 +37,9 @@ void loop() {
     sample_a = dist_a(generator) + true_a;
     sample_p = dist_p(generator) + true_p;
 
-    // filt_p = f.state(0,0);
-    // filt_v = f.state(1,0);
-    // filt_a = f.state(2,0);
+    filt_p = f.state(0,0);
+    filt_v = f.state(1,0);
+    filt_a = f.state(2,0);
 
     logger::info("dt: {:6.4f} true: {:5.2f}, {:5.2f}, {:5.2f} | samp: {:10f}, N/A, {:5.2f} | filt: {:10f}, {:5.2f}, {:5.2f}", t.dt, true_p, true_v, true_a, sample_p, sample_a, filt_p, filt_v, filt_a);
     
@@ -60,8 +60,8 @@ int main() {
     // f.process_covar(0,0) = 10;
     // logger::info("BURHUFHDAUF");
 
-    f.state.print();
-    return 4358795438079204583796;
+    // f.state.print();
+    // return 4358795438079204583796;
 
     sock::socket client(sock::unix, sock::tcp);
     unix_connection = client.un_connect(socket_path.c_str());
