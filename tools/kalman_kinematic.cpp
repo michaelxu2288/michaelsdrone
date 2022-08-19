@@ -60,11 +60,11 @@ int main() {
     // f.process_covar(0,0) = 10;
     // logger::info("BURHUFHDAUF");
 
-    f.observation_model_mat = arma::mat(3, 2, arma::fill:zeros);
+    f.observation_model_mat = arma::mat(3, 2, arma::fill::zeros);
     f.observation_model_mat(0,0) = 1;
     f.observation_model_mat(2,1) = 1;
 
-    f.observation_uncertainty = arma::mat(3, 3, aram::fill:eye);
+    f.observation_uncertainty = arma::mat(3, 3, aram::fill::eye);
     f.observation_uncertainty(0,0) = p_std_dev * p_std_dev;
     f.observation_uncertainty(2,2) = a_std_dev * a_std_dev;
 
