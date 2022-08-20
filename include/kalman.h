@@ -69,7 +69,7 @@ struct fuse_position_acceleration {
     fuse_position_acceleration(double observation_p_variance, double observation_a_variance);
 
     void update(double measured_p, double measure_a, double dt);
-}
+};
 
 
 #endif
