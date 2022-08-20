@@ -64,6 +64,7 @@ struct fuse_position_acceleration {
     double measured_v_variance_from_a = 1;
     double measured_v_variance_from_p = 1;
 
+    double off = 0.1;
     // double old_measured_x;
 
     fuse_position_acceleration(double observation_p_variance, double observation_a_variance);
