@@ -16,6 +16,8 @@ std::normal_distribution<double> dist_p(0, p_std_dev), dist_a(0, a_std_dev);
 
 kalman f(2,2);
 
+fuse_position_acceleration pa(p_std_dev * p_std_dev, a_std_dev * a_std_dev);
+
 timer t;
 std::string socket_path = "/home/pi/drone/run/drone";
 arma::mat measure(1,1);
@@ -41,20 +43,26 @@ void loop() {
     sample_a = dist_a(generator) + true_a;
     sample_p = dist_p(generator) + true_p;
 
-    measure(0,0) = sample_p;
+    // measure(0,0) = sample_p;
     // measure(1,0) = sample_a;
 
-    control_mat(0,0) = sample_a;
+    // control_mat(0,0) = sample_a;
 
-    kalman::kinematic1D_state_update_pv(f, t.dt);
-    kalman::kinematic1D_control_update_a(f, t.dt);
+    // kalman::kinematic1D_state_update_pv(f, t.dt);
+    // kalman::kinematic1D_control_update_a(f, t.dt);
 
-    f.predict(control_mat);
-    f.update(measure);
+    // f.predict(control_mat);
+    // f.update(measure);
 
-    filt_p = f.state(0,0);
-    filt_v = f.state(1,0);
+    // filt_p = f.state(0,0);
+    // filt_v = f.state(1,0);
     // filt_a = f.state(2,0);
+
+    pa.update(sample_p, sample_a, t.dt);
+
+    filt_p = pa.estimated_p;
+    filt_v = pa.estimated_v;
+    filt_a = pa.estimated_a;
 
     logger::info("dt: {:6.4f} true: {:5.2f}, {:5.2f}, {:5.2f} | samp: {:10f}, N/A, {:5.2f} | filt: {:10f}, {:5.2f}, {:5.2f}", t.dt, true_p, true_v, true_a, sample_p, sample_a, filt_p, filt_v, filt_a);
     
@@ -75,19 +83,19 @@ int main() {
     // f.process_covar(0,0) = 10;
     // logger::info("BURHUFHDAUF");
 
-    f.observation_model_mat = arma::mat(2, 1, arma::fill::zeros);
-    f.observation_model_mat(0,0) = 1;
-    // f.observation_model_mat(2,1) = 1;
+    // f.observation_model_mat = arma::mat(2, 1, arma::fill::zeros);
+    // f.observation_model_mat(0,0) = 1;
+    // // f.observation_model_mat(2,1) = 1;
 
-    f.observation_uncertainty = arma::mat(2, 2, arma::fill::zeros);
-    f.observation_uncertainty(0,0) = p_std_dev * p_std_dev;
-    // f.observation_uncertainty(2,2) = a_std_dev * a_std_dev;
+    // f.observation_uncertainty = arma::mat(2, 2, arma::fill::zeros);
+    // f.observation_uncertainty(0,0) = p_std_dev * p_std_dev;
+    // // f.observation_uncertainty(2,2) = a_std_dev * a_std_dev;
 
-    f.process_covar = arma::mat(2,2, arma::fill::eye);
+    // f.process_covar = arma::mat(2,2, arma::fill::eye);
 
-    f.r = arma::mat(2,2, arma::fill::zeros);
-    f.r(0,0) = 0.01;
-    f.r(1,1) = 0.01;
+    // f.r = arma::mat(2,2, arma::fill::zeros);
+    // f.r(0,0) = 0.01;
+    // f.r(1,1) = 0.01;
 
     // f.state.print();
     // return 4358795438079204583796;
