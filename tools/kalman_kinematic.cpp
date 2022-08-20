@@ -114,7 +114,7 @@ int main() {
         parameters::bind_dbl("sample_a", &sample_a, true);
         parameters::bind_dbl("filt_p", &filt_p, true);
         parameters::bind_dbl("filt_v", &filt_v, true);
-        // parameters::bind_dbl("filt_a", &filt_a, true);
+        parameters::bind_dbl("filt_a", &filt_a, true);
     }
 
     t.start(loop, 1000 / ref_rate);
