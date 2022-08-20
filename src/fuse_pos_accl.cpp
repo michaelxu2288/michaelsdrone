@@ -52,7 +52,7 @@ void fuse_position_acceleration::update(double measured_p, double measured_a, do
     estimated_v += gain_v * (measured_v - estimated_v);
     estimated_a += gain_a * (measured_a - estimated_a);
 
-    estimated_p_variance *= (1 - gain_p);
-    estimated_v_variance *= (1 - gain_v);
-    estimated_a_variance *= (1 - gain_a);
+    // estimated_p_variance *= (1 - gain_p);
+    // estimated_v_variance *= (1 - gain_v);
+    // estimated_a_variance *= (1 - gain_a);
 }
