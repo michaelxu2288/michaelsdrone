@@ -125,6 +125,7 @@ int main() {
             mpu6050::set_fsync(mpu6050::fsync::input_dis);
             mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
             mpu6050::wake_up();
+            mpu6050::calibrate();
             logger::info("Finished intializing the MPU6050.");
         }
         {
