@@ -52,7 +52,7 @@ void loop() {
     mpu6050::read(mpu);
     bmp390::get_data(bmp);
 
-    sample_a = mpu[2];
+    sample_a = -(mpu[2] + 1) * 9.81;
     sample_p = bmp[2];
 
     // sample_a = dist_a(generator) + true_a;
