@@ -79,7 +79,7 @@ void loop() {
     filt_v = pa.estimated_v;
     filt_a = pa.estimated_a;
 
-    logger::info("dt: {:6.4f} true: {:5.2f}, {:5.2f}, {:5.2f} | samp: {:10f}, N/A, {:5.2f} | filt: {:10f}, {:5.2f}, {:5.2f} | var: {:5.2f} {:5.2f} {:5.2f}", t.dt, true_p, true_v, true_a, sample_p, sample_a, filt_p, filt_v, filt_a, pa.estimated_p_variance, pa.estimated_v_variance, pa.estimated_a_variance);
+    logger::info("dt: {:6.4f} true: {:5.2f}, {:5.2f}, {:5.2f} | samp: {:10f}, N/A, {:5.2f} | filt: {:10f}, {:5.2f}, {:5.2f} | var: {:5.2f} {:5.2f} {:5.2f} | gain: {:5.4f} {:5.4f} {:5.4f}", t.dt, true_p, true_v, true_a, sample_p, sample_a, filt_p, filt_v, filt_a, pa.estimated_p_variance, pa.estimated_v_variance, pa.estimated_a_variance, pa.gain_p, pa.gain_v, pa.gain_a);
     
     // out = f.state(0,0);
     
