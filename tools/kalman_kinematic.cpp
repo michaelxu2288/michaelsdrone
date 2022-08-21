@@ -6,10 +6,16 @@
 #include <parameters.h>
 #include <socket.h>
 #include <string>
+#include <mpu6050.h>
+#include <bmp390.h>
+
+#include <cmath>
+
+#include <settings.h>
 
 int ref_rate = 50;
 double true_p = 0.0, true_v = 0.0, true_a = 0.0;
-double p_std_dev = 5, a_std_dev = 0.1;
+double p_std_dev = sqrt(ALTITUDE_VARIANCE), a_std_dev = sqrt(ACCEL_VARIANCE);
 
 std::default_random_engine generator;
 std::normal_distribution<double> dist_p(0, p_std_dev), dist_a(0, a_std_dev);
@@ -27,6 +33,9 @@ double out, sample_p, sample_a;
 
 double filt_p, filt_v, filt_a;
 
+double mpu[6];
+double bmp[3];
+
 sock::un_connection unix_connection;
 double i = 0;
 void loop() {
@@ -36,12 +45,18 @@ void loop() {
     // f.update(measure);
     i += t.dt;
 
-    true_p = 10 * sin(i);
-    true_v = 10 * cos(i);
-    true_a = -10 * sin(i);
+    // true_p = 10 * sin(i);
+    // true_v = 10 * cos(i);
+    // true_a = -10 * sin(i);
 
-    sample_a = dist_a(generator) + true_a;
-    sample_p = dist_p(generator) + true_p;
+    mpu6050::read(mpu);
+    bmp390::get_data(bmp);
+
+    sample_a = mpu[2];
+    sample_p = bmp[2];
+
+    // sample_a = dist_a(generator) + true_a;
+    // sample_p = dist_p(generator) + true_p;
 
     // measure(0,0) = sample_p;
     // measure(1,0) = sample_a;
@@ -100,6 +115,35 @@ int main() {
     // f.state.print();
     // return 4358795438079204583796;
 
+    {
+        {
+            logger::info("Initializing MPU6050.");
+            mpu6050::init();
+            mpu6050::set_accl_set(mpu6050::accl_range::g_2);
+            mpu6050::set_gyro_set(mpu6050::gyro_range::deg_250);
+            mpu6050::set_clk(mpu6050::clk::y_gyro);
+            mpu6050::set_fsync(mpu6050::fsync::input_dis);
+            mpu6050::set_dlpf_bandwidth(mpu6050::dlpf::hz_5);
+            mpu6050::wake_up();
+            logger::info("Finished intializing the MPU6050.");
+        }
+        {
+            logger::info("Initializing BMP390.");
+            bmp390::init();
+            bmp390::soft_reset();
+            bmp390::set_oversample(bmp390::oversampling::STANDARD, bmp390::ULTRA_LOW_POWER);
+            bmp390::set_iir_filter(bmp390::COEFF_3);
+            bmp390::set_output_data_rate(bmp390::hz50);
+            bmp390::set_enable(true, true);
+            
+            bmp390::set_enable_fifo(true, true);
+            bmp390::set_fifo_stop_on_full(false);
+
+            bmp390::set_pwr_mode(bmp390::NORMAL);
+            logger:info("Finished initializing the BMP390.");
+        }
+    }
+
     sock::socket client(sock::unix, sock::tcp);
     unix_connection = client.un_connect(socket_path.c_str());
 
@@ -107,9 +151,9 @@ int main() {
         // parameters::bind_dbl("out", &out, true);
         // parameters::bind_dbl("samp", &sample, true);
         // parameters::bind_dbl("truth", &true_temp, true);
-        parameters::bind_dbl("true_p", &true_p, true);
-        parameters::bind_dbl("true_v", &true_v, true);
-        parameters::bind_dbl("true_a", &true_a, true);
+        // parameters::bind_dbl("true_p", &true_p, true);
+        // parameters::bind_dbl("true_v", &true_v, true);
+        // parameters::bind_dbl("true_a", &true_a, true);
         parameters::bind_dbl("sample_p", &sample_p, true);
         parameters::bind_dbl("sample_a", &sample_a, true);
         parameters::bind_dbl("filt_p", &filt_p, true);
