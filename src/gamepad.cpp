@@ -132,7 +132,7 @@ double gamepad::get_axis(int axis){
     return axises[axis];
 }
 
-double gamepad::get_axis_ptr(int axis){
+double * gamepad::get_axis_ptr(int axis){
     return axises + axis;
 }
 
