@@ -28,14 +28,9 @@ void ctrl_thrd(){
 
 
     config::write_to_file();
-    if(!gamepad::init()){
-        logger::warn("Couldn't find controller!");
-        while(!gamepad::init()){
-            usleep(100000);
-        }
 
-    }
-    logger::info("Found a controller!");
+    gamepad::init_wo_connect();
+
     pid * roll_ctrl = drone::get_roll_controller();
     pid * pitch_ctrl = drone::get_pitch_controller();
     pid * vyaw_ctrl = drone::get_vyaw_controller();

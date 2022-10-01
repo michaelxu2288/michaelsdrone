@@ -15,6 +15,7 @@
 #include <bmp390.h>
 #include <parameters.h>
 
+#include <gamepad.h>
 // #include <cmath>
 #include <limits>
 #include <math.h>
@@ -697,6 +698,15 @@ void message_thread_funct(){
 
         parameters::bind_dbl("sensorRollPitchTau", &sensor_roll_pitch_tau, false);
         parameters::bind_dbl("sensorZTau", &sensor_z_tau, false);
+
+        parameters::bind_dbl("axis0", gamepad::get_axis_ptr(0), false);
+        parameters::bind_dbl("axis1", gamepad::get_axis_ptr(1), false);
+        parameters::bind_dbl("axis2", gamepad::get_axis_ptr(2), false);
+        parameters::bind_dbl("axis3", gamepad::get_axis_ptr(3), false);
+        parameters::bind_dbl("axis4", gamepad::get_axis_ptr(4), false);
+        parameters::bind_dbl("axis5", gamepad::get_axis_ptr(5), false);
+        parameters::bind_dbl("axis6", gamepad::get_axis_ptr(6), false);
+        parameters::bind_dbl("axis7", gamepad::get_axis_ptr(7), false);
     }
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect(socket_path.c_str());

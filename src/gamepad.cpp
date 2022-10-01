@@ -72,6 +72,11 @@ static void polling_thread_function(){
         usleep(10000);
     }
 }
+
+void gamepad::set_axis(int axis, double value) {
+    axises[axis] = value;
+}
+
 bool gamepad::init(){
     if(!running){
         fd = open("/dev/input/js0", O_RDONLY);
@@ -87,6 +92,33 @@ bool gamepad::init(){
     return false;
 }
 
+
+static void prepolling_thread_function(){
+    
+    fd = open("/dev/input/js0", O_RDONLY);
+    if(fd < 0) {
+        logger::info("Lost contact with joystick");
+        drone::set_ctrller_connected_flag(false);
+        fd = -1;
+        while(fd < 0){
+            fd = open("/dev/input/js0", O_RDONLY);
+            usleep(10000);
+        }
+        drone::set_ctrller_connected_flag(true);
+        logger:info("Restablished contact with joystick.");
+    }
+    
+    polling_thread_function();
+}
+
+
+void gamepad::init_wo_connect(){
+    if(!running) {
+        running = true;
+        polling_thread = std::thread(prepolling_thread_function);
+    }
+}
+
 void gamepad::stop(){
     if(running){
         running = false;
@@ -98,6 +130,10 @@ void gamepad::stop(){
 
 double gamepad::get_axis(int axis){
     return axises[axis];
+}
+
+double gamepad::get_axis_ptr(int axis){
+    return axises + axis;
 }
 
 bool gamepad::get_button(int button){
