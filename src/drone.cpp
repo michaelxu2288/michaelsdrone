@@ -694,6 +694,9 @@ void message_thread_funct(){
         parameters::bind_dbl("zkP", &z_controller.kP, false);
         parameters::bind_dbl("zkI", &z_controller.kI, false);
         parameters::bind_dbl("zkD", &z_controller.kD, false);
+
+        parameters::bind_dbl("sensorRollPitchTau", &sensor_roll_pitch_tau, false);
+        parameters::bind_dbl("sensorZTau", &sensor_z_tau, false);
     }
     sock::socket client(sock::unix, sock::tcp);
     sock::un_connection unix_connection = client.un_connect(socket_path.c_str());
