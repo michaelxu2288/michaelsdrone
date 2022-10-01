@@ -172,8 +172,8 @@ void parameters::chg(std::vector<std::string> & args, int i) {
     // int value;
 
     if(type == 0) {
-        logger::info("Changing writable parameter \"{}\" to \"{}\".", readonly_names[id], args[i+2]);
-        switch(readonly_types[id]){
+        logger::info("Changing writable parameter \"{}\" to \"{}\".", writable_names[id], args[i+2]);
+        switch(writable_types[id]){
         case 0:
             (*((bool *) writable_bindings[id])) = args[i+2][0] == '1';
             break;
