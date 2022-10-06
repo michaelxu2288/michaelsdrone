@@ -39,7 +39,7 @@ def convert_to_degrees(raw_value):
 
 
 gpgga_info = "$GPGGA,"
-ser = serial.Serial ("/dev/serial0", 9600, serial.SEVEN_BITS)              #Open port with baud rate
+ser = serial.Serial ("/dev/serial0", 9600, serial.SEVENBITS)              #Open port with baud rate
 GPGGA_buffer = 0
 NMEA_buff = 0
 lat_in_degrees = 0
