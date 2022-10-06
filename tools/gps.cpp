@@ -11,10 +11,10 @@ int main() {
 
     while(true) {
         int len = read(fd, buf, 200);
-        while(len --){
-            buf[len] = ~buf[len];
-        }
-        logger::info("data: {}", buf);
+        // while(len --){
+        //     buf[len] = ~buf[len];
+        // }
+        logger::info("length: {}, data: {}", len, buf);
     }
 
 }
