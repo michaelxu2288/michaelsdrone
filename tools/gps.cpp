@@ -7,8 +7,13 @@ int main() {
     
     char buf[200];
 
+
+
     while(true) {
         int len = read(fd, buf, 200);
+        while(len --){
+            buf[len] = ~buf[len];
+        }
         logger::info("data: {}", buf);
     }
 
