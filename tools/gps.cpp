@@ -3,7 +3,7 @@
 #include <fcntl.h>
 
 int main() {
-    int fd = open("/dev/serial0");
+    int fd = open("/dev/serial0", O_RDWR);
     
     char buf[200];
 
