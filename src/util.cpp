@@ -15,7 +15,7 @@
 //     void split(const std::string_view in, const char delim, std::vector<std::string> out);
 // }
 
-#endif
+// #endif
 
 bool has(const char * in, const char * delim) {
     for(size_t i = 0; delim[i] != '\0'; i ++) {
