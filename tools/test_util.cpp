@@ -18,6 +18,9 @@ int main() {
     logger::info("{}", buf2);
     logger::info("{}", buf);
 
+    strcpy(buf, "hello world!");
+    int i = cstr::index_of(buf, "w ");
+    logger::info("{}", i);
     
     strcpy(buf, "ab !ab !ab !ab !ab !ab !ab !ab !ab");
     i = cstr::index_of(buf, " !");
