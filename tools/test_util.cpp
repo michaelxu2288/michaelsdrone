@@ -16,6 +16,7 @@ int main() {
     logger::info("{}", i);
     cstr::shift(buf, i+2, buf2);
     logger::info("{}", buf2);
+    logger::info("{}", buf);
 
     
     strcpy(buf, "ab !ab !ab !ab !ab !ab !ab !ab !ab");
@@ -23,5 +24,7 @@ int main() {
     logger::info("{}", i);
     cstr::shift(buf, i+2, buf2);
     logger::info("{}", buf2);
+    logger::info("{}", buf);
+
 
 }
