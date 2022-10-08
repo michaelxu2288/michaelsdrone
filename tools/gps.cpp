@@ -19,6 +19,7 @@ int main() {
             int i = cstr::index_of(buf, "\r\n");
             if(i >= 0) {
                 cstr::shift(buf, i+2, buf2);
+                len -= i+2;
                 logger::info("length: {}, data: {}", i+2, buf2);
             }
         }
