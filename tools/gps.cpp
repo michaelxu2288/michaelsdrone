@@ -5,7 +5,7 @@
 #define INTERNAL_BUFFER 1024
 
 int main() {
-    int fd = open("/dev/serial0", O_RDWR);
+    int fd = open("/dev/serial0", O_RDWR | O_BLOCK);
     
     char buf[INTERNAL_BUFFER];
 
@@ -15,7 +15,10 @@ int main() {
         // while(len --){
         //     buf[len] = ~buf[len];
         // }
-        logger::info("length: {}, data: {}", len, buf);
+        if(len != 0) {
+
+            logger::info("length: {}, data: {}", len, buf);
+        }
     }
 
 }
