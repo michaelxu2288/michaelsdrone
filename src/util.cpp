@@ -29,7 +29,7 @@ bool has(const char * in, const char * delim) {
     return true;
 }
 
-size_t cstr::index_of(char * in, const char * delim) {
+size_t cstr::index_of(const char * in, const char * delim) {
     for(size_t i = 0; in[i] != '\0'; i++) {
         if(has(in + i, delim)) {
             return i;
