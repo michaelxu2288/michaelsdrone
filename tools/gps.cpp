@@ -11,7 +11,7 @@ int main() {
     int len = 0;
 
     while(true) {
-        int chg_len += read(fd, buf + chg_len, INTERNAL_BUFFER);
+        int chg_len += read(fd, buf + len, INTERNAL_BUFFER - len);
         if(chg_len != 0) {
             len += chg_len;
             logger::info("length: {}, data: {}", len, buf);
