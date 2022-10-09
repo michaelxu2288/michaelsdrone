@@ -29,6 +29,15 @@ bool has(const char * in, const char * delim) {
     return true;
 }
 
+size_t cstr::index_of(const char * in, const char * delim, const size_t s) {
+    for(size_t i = s; in[i] != '\0'; i++) {
+        if(has(in + i, delim)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 size_t cstr::index_of(const char * in, const char * delim) {
     for(size_t i = 0; in[i] != '\0'; i++) {
         if(has(in + i, delim)) {
@@ -51,4 +60,17 @@ void cstr::shift(char * in, size_t amount, char * out) {
         in[i] = in[i + amount];
     }
     in[i] = '\0';
+}
+
+
+void cstr::split(const char * in, const char delim, std::vector<std::string> out) {
+    size_t next = cstr::index_of(in, delim, 0);
+    size_t last = 0;
+    while(next < 0) {
+        std::string str(in + last, in + next);
+        out.push_back(str);
+        next = cstr::index_of(in, delim, last);
+    }
+    std::string str(in + last);
+    out.push_back(str);
 }

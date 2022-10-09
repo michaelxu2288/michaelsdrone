@@ -18,15 +18,15 @@ int main() {
             len += chg_len;
             buf[len] = '\0';
             int i = cstr::index_of(buf, "\r\n");
-            if(i >= 0) {
+            while(i >= 0) {
                 logger::info("i: {}, data: {}", i, buf);
                 cstr::shift(buf, i+2, buf2);
-                len -= i+2;
                 logger::info("length: {}, data: {}", i+2, buf2);
+                
+                len -= i+2;
+                
+                i = cstr::index_of(buf, "\r\n");
             }
-
-            // logger::info("{}", buf);
-
         }
     }
 
