@@ -63,7 +63,7 @@ void cstr::shift(char * in, size_t amount, char * out) {
 }
 
 
-void cstr::split(const char * in, const char delim, std::vector<std::string> out) {
+void cstr::split(const char * in, const char * delim, std::vector<std::string> out) {
     size_t next = cstr::index_of(in, delim, 0);
     size_t last = 0;
     while(next < 0) {
