@@ -23,11 +23,11 @@ int main() {
     logger::info("{}", i);
     
     strcpy(buf, "ab !ab !ab !ab !ab !ab !ab !ab !ab");
-    i = cstr::index_of(buf, " !");
-    logger::info("{}", i);
-    cstr::shift(buf, i+2, buf2);
-    logger::info("{}", buf2);
-    logger::info("{}", buf);
 
+    std::vector<std::string> strs;
+    cstr::split(buf, " !", strs);
+    for(int i = 0; i < strs.size(); i ++) {
+        logger::info("Cock: {}", strs[i]);
+    }
 
 }

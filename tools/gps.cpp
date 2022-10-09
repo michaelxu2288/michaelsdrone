@@ -5,6 +5,11 @@
 
 #define INTERNAL_BUFFER 1024
 
+
+void process_nmea_line(char * line) {
+    
+}
+
 int main() {
     int fd = open("/dev/serial0", O_RDWR);
     
@@ -26,6 +31,9 @@ int main() {
                 len -= i+2;
                 
                 i = cstr::index_of(buf, "\r\n");
+
+
+
             }
         }
     }
