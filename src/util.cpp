@@ -79,6 +79,7 @@ void cstr::split(const char * in, const char * delim, size_t delim_length, std::
         printf("%d %d\n", last, next);
     }
     if(in[last] != '\0'){
+        printf("%d\n", last);
         std::string str(in + last);
         out.push_back(str);
     }
