@@ -69,8 +69,10 @@ void cstr::split(const char * in, const char * delim, size_t delim_length, std::
     size_t last = 0;
     printf("%d %d", last, next);
     while(next >= 0) {
-        std::string str(in + last, next - last);
-        out.push_back(str);
+        if(next - last > 0){
+            std::string str(in + last, next - last);
+            out.push_back(str);
+        } 
         last = next + 2;
         next = cstr::index_of(in, delim, last);
         printf("%d %d", last, next);
