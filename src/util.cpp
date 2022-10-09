@@ -67,7 +67,7 @@ void cstr::split(const char * in, const char * delim, size_t delim_length, std::
     size_t next = cstr::index_of(in, delim, 0);
     size_t last = 0;
     while(next >= 0) {
-        std::string str(in + last, in + next);
+        std::string str(in + last, next - last);
         last = next + 2;
         out.push_back(str);
         next = cstr::index_of(in, delim, last);
