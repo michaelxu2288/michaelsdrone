@@ -25,7 +25,7 @@ int main() {
                 logger::info("length: {}, data: {}", i+2, buf2);
             }
 
-            logger::info("{}", buf);
+            // logger::info("{}", buf);
 
         }
     }
