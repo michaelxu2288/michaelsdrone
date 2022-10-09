@@ -16,6 +16,7 @@ int main() {
         int chg_len = read(fd, buf + len, INTERNAL_BUFFER - len);
         if(chg_len != 0) {
             len += chg_len;
+            buf[len] = '\0';
             int i = cstr::index_of(buf, "\r\n");
             // if(i >= 0) {
             //     logger::info("i: {}, data: {}", i, buf);
