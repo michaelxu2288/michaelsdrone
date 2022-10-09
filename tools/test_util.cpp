@@ -25,7 +25,7 @@ int main() {
     strcpy(buf, "ab !ab !ab !ab !ab !ab !ab !ab !ab");
 
     std::vector<std::string> strs;
-    cstr::split(buf, " !", strs);
+    cstr::split(buf, " !", 2, strs);
     for(int i = 0; i < strs.size(); i ++) {
         logger::info("Cock: {}", strs[i]);
     }

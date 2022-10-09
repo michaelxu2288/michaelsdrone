@@ -9,7 +9,8 @@ namespace cstr {
     size_t index_of(const char * in, const char * delim, const size_t s);
     size_t substr(const char * in, size_t start, size_t end);
     void shift(char * in, size_t amount, char * out);
-    void split(const char * in, const char * delim, std::vector<std::string> out);
+    void split(const char * in, const char * delim, size_t delim_length, std::vector<std::string> out);
+    size_t len(const char * in);
 }
 
 namespace str {
