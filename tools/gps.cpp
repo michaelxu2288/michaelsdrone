@@ -28,7 +28,7 @@ int main() {
             while(i != std::string::npos) {
                 logger::info("i: {}, data: {}", i, buf);
                 std::string s = current.substr(0, i);
-
+                current = current.substr(i+2);
                 logger::info("length: {}, data: {}", i, s);
                 
                 i = current.find("\r\n");
