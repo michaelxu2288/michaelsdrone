@@ -89,13 +89,13 @@ void cstr::split(const char * in, const char * delim, size_t delim_length, std::
 void str::split(const std::string in, const std::string delim, std::vector<std::string> out) {
     
     auto start = 0U;
-    auto end = s.find(delim);
+    auto end = in.find(delim);
     while (end != std::string::npos)
     {
         // std::cout << s.substr(start, end - start) << std::endl;
         out.push_back(in.substr(start, end - start));
         start = end + delim.length();
-        end = s.find(delim, start);
+        end = in.find(delim, start);
     }
     out.push_back(in.substr(start, end));
 }
