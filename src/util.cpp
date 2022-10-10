@@ -31,28 +31,6 @@ size_t cstr::index_of(const char * in, const char * delim) {
     return -1;
 }
 
-void cstr::split(const char * in, const char * delim, size_t delim_length, std::vector<std::string> out) {
-    printf("%s\n", in);
-    size_t next = cstr::index_of(in, delim, 0);
-    size_t last = 0;
-    printf("%d %d\n", last, next);
-    while(next != -1) {
-        printf("FUCK  FUANDFSKFDS  - %d %d\n", last, next);
-        if(next - last > 0){
-            std::string str(in + last, next - last);
-            printf("%s\n", str.c_str());
-            out.push_back(str);
-        } 
-        last = next + 2;
-        next = cstr::index_of(in, delim, last);
-        printf("%d %d\n", last, next);
-    }
-    if(in[last] != '\0') {
-        std::string str(in + last);
-        out.push_back(str);
-    }
-}
-
 void str::split(const std::string in, const std::string delim, std::vector<std::string> out) {
     
     auto start = 0U;
