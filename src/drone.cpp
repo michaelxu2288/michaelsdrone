@@ -165,6 +165,11 @@ void setup_filters(){
 
     pressure_filter = filter::low_pass(sensor_ref_rate, upper_pressure_freq_cutoff);
     vzfilter = filter::low_pass(sensor_ref_rate, upper_vz_freq_cutoff);
+
+    z_controller.dFilter = filter::low_pass(sensor_ref_rate, 1);
+    roll_controller.dFilter = filter::low_pass(sensor_ref_rate, 1);
+    pitch_controller.dFilter = filter::low_pass(sensor_ref_rate, 1);
+    vyaw_controller.dFilter = filter::low_pass(sensor_ref_rate, 1);
 }
 
 

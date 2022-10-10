@@ -18,8 +18,9 @@ double pid::update(double curr, double dt){
         i_curr = std::max(std::min(i_curr, i_max), -i_max);
     }
 
-    derr = (err - old_error) / dt;  
-    old_error = err;
+    filtered_error = dFilter[err];
+    derr = (filtered_error - old_error) / dt;  
+    old_error = filtered_error;
 
     p = kP * err;
     i = kI * i_curr;

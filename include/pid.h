@@ -4,6 +4,8 @@
 #define I_MAX_ERR 1.0
 #define I_MAX 1.0
 
+#include <filter.h>
+
 struct pid {
 
     double kP = 0.0;
@@ -17,7 +19,8 @@ struct pid {
     double i_curr = 0.0;
     double setpoint = 0.0;
     double old_error = 0.0;
-
+    double filtered_error = 0.0;
+    
     double err = 0.0;
     double derr = 0.0;
 
@@ -28,6 +31,10 @@ struct pid {
     double min_pwr = 0.0;
 
     double output = 0.0;
+
+
+
+    filter::filter dFilter;
 
     pid();
     pid(double p_p, double p_i, double p_d);
