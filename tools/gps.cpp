@@ -13,7 +13,7 @@ enum gps_talkers{
     galileo = 2,
     beidou = 3
 };
-char * talkers_to_string[4] = ["gps", "glonass", "galileo" , "beidou"];
+char * talkers_to_string[4] = {"gps", "glonass", "galileo" , "beidou"};
 
 
 
@@ -30,10 +30,10 @@ void process_nmea_line(const std::vector<std::string> & nmea_args, const std::st
             break;
         case 'A': // Galileo
             talker = galileo;
-            break
+            break;
         case 'P': // Navstar GPS
             talker = gps;
-            break
+            break;
         case 'L': // Glonass
             talker = glonass;
             break;
