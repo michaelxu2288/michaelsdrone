@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <util.h>
+#include <string>
 
 #define INTERNAL_BUFFER 1024
 
@@ -14,23 +15,23 @@ int main() {
     int fd = open("/dev/serial0", O_RDWR);
     
     char buf[INTERNAL_BUFFER];
-    char buf2[INTERNAL_BUFFER];
+    std::string current = "";
+
+
     int len = 0;
 
     while(true) {
-        int chg_len = read(fd, buf + len, INTERNAL_BUFFER - len);
+        int chg_len = read(fd, buf, INTERNAL_BUFFER);
         if(chg_len != 0) {
-            len += chg_len;
-            buf[len] = '\0';
-            int i = cstr::index_of(buf, "\r\n");
-            while(i != -1) {
+            current += buf;
+            auto i = current.find("\r\n")
+            while(i != std::string::npos) {
                 logger::info("i: {}, data: {}", i, buf);
-                cstr::shift(buf, i+2, buf2);
-                logger::info("length: {}, data: {}", i+2, buf2);
+                std::string s = current.substr(0, i);
+
+                logger::info("length: {}, data: {}", i, s);
                 
-                len -= i+2;
-                
-                i = cstr::index_of(buf, "\r\n");
+                i = current.find("\r\n")
 
 
 
