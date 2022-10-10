@@ -10,7 +10,7 @@ namespace cstr {
 
 namespace str {
     // void split(const std::string_view in, const char delim, std::vector<std::string> out);
-    void split(const std::string in, const std::string delim, std::vector<std::string> out);
+    void split(const std::string& in, const std::string& delim, std::vector<std::string> &out);
 }
 
 #endif
