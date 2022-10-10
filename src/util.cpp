@@ -72,6 +72,7 @@ void cstr::split(const char * in, const char * delim, size_t delim_length, std::
     while(next >= 0) {
         if(next - last > 0){
             std::string str(in + last, next - last);
+            printf("%s\n", str.c_str());
             out.push_back(str);
         } 
         last = next + 2;
