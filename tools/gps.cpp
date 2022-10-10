@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <util.h>
 #include <string>
+#include <vector>
 
 #define INTERNAL_BUFFER 1024
 
@@ -26,15 +27,18 @@ int main() {
             current += buf;
             auto i = current.find("\r\n");
             while(i != std::string::npos) {
-                logger::info("i: {}, data: {}", i, buf);
-                std::string s = current.substr(0, i);
+                // logger::info("i: {}, data: {}", i, buf);
+                std::string msg = current.substr(0, i);
                 current = current.substr(i+2);
-                logger::info("length: {}, data: {}", i, s);
+                // logger::info("length: {}, data: {}", i, s);
                 
+                std::vector<std::string> args;
+                str::split(msg, ",", args);
+                for(int i = 0; i < args.size(); i ++) {
+                    logger::info("arg: {}", args[i]);
+                }
+
                 i = current.find("\r\n");
-
-
-
             }
         }
     }
