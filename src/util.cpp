@@ -80,4 +80,22 @@ void cstr::split(const char * in, const char * delim, size_t delim_length, std::
         next = cstr::index_of(in, delim, last);
         printf("%d %d\n", last, next);
     }
+    if(in[last] != '\0') {
+        std::string str(in + last);
+        out.push_back(str);
+    }
+}
+
+void str::split(const std::string in, const std::string delim, std::vector<std::string> out) {
+    
+    auto start = 0U;
+    auto end = s.find(delim);
+    while (end != std::string::npos)
+    {
+        // std::cout << s.substr(start, end - start) << std::endl;
+        out.push_back(in.substr(start, end - start));
+        start = end + delim.length();
+        end = s.find(delim, start);
+    }
+    out.push_back(in.substr(start, end));
 }
