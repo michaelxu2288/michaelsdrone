@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <util.h>
+#include <string>
 
 #define INTERNAL_BUFFER 1024
 
@@ -23,7 +24,6 @@ int main() {
     logger::info("{}", i);
     
     strcpy(buf, "ab !ab !ab !ab !ab !ab !ab !ab !ab");
-
     std::vector<std::string> strs;
     cstr::split(buf, " !", 2, strs);
     for(int i = 0; i < strs.size(); i ++) {
