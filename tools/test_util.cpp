@@ -23,7 +23,7 @@ int main() {
     i = cstr::index_of(buf, "w ");
     logger::info("{}", i);
     
-    strcpy(buf, "ab !ab !ab !ab !ab !ab !ab !ab !ab");
+    strcpy(buf, "ab !bc !cd !de !ef !fg !gh !hi !ij");
     std::vector<std::string> strs;
     cstr::split(buf, " !", 2, strs);
     for(int i = 0; i < strs.size(); i ++) {
