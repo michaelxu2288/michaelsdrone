@@ -23,7 +23,7 @@ int main() {
             len += chg_len;
             buf[len] = '\0';
             int i = cstr::index_of(buf, "\r\n");
-            while(i >= 0) {
+            while(i != -1) {
                 logger::info("i: {}, data: {}", i, buf);
                 cstr::shift(buf, i+2, buf2);
                 logger::info("length: {}, data: {}", i+2, buf2);
