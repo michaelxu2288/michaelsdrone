@@ -70,6 +70,7 @@ void cstr::split(const char * in, const char * delim, size_t delim_length, std::
     size_t last = 0;
     printf("%d %d\n", last, next);
     while(next >= 0) {
+        printf("FUCK  FUANDFSKFDS  - %d %d\n", last, next);
         if(next - last > 0){
             std::string str(in + last, next - last);
             printf("%s\n", str.c_str());
