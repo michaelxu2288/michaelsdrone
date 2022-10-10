@@ -31,7 +31,7 @@ size_t cstr::index_of(const char * in, const char * delim) {
     return -1;
 }
 
-void str::split(const std::string in, const std::string delim, std::vector<std::string> out) {
+void str::split(const std::string& in, const std::string& delim, std::vector<std::string> &out) {
     
     auto start = 0U;
     auto end = in.find(delim);
