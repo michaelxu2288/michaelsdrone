@@ -24,14 +24,14 @@ int main() {
         int chg_len = read(fd, buf, INTERNAL_BUFFER);
         if(chg_len != 0) {
             current += buf;
-            auto i = current.find("\r\n")
+            auto i = current.find("\r\n");
             while(i != std::string::npos) {
                 logger::info("i: {}, data: {}", i, buf);
                 std::string s = current.substr(0, i);
 
                 logger::info("length: {}, data: {}", i, s);
                 
-                i = current.find("\r\n")
+                i = current.find("\r\n");
 
 
 
