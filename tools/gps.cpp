@@ -95,8 +95,8 @@ int main() {
                 
                 process_nmea_line(nmea_args, nmea_msg);
                     
-                for(int i = 0; i < args.size(); i ++) {
-                    logger::info("arg: {}", args[i]);
+                for(int i = 0; i < nmea_args.size(); i ++) {
+                    logger::info("arg: {}", nmea_args[i]);
                 }
 
                 i = current.find("\r\n");
