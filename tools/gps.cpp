@@ -83,8 +83,9 @@ int main() {
         int chg_len = read(fd, buf, INTERNAL_BUFFER);
         if(chg_len != 0) {
             current += buf;
-            logger::info("bruh: {}", buf);
+            logger::info("bruh: {}", current);
             auto i = current.find("\r\n");
+            logger::info("cock: {}", i);
             while(i != std::string::npos) {
                 logger::info("i: {}, data: {}", i, buf);
                 std::string nmea_msg = current.substr(0, i);
