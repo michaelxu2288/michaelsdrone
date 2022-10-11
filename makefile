@@ -9,7 +9,7 @@ OBJ_FILES := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 LIBS := ${wildcard ./lib/lib*.a}
 CMD_LIBS := $(patsubst ./lib/lib%.a,-l%, ${LIBS})
 
-OPTS:= -Iinclude -pthread -lpthread -std=c++2a -Wno-psabi -larmadillo -L./lib ${CMD_LIBS} -DENABLE_MOTOR
+OPTS:= -Iinclude -pthread -lpthread -std=c++2a -Wno-psabi -larmadillo -L./lib ${CMD_LIBS}
 
 .PHONY: drone lib
 
@@ -21,7 +21,12 @@ ${OBJDIR}/%.o: ${SRCDIR}/%.cpp
 
 drone: ${OBJ_FILES} 
 	mkdir -p bin
+	g++ main/main.cpp $^ -o bin/drone ${OPTS} -DENABLE_MOTOR
+
+dronenomotor: ${OBJ_FILES}
+	mkdir -p bin
 	g++ main/main.cpp $^ -o bin/drone ${OPTS}
+
 
 %: ${OBJ_FILES} tools/%.cpp
 	mkdir -p bin
