@@ -81,14 +81,15 @@ int main() {
 
     while(true) {
         int chg_len = read(fd, buf, INTERNAL_BUFFER);
+        logger::info("bruh: {}", buf);
         if(chg_len != 0) {
             current += buf;
             auto i = current.find("\r\n");
             while(i != std::string::npos) {
-                // logger::info("i: {}, data: {}", i, buf);
+                logger::info("i: {}, data: {}", i, buf);
                 std::string nmea_msg = current.substr(0, i);
                 current = current.substr(i+2);
-                // logger::info("length: {}, data: {}", i, s);
+                logger::info("length: {}, data: {}", i, s);
                 
                 std::vector<std::string> nmea_args;
                 str::split(nmea_msg, ",", nmea_args);
