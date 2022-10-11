@@ -503,10 +503,10 @@ void sensor_thread_funct(){
             double roll = atan2(mpu6050_data[1], mpu6050_data[2]);
             double pitch = atan2((mpu6050_data[0]) , sqrt(mpu6050_data[1] * mpu6050_data[1] + mpu6050_data[2] * mpu6050_data[2]));
 
-            orientation_euler.x = orientation_euler.x * (1 - sensor_roll_pitch_tau) + -roll * sensor_roll_pitch_tau;
-            orientation_euler.y = orientation_euler.y * (1 - sensor_roll_pitch_tau) + -pitch * sensor_roll_pitch_tau;
+            orientation_euler.x = orientation_euler.x * (1 - sensor_roll_pitch_tau) + roll * sensor_roll_pitch_tau;
+            orientation_euler.y = orientation_euler.y * (1 - sensor_roll_pitch_tau) + pitch * sensor_roll_pitch_tau;
             
-            logger::info("{:.4f} {:.4f} | {:.4f} {:.4f}", orientation_euler.x * RAD_T_DEG, -roll * RAD_T_DEG, orientation_euler.y * RAD_T_DEG, -pitch * RAD_T_DEG);
+            logger::info("{:.4f} {:.4f} | {:.4f} {:.4f}", orientation_euler.x * RAD_T_DEG, roll * RAD_T_DEG, orientation_euler.y * RAD_T_DEG, pitch * RAD_T_DEG);
 
             orientation = math::quarternion::fromEulerZYX(orientation_euler);
             orientation_euler = math::quarternion::toEuler(orientation);
