@@ -22,6 +22,7 @@ void process_nmea_line(const std::vector<std::string> & nmea_args, const std::st
     if(nmea_args.size() <= 1 || nmea_args[0].length() != 6 || nmea_args[0][0] != '$') return;
 
     gps_talkers talker;
+    logger::warn("NMEA cmd: {}", nmea_args[0]);
 
     if(nmea_args[0][1] == 'G') {
         switch(nmea_args[0][2]) {
