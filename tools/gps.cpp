@@ -81,9 +81,9 @@ int main() {
 
     while(true) {
         int chg_len = read(fd, buf, INTERNAL_BUFFER);
-        logger::info("bruh: {}", buf);
         if(chg_len != 0) {
             current += buf;
+            logger::info("bruh: {}", buf);
             auto i = current.find("\r\n");
             while(i != std::string::npos) {
                 logger::info("i: {}, data: {}", i, buf);
