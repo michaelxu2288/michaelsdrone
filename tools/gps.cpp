@@ -89,13 +89,13 @@ int main() {
                 logger::info("i: {}, data: {}", i, buf);
                 std::string nmea_msg = current.substr(0, i);
                 current = current.substr(i+2);
-                logger::info("length: {}, data: {}", i, s);
+                logger::info("length: {}, data: {}", i, current);
                 
                 std::vector<std::string> nmea_args;
                 str::split(nmea_msg, ",", nmea_args);
                 
-                for(int i = 0; i < nmea_args.size(); i ++) {
-                    logger::info("arg: {}", nmea_args[i]);
+                for(int j = 0; j < nmea_args.size(); j ++) {
+                    logger::info("arg: {}", nmea_args[j]);
                 }
 
                 process_nmea_line(nmea_args, nmea_msg);
