@@ -13,7 +13,7 @@ enum gps_talkers{
     galileo = 2,
     beidou = 3
 };
-char talkers_to_string[][4] = {"gps", "glonass", "galileo" , "beidou"};
+const char * talkers_to_string[] = {"gps", "glonass", "galileo" , "beidou"};
 
 
 
@@ -96,7 +96,7 @@ int main() {
                 for(int i = 0; i < nmea_args.size(); i ++) {
                     logger::info("arg: {}", nmea_args[i]);
                 }
-                
+
                 process_nmea_line(nmea_args, nmea_msg);
                     
 
