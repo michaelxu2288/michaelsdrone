@@ -13,7 +13,7 @@ enum gps_talkers{
     galileo = 2,
     beidou = 3
 };
-char * talkers_to_string[4] = {"gps", "glonass", "galileo" , "beidou"};
+char talkers_to_string[][4] = {"gps", "glonass", "galileo" , "beidou"};
 
 
 
@@ -93,11 +93,12 @@ int main() {
                 std::vector<std::string> nmea_args;
                 str::split(nmea_msg, ",", nmea_args);
                 
-                process_nmea_line(nmea_args, nmea_msg);
-                    
                 for(int i = 0; i < nmea_args.size(); i ++) {
                     logger::info("arg: {}", nmea_args[i]);
                 }
+                
+                process_nmea_line(nmea_args, nmea_msg);
+                    
 
                 i = current.find("\r\n");
             }
