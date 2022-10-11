@@ -85,6 +85,8 @@ static double debug_vals[6] = {0, 0, 0, 0, 0, 0};
 
 static timer sensor_timer;
 
+static bool enable_fl = true, enable_fr = true, enable_bl = true, enable_br = true;
+
 enum state {
     configuring = 0, ready = 1, calibrating = 2, idle = 3, init = 4, settling = 5, destroying = 6
 };
