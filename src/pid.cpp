@@ -24,7 +24,7 @@ double pid::update(double curr, double dt){
 
     p = kP * err;
     i = kI * i_curr;
-    d = kD * derr;
+    d = -kD * derr;
 
     output = p + i + d;
     return output;
