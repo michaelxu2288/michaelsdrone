@@ -498,10 +498,10 @@ void sensor_thread_funct(){
         orientation_euler = math::quarternion::toEuler(orientation);
 
 
-        double a_dist_from_one_sqrd = filtered_mpu6050_data[0] * filtered_mpu6050_data[0] + filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2] - 1;
+        double a_dist_from_one_sqrd = mpu6050_data[0] * mpu6050_data[0] + mpu6050_data[1] * mpu6050_data[1] + mpu6050_data[2] * mpu6050_data[2] - 1;
         if((a_dist_from_one_sqrd < 0 ? a_dist_from_one_sqrd > - sensor_g_tolerance_sqrd : a_dist_from_one_sqrd < sensor_g_tolerance_sqrd)){
-            double roll = atan2(filtered_mpu6050_data[1], filtered_mpu6050_data[2]);
-            double pitch = atan2((filtered_mpu6050_data[0]) , sqrt(filtered_mpu6050_data[1] * filtered_mpu6050_data[1] + filtered_mpu6050_data[2] * filtered_mpu6050_data[2]));
+            double roll = atan2(mpu6050_data[1], mpu6050_data[2]);
+            double pitch = atan2((mpu6050_data[0]) , sqrt(mpu6050_data[1] * mpu6050_data[1] + mpu6050_data[2] * mpu6050_data[2]));
 
             orientation_euler.x = orientation_euler.x * (1 - sensor_roll_pitch_tau) + roll * sensor_roll_pitch_tau;
             orientation_euler.y = orientation_euler.y * (1 - sensor_roll_pitch_tau) + pitch * sensor_roll_pitch_tau;
