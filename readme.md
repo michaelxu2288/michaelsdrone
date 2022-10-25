@@ -1,5 +1,7 @@
 # Drone
 Do you really want to know whats going on?
+
+Made by Andrew Lin. 
 ## What is this?
 This is an on going drone build with a Raspberry Pi (running Debian Linux) as the main flight controller.
 ## Languages
