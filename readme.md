@@ -1,7 +1,8 @@
 # Drone
-Do you really want to know whats going on?
 
-Made by Andrew Lin. 
+MY NAME IS ANDREW RYAN AND IM CHOPPED 
+
+Made by michael xu
 ## What is this?
 This is an on going drone build with a Raspberry Pi (running Debian Linux) as the main flight controller.
 ## Languages
